@@ -168,25 +168,23 @@
     <!-- <CompareUploadDialog
       v-if="IsUploadDialogShow"
       @on-close="closeUploadDialog"
-    ></CompareUploadDialog>
-    <ComparePayDialog
-      v-if="IsPayDialogShow"
+    ></CompareUploadDialog> -->
+    <UploadDialog
       @on-close="closePayDialog"
       :IsPayDialogShow="this.IsPayDialogShow"
-      :work="this.workObj"
-    ></ComparePayDialog> -->
+    ></UploadDialog>
   </el-container>
 </template>
 
 <script>
-// import CompareUploadDialog from "./components/compare-upload-dialog.vue";
+import UploadDialog from "@/components/Home/Compare/UploadDialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "HomeCompare",
+  name: "Compare",
   components: {
-    // CompareUploadDialog,
+    UploadDialog,
     // ComparePayDialog,
   },
   data() {
@@ -213,27 +211,11 @@ export default {
   },
   methods: {
     gotoCompareResult(compareId) {
-      console.log(compareId);
-      this.$store
-        .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-        .then(() => {
-          this.compareImgUrl = this.workObj.compareResultUrl;
-          if (this.workObj.compareResultUrl) {
-            this.$notify.success({
-              title: "成功",
-              message: "获取对比结果",
-            });
-          }
-          console.log(this.compareImgUrl);
-        });
     },
     openUploadDialog() {
       this.IsUploadDialogShow = true;
     },
     getCompareResultUrl() {
-      return !("workObj" in this) || !("compareResultUrl" in this.workObj)
-        ? `/public/images/251.png`
-        : this.workObj.compareResultUrl;
     },
     foldItem(id) {
       this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
@@ -254,7 +236,6 @@ export default {
       this.isLoading = true;
       setTimeout(() => {
         this.currentPage++;
-        this.queryData();
       }, 500);
     },
     queryData() {

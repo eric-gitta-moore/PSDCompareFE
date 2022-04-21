@@ -114,7 +114,7 @@
 
 <script>
 export default {
-  name: "HomeHistory",
+  name: "History",
   components: {},
   computed: {},
   methods: {
