@@ -18,7 +18,7 @@
         <!--        左侧表格-->
         <el-container class="left-table">
           <el-header class="table-header" height="auto">
-            <p>参考图纸文件</p>
+            <p>参考图纸文件（{{ fileListLeftSize }}）</p>
             <el-button type="primary" size="mini" @click="handleUploadClick('leftFileInput')"
             >上传
             </el-button
@@ -99,7 +99,7 @@
         <!--        右侧表格-->
         <el-container class="right-table">
           <el-header class="table-header" height="auto">
-            <p>参考图纸文件</p>
+            <p>对比图纸文件（{{ fileListRightSize }}）</p>
             <el-button type="primary" size="mini" @click="handleUploadClick('rightFileInput')"
             >上传
             </el-button
@@ -180,6 +180,8 @@
       <div class="footer-btn-group">
         <div class="left">
           <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
+          <el-button @click="resetFileList" plain>重置匹配</el-button>
+          <el-button @click="clearFileList" plain>清空</el-button>
         </div>
         <div class="right">
           <el-button @click="closeDialog">取消</el-button>
@@ -193,6 +195,7 @@
 <script>
 import FileHelper from "@/util/FileHelper.js";
 import Sortable, {Swap} from "sortablejs";
+import {deepClone} from '@/util/DeepClone'
 
 Sortable.mount(new Swap());
 import BaseDialog from "@/components/_Common/BaseDialog.vue";
@@ -206,6 +209,8 @@ export default {
     return {
       fileListLeft: [], //左侧文件列表
       fileListRight: [], //右侧文件列表
+      fileListLeftBackup: [], //左侧文件列表，备份用于重置的
+      fileListRightBackup: [], //右侧文件列表，备份用于重置的
       headerCellStyle: {background: "#f6f8fa"},
       leftTableDing: false, //左侧表格表头钉子状态
       rightTableDing: false, //右侧表格表头钉子状态
@@ -218,8 +223,35 @@ export default {
     rightTableDom() {
       return this.$refs.rightTable.$el.querySelector(".el-table__body tbody");
     },
+    fileListLeftSize() {
+      return this.fileListLeft.length;
+    },
+    fileListRightSize() {
+      return this.fileListRight.length;
+    },
   },
   methods: {
+    resetFileList() {
+      if (this.fileListLeftBackup.length === 0 || this.fileListRightBackup.length === 0) {
+        this.$message({
+          showClose: true,
+          message: '无法重置',
+          type: 'error'
+        });
+        return
+      }
+      this.fileListLeft = this.fileListLeftBackup;
+      this.fileListRight = this.fileListRightBackup;
+      this.$message({
+        showClose: true,
+        message: '重置文件列表',
+        type: 'success'
+      });
+    },
+    clearFileList() {
+      this.fileListLeft = [];
+      this.fileListRight = [];
+    },
     autoMatchFileList() {
       if (this.fileListLeft.length === 0 || this.fileListRight.length === 0) {
         this.$message({
@@ -227,18 +259,49 @@ export default {
           message: '左右文件列表不能同时为空',
           type: 'error'
         });
+        return;
       }
-      let leftFileList = this.fileListLeft;
-      let rightFileList = this.fileListRight;
+      this.fileListLeftBackup = deepClone(this.fileListLeft);
+      this.fileListRightBackup = deepClone(this.fileListRight);
+      let leftFileListUnmatchedIndex = [], rightFileListUnmatchedIndex = [];//未匹配到的文件的index
       let leftFileListMatched = [], rightFileListMatched = [];
-      for (const leftItem of leftFileList) {
-        for (const rightItem of rightFileList) {
-          if (leftItem.title === rightItem.title) {
-            leftFileListMatched.push(leftItem);
-            rightFileListMatched.push(rightItem);
+      for (const leftItemIndex in this.fileListLeft) {
+        for (const rightItemIndex in this.fileListRight) {
+          // console.log(leftItemIndex, rightItemIndex, this.fileListLeft[leftItemIndex].title.trim(), this.fileListRight[rightItemIndex].title.trim(), this.fileListLeft[leftItemIndex].title.trim() === this.fileListRight[rightItemIndex].title.trim())
+          if (this.fileListLeft[leftItemIndex].title.trim() === this.fileListRight[rightItemIndex].title.trim()) {
+            // 匹配到的文件就给他锁定
+            leftFileListMatched.push(deepClone(this.fileListLeft[leftItemIndex]));
+            leftFileListMatched[leftFileListMatched.length - 1].dragalbe = false;
+            leftFileListUnmatchedIndex.push(parseInt(leftItemIndex));
+
+            rightFileListMatched.push(deepClone(this.fileListRight[rightItemIndex]));
+            rightFileListMatched[rightFileListMatched.length - 1].dragalbe = false;
+            rightFileListUnmatchedIndex.push(parseInt(rightItemIndex));
+            break;
           }
         }
       }
+      let leftFileListUnmatched = [], rightFileListUnmatched = [];
+      leftFileListUnmatched = deepClone(this.fileListLeft.filter((value, index) => !leftFileListUnmatchedIndex.includes(index)));
+      rightFileListUnmatched = deepClone(this.fileListRight.filter((value, index) => !rightFileListUnmatchedIndex.includes(index)));
+      let matchedSize = leftFileListMatched.length;
+      // console.log("leftFileListUnmatchedIndex", leftFileListUnmatchedIndex, "rightFileListUnmatchedIndex", rightFileListUnmatchedIndex)
+      // console.log("leftFileListUnmatched", leftFileListUnmatched, "rightFileListUnmatched", rightFileListUnmatched)
+      // console.log("leftFileListMatched", leftFileListMatched, "rightFileListMatched", rightFileListMatched)
+      leftFileListMatched = leftFileListMatched.concat(leftFileListUnmatched);
+      rightFileListMatched = rightFileListMatched.concat(rightFileListUnmatched);
+      for (const i in leftFileListMatched) {
+        leftFileListMatched[i].sortIndex = parseInt(i);
+      }
+      for (const i in rightFileListMatched) {
+        rightFileListMatched[i].sortIndex = parseInt(i);
+      }
+      this.fileListLeft = leftFileListMatched;
+      this.fileListRight = rightFileListMatched;
+      this.$notify.success({
+        title: '消息',
+        message: `成功匹配${matchedSize}个同名文件`
+      });
     },
     //单元格 格式化内容回调
     showFormatFileSize(row, column, cellValue, index) {
