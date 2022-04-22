@@ -157,7 +157,7 @@
                   <SvgIcon
                       icon-class="ding"
                       class="ding-icon"
-                      :class="headerDingStyle(leftTableDing)"
+                      :class="headerDingStyle(rightTableDing)"
                   ></SvgIcon>
                 </template>
               </el-table-column>
@@ -179,8 +179,12 @@
     <template #footer>
       <div class="footer-btn-group">
         <div class="left">
-          <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
-          <el-button @click="resetFileList" plain>重置匹配</el-button>
+          <el-tooltip content="自动匹配文件名相同的文件并锁定" placement="top" :open-delay="1000">
+            <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
+          </el-tooltip>
+          <el-tooltip content="恢复到最近一次自动匹配前的状态" placement="top" :open-delay="1000">
+            <el-button @click="resetFileList" plain>重置匹配</el-button>
+          </el-tooltip>
           <el-button @click="clearFileList" plain>清空</el-button>
         </div>
         <div class="right">
@@ -207,13 +211,39 @@ export default {
   },
   data() {
     return {
-      fileListLeft: [], //左侧文件列表
-      fileListRight: [], //右侧文件列表
-      fileListLeftBackup: [], //左侧文件列表，备份用于重置的
-      fileListRightBackup: [], //右侧文件列表，备份用于重置的
+      /**
+       * @description 左侧文件列表
+       */
+      fileListLeft: [],
+      /**
+       * @description 右侧文件列表
+       */
+      fileListRight: [],
+      /**
+       * @description 左侧文件列表，备份用于重置的
+       */
+      fileListLeftBackup: [],
+      /**
+       * @description 右侧文件列表，备份用于重置的
+       */
+      fileListRightBackup: [],
       headerCellStyle: {background: "#f6f8fa"},
-      leftTableDing: false, //左侧表格表头钉子状态
-      rightTableDing: false, //右侧表格表头钉子状态
+      /**
+       * @description 左侧表格表头钉子状态
+       */
+      leftTableDing: false,
+      /**
+       * @description 右侧表格表头钉子状态
+       */
+      rightTableDing: false,
+      /**
+       * @description sortableJS实例对象
+       */
+      sortableLeft: {},
+      /**
+       * @description sortableJS实例对象
+       */
+      sortableRight: {}
     };
   },
   computed: {
@@ -230,7 +260,31 @@ export default {
       return this.fileListRight.length;
     },
   },
+  watch: {},
   methods: {
+    /**
+     * @description 重新初始化sorttable
+     */
+    refreshSortTable() {
+      // if (Object.keys(this.sortableLeft).length !== 0)
+      //   this.sortableLeft.destory();
+      // if (Object.keys(this.sortableRight).length !== 0)
+      //   this.sortableRight.destory();
+      try {
+        this.sortableLeft.destroy();
+      } catch (e) {
+        console.log(e)
+      }
+      try {
+        this.sortableRight.destroy();
+      } catch (e) {
+        console.log(e)
+      }
+      this.initSortTable()
+    },
+    /**
+     * @description 重置两边文件列表为上一次配对前的状态
+     */
     resetFileList() {
       if (this.fileListLeftBackup.length === 0 || this.fileListRightBackup.length === 0) {
         this.$message({
@@ -248,10 +302,16 @@ export default {
         type: 'success'
       });
     },
+    /**
+     * @description 清空两边文件列表
+     */
     clearFileList() {
       this.fileListLeft = [];
       this.fileListRight = [];
     },
+    /**
+     * @description 自动配对文件
+     */
     autoMatchFileList() {
       if (this.fileListLeft.length === 0 || this.fileListRight.length === 0) {
         this.$message({
@@ -302,23 +362,56 @@ export default {
         title: '消息',
         message: `成功匹配${matchedSize}个同名文件`
       });
+
+      this.refreshSortTable();
     },
-    //单元格 格式化内容回调
+    /**
+     * @description 单元格 格式化文件大小
+     * @param row 该行数据 行对象
+     * @param column 列对象
+     * @param cellValue
+     * @param index
+     * @returns {*}
+     */
     showFormatFileSize(row, column, cellValue, index) {
       return FileHelper.formatFileSize(row.size);
     },
     closeDialog() {
     },
-    //固定所有行
+    /**
+     * @description 固定所有行
+     */
     doFixedAll() {
       for (const iterator of this.fileListLeft) {
         iterator.dragalbe = this.leftTableDing;
       }
       this.leftTableDing = !this.leftTableDing;
     },
-    //表头钉子样式回调
+
+    /**
+     * @description 固定当前行
+     * @param row
+     * @param column
+     * @param cell
+     * @param event
+     */
+    doFixed({row, column, cell, event}) {
+      row.dragalbe = !row.dragalbe;
+    },
+
+    /**
+     * @description 表头钉子样式回调
+     * @param a {leftTableDing|rightTableDing}
+     * @returns {string}
+     */
     headerDingStyle: (a) => (a ? "ding" : ""),
-    //普通钉子样式回调
+
+    /**
+     * @description 普通钉子样式回调
+     * @param a {leftTableDing|rightTableDing}
+     * @param fileList {fileListLeft|fileListRight}
+     * @returns {string}
+     */
     dingStyle(a, fileList) {
       //调整表头钉子样式，如果为非全选状态则切换为非ding状态
       let fileStatus = fileList[0].dragalbe;
@@ -338,11 +431,23 @@ export default {
 
       return !a.dragalbe ? "ding" : "";
     },
-    //处理所有表头点击事件
+
+    /**
+     * @description 处理所有表头点击事件
+     * @param column
+     * @param event
+     */
     headerClickEvent(column, event) {
       if (parseInt(column.columnIndex) === 4) this.doFixedAll();
     },
-    //初始化每一个单元格索引
+
+    /**
+     * @description 初始化每一个单元格索引
+     * @param row
+     * @param column
+     * @param rowIndex
+     * @param columnIndex
+     */
     tableCellClassName({row, column, rowIndex, columnIndex}) {
       // row.rowIndex = rowIndex;
       column.columnIndex = columnIndex;
@@ -352,41 +457,56 @@ export default {
         return "drag-filtered";
       }
     },
-    //初始化表格拖拽功能
-    initLeftTable() {
-      new Sortable(this.leftTableDom, {
+
+    /**
+     * @description 初始化表格拖拽功能
+     */
+    initSortTable() {
+      this.sortableLeft = new Sortable(this.leftTableDom, {
         swap: true, // Enable swap plugin
         swapClass: "drag-highlight", // The class applied to the hovered swap item
         animation: 150,
         handle: ".dragalbe",
         filter: ".drag-filtered",
-        onMove: this.handleDragOnMove,
-        onEnd: this.handleDragOnEnd,
+        onMove: this.handleDragOnMoveLeft,
+        onEnd: this.handleDragOnEndLeft,
       });
-      new Sortable(this.rightTableDom, {
+      this.sortableRight = new Sortable(this.rightTableDom, {
         swap: true, // Enable swap plugin
         swapClass: "drag-highlight", // The class applied to the hovered swap item
         animation: 150,
         handle: ".dragalbe",
         filter: ".drag-filtered",
-        onMove: this.handleDragOnMove,
-        onEnd: this.handleDragOnEnd,
+        onMove: this.handleDragOnMoveRight,
+        onEnd: this.handleDragOnEndRight,
       });
     },
-    //固定当前行
-    doFixed({row, column, cell, event}) {
-      row.dragalbe = !row.dragalbe;
-    },
-    //处理所有单元格单击事件
+
+    /**
+     * @description 处理所有单元格单击事件
+     * @param row
+     * @param column
+     * @param cell
+     * @param event
+     */
     cellClickEvent(row, column, cell, event) {
       if (parseInt(column.columnIndex) === 4) this.doFixed({row, column, cell, event});
     },
-    //点击上传按钮
+
+    /**
+     * @description 点击上传按钮
+     * @param fileInputSideStr
+     */
     handleUploadClick(fileInputSideStr) {
       this.$refs[fileInputSideStr].value = null;
       this.$refs[fileInputSideStr].click();
     },
-    //上传按钮回调
+
+    /**
+     * @description 上传按钮回调
+     * @param refs
+     * @param fileListSideStr
+     */
     handFileChange(refs, fileListSideStr) {
       let files = this.$refs[refs].files;
       for (const file of files) {
@@ -399,15 +519,14 @@ export default {
           sortIndex: this[fileListSideStr].length
         });
       }
-      this.handleFileListTree()
+      this.refreshSortTable();
     },
-    handleFileListTree() {
-      // if (this.fileListLeft.length && this.fileListRight) {
-      //
-      // }
-    },
-    // 元素拖拽结束，更改sortIndex
-    handleDragOnEnd: function (/**Event*/ evt) {
+
+    /**
+     * @description 元素拖拽结束，更改sortIndex
+     * @param evt
+     */
+    handleDragOnEndLeft: function (/**Event*/ evt) {
       // var itemEl = evt.item; // dragged HTMLElement
       // evt.to; // target list
       // evt.from; // previous list
@@ -418,6 +537,9 @@ export default {
       // evt.clone; // the clone element
       // evt.pullMode; // when item is in another sortable: `"clone"` if cloning, `true` if moving
       console.log(evt);
+
+      if (evt.swapItem === undefined)
+        return;
       // let row = evt.related.querySelector("[data-index]");
       for (const item of this.fileListLeft) {
         let index = evt.item.querySelector('[data-index]').dataset.index;
@@ -427,15 +549,44 @@ export default {
         }
       }
       for (const item of this.fileListLeft) {
-        let index = evt.swapItem.querySelector('[data-index]').dataset.index;
+        let index = evt.swapItem?.querySelector('[data-index]').dataset.index;
         if (parseInt(item.index) === parseInt(index)) {
           item.sortIndex = evt.oldIndex;
           break
         }
       }
     },
-    // 在列表中或在列表之间移动项目时
-    handleDragOnMove(/**Event*/ evt, /**Event*/ originalEvent) {
+
+    /**
+     * @description 元素拖拽结束，更改sortIndex，右侧表格
+     * @param evt
+     */
+    handleDragOnEndRight: function (/**Event*/ evt) {
+      if (evt.swapItem === undefined)
+        return;
+      for (const item of this.fileListRight) {
+        let index = evt.item.querySelector('[data-index]').dataset.index;
+        if (parseInt(item.index) === parseInt(index)) {
+          item.sortIndex = evt.newIndex;
+          break
+        }
+      }
+      for (const item of this.fileListRight) {
+        let index = evt.swapItem?.querySelector('[data-index]').dataset.index;
+        if (parseInt(item.index) === parseInt(index)) {
+          item.sortIndex = evt.oldIndex;
+          break
+        }
+      }
+    },
+
+    /**
+     * @description 在列表中或在列表之间移动项目时，左侧表格
+     * @param evt
+     * @param originalEvent
+     * @returns {*|boolean}
+     */
+    handleDragOnMoveLeft(/**Event*/ evt, /**Event*/ originalEvent) {
       // Example: https://jsbin.com/nawahef/edit?js,output
       // evt.dragged; // 被拖动的元素
       // evt.draggedRect; // DOMRect {left, top, right, bottom}
@@ -457,26 +608,29 @@ export default {
         }
       }
     },
+
+    /**
+     * @description 在列表中或在列表之间移动项目时，右侧表格
+     * @param evt
+     * @param originalEvent
+     * @returns {*|boolean}
+     */
+    handleDragOnMoveRight(/**Event*/ evt, /**Event*/ originalEvent) {
+      let row = evt.related.querySelector("[data-index]");
+      if (!row) return;
+      for (const file of this.fileListRight) {
+        if (parseInt(file.index) === parseInt(row.dataset.index)) {
+          //不可拖动
+          return file.dragalbe;
+        }
+      }
+    },
   },
   beforeMount() {
-    // for (let i = 0; i < 10; i++) {
-    //   this.fileListLeft.push({
-    //     title: `文件${i}`,
-    //     size: 3000 + i,
-    //     dragalbe: true,
-    //   });
-    //   this.fileListRight.push({
-    //     title: `文件${i}`,
-    //     size: 3000 + i,
-    //     dragalbe: true,
-    //   });
-    // }
+
   },
   mounted() {
-    this.initLeftTable();
-    window.fileListLeft = this.fileListLeft;
-    window.leftFileInput = this.$refs.leftFileInput;
-    window.vue = this;
+    window.vue = this
   },
 };
 </script>
