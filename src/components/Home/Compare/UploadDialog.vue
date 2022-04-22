@@ -7,7 +7,24 @@
   >
     <template #header>
       <el-row class="header">
-        <el-col :span="20" class="title">上传PDF图纸</el-col>
+        <el-col :span="20" class="title">
+          上传PDF图纸
+          <el-tooltip>
+            <template #content>
+              <ol style="padding: 0 0 0 18px;margin: 0">
+                <li>
+                  左右表格中在同一行的两个文件会进行对比
+                </li>
+                <li>
+                  如果左右文件数量不一样，那么多余的文件会被舍弃
+                </li>
+              </ol>
+            </template>
+            <template>
+              <i class="el-icon-info"></i>
+            </template>
+          </el-tooltip>
+        </el-col>
         <el-col :span="4" class="close">
           <svg-icon icon-class="close" @click="closeDialog"></svg-icon>
         </el-col>
@@ -32,7 +49,7 @@
                 :row-class-name="rowClassName"
                 @cell-click="cellClickEvent"
                 :cell-class-name="tableCellClassName"
-                @header-click="headerClickEvent"
+                @header-click="headerLeftClickEvent"
                 ref="leftTable"
             >
               <el-table-column width="40px" class-name="dragalbe">
@@ -113,7 +130,7 @@
                 :row-class-name="rowClassName"
                 @cell-click="cellClickEvent"
                 :cell-class-name="tableCellClassName"
-                @header-click="headerClickEvent"
+                @header-click="headerRightClickEvent"
                 ref="rightTable"
             >
               <el-table-column width="40px" class-name="dragalbe">
@@ -128,7 +145,7 @@
               </el-table-column>
               <el-table-column
                   width="50px"
-                  type="index"
+                  prop="index"
                   label="序号"
                   show-overflow-tooltip
               ></el-table-column>
@@ -150,7 +167,7 @@
                   <SvgIcon
                       icon-class="ding"
                       class="ding-icon"
-                      :class="dingStyle(scope.row, fileListLeft)"
+                      :class="dingStyle(scope.row, fileListRight)"
                   ></SvgIcon>
                 </template>
                 <template #header>
@@ -161,6 +178,18 @@
                   ></SvgIcon>
                 </template>
               </el-table-column>
+              <!--              <el-table-column width="40px">-->
+              <!--                <template #default="scope">-->
+              <!--                  <el-popconfirm-->
+              <!--                      title="这是一段内容确定删除吗？"-->
+              <!--                      @onConfirm="handleDeleteFileList('Right',scope)"-->
+              <!--                  >-->
+              <!--                    <template #reference>-->
+              <!--                      <i class="el-icon-delete icon-act"></i>-->
+              <!--                    </template>-->
+              <!--                  </el-popconfirm>-->
+              <!--                </template>-->
+              <!--              </el-table-column>-->
             </el-table>
 
             <input
@@ -179,17 +208,17 @@
     <template #footer>
       <div class="footer-btn-group">
         <div class="left">
-          <el-tooltip content="自动匹配文件名相同的文件并锁定" placement="top" :open-delay="1000">
+          <el-tooltip content="自动匹配文件名相同的文件并锁定" placement="top" :open-delay="500">
             <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
           </el-tooltip>
-          <el-tooltip content="恢复到最近一次自动匹配前的状态" placement="top" :open-delay="1000">
+          <el-tooltip content="恢复到最近一次自动匹配前的状态" placement="top" :open-delay="500">
             <el-button @click="resetFileList" plain>重置匹配</el-button>
           </el-tooltip>
           <el-button @click="clearFileList" plain>清空</el-button>
         </div>
         <div class="right">
           <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary">完成</el-button>
+          <el-button type="primary" @click="complete">完成</el-button>
         </div>
       </div>
     </template>
@@ -208,6 +237,12 @@ export default {
   name: "UploadDialog",
   components: {
     BaseDialog,
+  },
+  props: {
+    taskId: {
+      type: String,
+      required: true,
+    }
   },
   data() {
     return {
@@ -262,6 +297,27 @@ export default {
   },
   watch: {},
   methods: {
+    // TODO:懒得弄删除了
+    // handleDeleteFileList(side, scope) {
+    //   console.log(side, scope);
+    // },
+    /**
+     * @description 完成排序准备上传
+     */
+    complete() {
+      let left = deepClone(this.fileListLeft);
+      let right = deepClone(this.fileListRight);
+      left.sort((a, b) => a.sortIndex - b.sortIndex)
+      right.sort((a, b) => a.sortIndex - b.sortIndex)
+      let compareArr = [];
+      for (let i = 0; i < Math.min(left.length, right.length); i++) {
+        compareArr.push({
+          reference: left[i].FileObj,
+          contrast: right[i].FileObj,
+        })
+      }
+      console.log(compareArr);
+    },
     /**
      * @description 重新初始化sorttable
      */
@@ -341,9 +397,15 @@ export default {
           }
         }
       }
+
+      //把没有匹配到的过滤出来
       let leftFileListUnmatched = [], rightFileListUnmatched = [];
       leftFileListUnmatched = deepClone(this.fileListLeft.filter((value, index) => !leftFileListUnmatchedIndex.includes(index)));
       rightFileListUnmatched = deepClone(this.fileListRight.filter((value, index) => !rightFileListUnmatchedIndex.includes(index)));
+      //锁定状态修改为未锁定
+      leftFileListUnmatched.forEach((e) => e.dragalbe = true);
+      rightFileListUnmatched.forEach((e) => e.dragalbe = true);
+
       let matchedSize = leftFileListMatched.length;
       // console.log("leftFileListUnmatchedIndex", leftFileListUnmatchedIndex, "rightFileListUnmatchedIndex", rightFileListUnmatchedIndex)
       // console.log("leftFileListUnmatched", leftFileListUnmatched, "rightFileListUnmatched", rightFileListUnmatched)
@@ -377,15 +439,17 @@ export default {
       return FileHelper.formatFileSize(row.size);
     },
     closeDialog() {
+      this.$emit('onClose')
     },
     /**
      * @description 固定所有行
+     * @param side {String} Left|Right
      */
-    doFixedAll() {
-      for (const iterator of this.fileListLeft) {
-        iterator.dragalbe = this.leftTableDing;
+    doFixedAll(side) {
+      for (const item of this[`fileList${side}`]) {
+        item.dragalbe = this[`${side.toLowerCase()}TableDing`];
       }
-      this.leftTableDing = !this.leftTableDing;
+      this[`${side.toLowerCase()}TableDing`] = !this[`${side.toLowerCase()}TableDing`];
     },
 
     /**
@@ -437,8 +501,17 @@ export default {
      * @param column
      * @param event
      */
-    headerClickEvent(column, event) {
-      if (parseInt(column.columnIndex) === 4) this.doFixedAll();
+    headerLeftClickEvent(column, event) {
+      if (parseInt(column.columnIndex) === 4) this.doFixedAll('Left');
+    },
+
+    /**
+     * @description 处理所有表头点击事件
+     * @param column
+     * @param event
+     */
+    headerRightClickEvent(column, event) {
+      if (parseInt(column.columnIndex) === 4) this.doFixedAll('Right');
     },
 
     /**
@@ -452,6 +525,13 @@ export default {
       // row.rowIndex = rowIndex;
       column.columnIndex = columnIndex;
     },
+
+    /**
+     * @description 表格中列class回调
+     * @param row
+     * @param rowIndex
+     * @returns {string}
+     */
     rowClassName({row, rowIndex}) {
       if (!row.dragalbe) {
         return "drag-filtered";
@@ -536,7 +616,6 @@ export default {
       // evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
       // evt.clone; // the clone element
       // evt.pullMode; // when item is in another sortable: `"clone"` if cloning, `true` if moving
-      console.log(evt);
 
       if (evt.swapItem === undefined)
         return;
@@ -637,6 +716,11 @@ export default {
 
 <style lang="scss">
 .upload-dialog {
+  .icon-act {
+    transform: scale(1.3);
+    cursor: pointer;
+  }
+
   .main-contain {
     display: flex;
 

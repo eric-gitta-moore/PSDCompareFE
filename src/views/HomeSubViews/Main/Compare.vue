@@ -170,8 +170,8 @@
       @on-close="closeUploadDialog"
     ></CompareUploadDialog> -->
     <UploadDialog
-      @on-close="closePayDialog"
-      :IsPayDialogShow="this.IsPayDialogShow"
+      v-if="IsUploadDialogShow"
+      @onClose="closeUploadDialog"
     ></UploadDialog>
   </el-container>
 </template>
@@ -189,7 +189,7 @@ export default {
   },
   data() {
     return {
-      IsUploadDialogShow: false,
+      IsUploadDialogShow: true,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,
