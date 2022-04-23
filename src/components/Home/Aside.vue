@@ -1,30 +1,6 @@
 <template>
   <el-aside style="flex-basis: 12.5%">
     <div class="aside">
-      <el-row v-if="false">
-        <el-col :span="24">
-          <div
-            class="router"
-            @click="redirectTo('/compare')"
-            v-bind:class="{ active: isHomeCompare }"
-          >
-            <SvgIcon icon-class="compare" class="compare-icon"></SvgIcon>
-            <span>图纸对比</span>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row v-if="false">
-        <el-col :span="24">
-          <div
-            class="router"
-            v-bind:class="{ active: isHomeHistory }"
-            @click="redirectTo('/history')"
-          >
-            <SvgIcon icon-class="note" class="note-icon"></SvgIcon>
-            <span>历史记录</span>
-          </div>
-        </el-col>
-      </el-row>
       <el-row>
         <el-col :span="24" v-for="(v, k) in this.routes" :key="k">
           <div
@@ -64,7 +40,9 @@ export default {
       this.routes.push(r);
     }
   },
-  mounted() {},
+  mounted() {
+    console.log("侧边连跳转的路由",this.routes);
+  },
   computed: {
     isHomeHistory() {
       return this.$route.name == "HomeHistory";

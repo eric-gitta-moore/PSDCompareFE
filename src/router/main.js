@@ -8,14 +8,24 @@
 
 export default [
     {
-        path: 'compare',
-        name: 'HomeCompare',
-        component: () => import('@/views/HomeSubViews/Main/Compare.vue'),
+        path: 'CompareLeft',
+        name: 'CompareLeft',
+        component: () => import('@/views/HomeSubViews/Main/CompareLeft.vue'),
         meta: {
             title: '图纸对比',
             iconClass: 'compare',
             keepAlive: true
-        }
+        },
+    },
+    {
+        path: 'CompareUp',
+        name: 'CompareUp',
+        component: () => import('@/views/HomeSubViews/Main/CompareUp.vue'),
+        meta: {
+            title: '图纸对比',
+            iconClass: 'compare',
+            keepAlive: true
+        },
     },
     {
         path: 'history',
