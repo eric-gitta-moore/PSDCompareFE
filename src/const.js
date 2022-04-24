@@ -20,8 +20,8 @@ switch (process.env.NODE_ENV) {
     }
     case "development": // 本机前端开发调试 npm run serve
     default:
-        baseUrl = 'http://ty.y68.fun/sales-show-3'; // swagger http://ty.y68.fun/sales-expo-saas/#/
-        // baseUrl = '/api';
+        // baseUrl = 'http://ty.y68.fun/sales-show-3'; // swagger http://ty.y68.fun/sales-expo-saas/#/
+        baseUrl = 'http://127.0.0.1:4523/mock/838613';
         break;
 }
 export const BASE_URL = baseUrl;

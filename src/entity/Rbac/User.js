@@ -17,12 +17,12 @@ class User extends Parent {
      * @param {boolean} isRememberMe 是否记住我
      */
     constructor({
-        token,
-        username,
-        realname,
-        isRememberMe = true, // 是否记住我，是则记在localStorage，否则记在sessionStorage
-        ...rest
-    }) {
+                    token,
+                    username,
+                    realname,
+                    isRememberMe = true, // 是否记住我，是则记在localStorage，否则记在sessionStorage
+                    ...rest
+                }) {
         super(rest);
         this.token = token;
         this.username = username;

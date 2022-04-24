@@ -66,19 +66,19 @@
                   width="50px"
                   prop="index"
                   label="序号"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                   prop="title"
                   label="文件名"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   :index="3"
               ></el-table-column>
               <el-table-column
                   prop="size"
                   label="大小"
                   :formatter="showFormatFileSize"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   width="80px"
               ></el-table-column>
               <el-table-column width="40px">
@@ -147,19 +147,19 @@
                   width="50px"
                   prop="index"
                   label="序号"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                   prop="title"
                   label="文件名"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   :index="3"
               ></el-table-column>
               <el-table-column
                   prop="size"
                   label="大小"
                   :formatter="showFormatFileSize"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   width="80px"
               ></el-table-column>
               <el-table-column width="40px">
@@ -209,12 +209,12 @@
       <div class="footer-btn-group">
         <div class="left">
           <el-tooltip content="自动匹配文件名相同的文件并锁定" placement="top" :open-delay="500">
-            <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
+            <el-button @click="autoMatchFileList" :plain="true">自动匹配</el-button>
           </el-tooltip>
           <el-tooltip content="恢复到最近一次自动匹配前的状态" placement="top" :open-delay="500">
-            <el-button @click="resetFileList" plain>重置匹配</el-button>
+            <el-button @click="resetFileList" :plain="true">重置匹配</el-button>
           </el-tooltip>
-          <el-button @click="clearFileList" plain>清空</el-button>
+          <el-button @click="clearFileList" :plain="true">清空</el-button>
         </div>
         <div class="right">
           <el-button @click="closeDialog">取消</el-button>
