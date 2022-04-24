@@ -364,6 +364,11 @@ export default {
     clearFileList() {
       this.fileListLeft = [];
       this.fileListRight = [];
+      this.$message({
+        showClose: true,
+        message: '清空成功',
+        type: 'success',
+      });
     },
     /**
      * @description 自动配对文件

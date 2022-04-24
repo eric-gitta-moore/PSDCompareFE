@@ -16,9 +16,9 @@
       </div>
       <div class="orders">
         <ul
-          v-infinite-scroll="load"
-          infinite-scroll-disabled="disableLoading"
-          infinite-scroll-immediate="false"
+            v-infinite-scroll="load"
+            infinite-scroll-disabled="disableLoading"
+            infinite-scroll-immediate="false"
         >
           <li v-for="val in compareLogData" :key="val.id">
             <el-row class="order">
@@ -28,8 +28,8 @@
                     <el-col :span="16">
                       <span class="notice">名称：</span>
                       <span>{{
-                        val.title ? val.title : "对比记录" + val.id
-                      }}</span>
+                          val.title ? val.title : "对比记录" + val.id
+                        }}</span>
                     </el-col>
 
                     <el-col :span="4" class="compare">
@@ -81,23 +81,23 @@
                     <el-row class="time-line">
                       <el-col :span="2">
                         <svg-icon
-                          v-if="val.status == '已完成' || true"
-                          icon-class="play"
+                            v-if="val.status == '已完成' || true"
+                            icon-class="play"
                         ></svg-icon>
                         <svg-icon v-else icon-class="clock"></svg-icon>
                       </el-col>
                       <el-col :span="19">
                         <el-progress
-                          :percentage="val.status == '已完成' || true ? 100 : 0"
-                          :stroke-width="10"
-                          :show-text="false"
+                            :percentage="val.status == '已完成' || true ? 100 : 0"
+                            :stroke-width="10"
+                            :show-text="false"
                         >
                         </el-progress>
                       </el-col>
                       <el-col :span="3">
                         <div>
                           <span
-                            >{{
+                          >{{
                               val.status == "已完成" || true ? 100 : 0
                             }}%</span
                           >
@@ -115,7 +115,7 @@
                   <el-row v-else>
                     <el-col class="more">
                       <span class="fold" @click="foldItem(val.id)"
-                        >查看更多
+                      >查看更多
                       </span>
                       <svg-icon icon-class="angle-bottom"></svg-icon>
                     </el-col>
@@ -161,7 +161,7 @@
         </el-header>
         <el-main>
           <div class="right-main-img">
-            <img :src="compareImgUrl" alt="" />
+            <img :src="compareImgUrl" alt=""/>
           </div>
         </el-main>
       </el-container>
@@ -176,23 +176,30 @@
       :IsPayDialogShow="this.IsPayDialogShow"
       :work="this.workObj"
     ></ComparePayDialog> -->
+    <UploadDialog
+        v-if="IsUploadDialogShow"
+        @onClose="closeUploadDialog"
+        task-id="1"
+    ></UploadDialog>
   </el-container>
 </template>
 
 <script>
+import UploadDialog from "@/components/Home/Compare/UploadDialog";
 // import CompareUploadDialog from "./components/compare-upload-dialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
-import { mapState } from "vuex";
+import {mapState} from "vuex";
 
 export default {
   name: "CompareLeft",
   components: {
+    UploadDialog
     // CompareUploadDialog,
     // ComparePayDialog,
   },
   data() {
     return {
-      IsUploadDialogShow: false,
+      IsUploadDialogShow: true,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,
@@ -216,25 +223,25 @@ export default {
     gotoCompareResult(compareId) {
       console.log(compareId);
       this.$store
-        .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-        .then(() => {
-          this.compareImgUrl = this.workObj.compareResultUrl;
-          if (this.workObj.compareResultUrl) {
-            this.$notify.success({
-              title: "成功",
-              message: "获取对比结果",
-            });
-          }
-          console.log(this.compareImgUrl);
-        });
+          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+          .then(() => {
+            this.compareImgUrl = this.workObj.compareResultUrl;
+            if (this.workObj.compareResultUrl) {
+              this.$notify.success({
+                title: "成功",
+                message: "获取对比结果",
+              });
+            }
+            console.log(this.compareImgUrl);
+          });
     },
     openUploadDialog() {
       this.IsUploadDialogShow = true;
     },
     getCompareResultUrl() {
       return !("workObj" in this) || !("compareResultUrl" in this.workObj)
-        ? `/public/images/251.png`
-        : this.workObj.compareResultUrl;
+          ? `/public/images/251.png`
+          : this.workObj.compareResultUrl;
     },
     foldItem(id) {
       this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
@@ -260,44 +267,44 @@ export default {
     },
     queryData() {
       this.$api
-        .selectCompareLog(this.currentPage, this.pageSize)
-        .then((res) => {
-          this.compareLogData = this.compareLogData.concat(
-            res.data.data.records
-          );
-          for (let datum of res.data.data.records) {
-            this.isFoldArray[datum.id] = false;
-          }
-          this.currentPage = res.data.data.current;
-          this.pageSize = res.data.data.size;
-          this.totalPages = res.data.data.pages;
-          this.isLoading = false;
-        });
+          .selectCompareLog(this.currentPage, this.pageSize)
+          .then((res) => {
+            this.compareLogData = this.compareLogData.concat(
+                res.data.data.records
+            );
+            for (let datum of res.data.data.records) {
+              this.isFoldArray[datum.id] = false;
+            }
+            this.currentPage = res.data.data.current;
+            this.pageSize = res.data.data.size;
+            this.totalPages = res.data.data.pages;
+            this.isLoading = false;
+          });
     },
     downloadCompareResult(compareId) {
       if (!this.workObj || !this.workObj.workCode) {
         this.$store
-          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-          .then(() => {
-            this.compareImgUrl = this.workObj.compareResultUrl;
-            if (this.workObj.compareResultUrl) {
-              this.$notify.success({
-                title: "成功",
-                message: "获取对比结果",
-              });
-            }
-            console.log(this.compareImgUrl);
-            window.open(
-              this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
-            );
-          });
+            .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+            .then(() => {
+              this.compareImgUrl = this.workObj.compareResultUrl;
+              if (this.workObj.compareResultUrl) {
+                this.$notify.success({
+                  title: "成功",
+                  message: "获取对比结果",
+                });
+              }
+              console.log(this.compareImgUrl);
+              window.open(
+                  this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
+              );
+            });
       } else {
         window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
       }
     },
-    changeLayout(){
+    changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
-      this.$router.push({name:"CompareUp"})
+      this.$router.push({name: "CompareUp"})
     },
   },
 };
@@ -314,6 +321,7 @@ $radius: 4px;
   animation: zhuan 0.5s linear infinite;
   border-radius: 50%;
 }
+
 @keyframes zhuan {
   0% {
     transform: rotate(0);
@@ -322,6 +330,7 @@ $radius: 4px;
     transform: rotate(360deg);
   }
 }
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -335,12 +344,14 @@ $radius: 4px;
 .gray {
   color: #a8a8aa;
 }
+
 .main-container {
   height: 100%;
   align-items: stretch;
   padding: 18px;
   box-sizing: border-box;
   background: #f1f5f9;
+
   .main-left {
     flex: {
       basis: 24%;
@@ -356,6 +367,7 @@ $radius: 4px;
     border-right: 1px solid #e5e7ed;
   }
 }
+
 .header-row {
   line-height: 60px;
   font-size: 16px;
@@ -363,51 +375,64 @@ $radius: 4px;
   .left {
     text-align: left;
   }
+
   .right {
     .svg-icon {
       cursor: pointer;
     }
+
     text-align: right;
   }
 }
+
 .orders {
   height: 90%;
   overflow-y: auto;
 }
+
 .order {
   margin-bottom: 20px;
   border: 1px solid #e5e7ed;
   border-radius: 4px;
   padding: 15px;
   text-align: left;
+
   .more {
     text-align: center;
     color: #25262b;
     margin-top: 0.5em;
+
     span {
       cursor: pointer;
     }
   }
+
   .el-row {
     margin-bottom: 20px;
+
     &:last-child {
       margin-bottom: 0;
     }
   }
+
   .success {
     color: #7ebf50;
   }
+
   .normal {
     color: #347eff;
   }
+
   .compare,
   .download {
     text-align: right;
+
     a {
       cursor: pointer;
       color: #347eff;
     }
   }
+
   .notice {
     color: #a8a8aa;
   }
@@ -416,32 +441,39 @@ $radius: 4px;
     border: 1px solid #e5e7ed;
   }
 }
+
 .time-line {
   text-align: center;
   line-height: 14px;
   font-size: 14px;
+
   .svg-icon {
     width: 1.2em;
     height: 1.2em;
     transform: translateY(-15%);
   }
+
   .el-progress {
     transform: translateY(15%);
   }
 }
+
 .main-right {
   .el-container {
     height: 100%;
   }
+
   .right-main-img {
     padding: 20px;
     width: 100%;
     height: 100%;
+
     img {
       width: 100%;
       height: 100%;
     }
   }
+
   flex: {
     basis: 77%;
   }
@@ -449,11 +481,13 @@ $radius: 4px;
   border-top-right-radius: $radius;
   border-bottom-right-radius: $radius;
 }
+
 .main-right-header {
   .el-col {
     &:first-of-type {
       text-align: left;
     }
+
     &:last-of-type {
       text-align: right;
     }
