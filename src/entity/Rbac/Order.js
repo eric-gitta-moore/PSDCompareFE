@@ -1,11 +1,26 @@
 import File from "@/entity/Rbac/File";
 
-class OrderLog {
+class Order {
+    /**
+     * 订单模型，对比组模型
+     * @param {Number} id 订单记录id
+     * @param {'complete'|'incomplete'} status 订单状态:complete 已完成,incomplete 未完成
+     * @param {Number} fee 应付金额
+     * @param {string} title 订单名称
+     * @param {string} serialNumber 流水号
+     * @param {string} createTime 创建时间
+     * @param {string} url 对比之后的文件的位置
+     * @param {string} size 文件大小，用mb做单位
+     * @param {string} resolution 图片分辨率
+     * @param {Number} taskId 任务组id
+     * @param {string} result 对比结果
+     * @param {string} fileName 对比后的文件名
+     * @param {Array.<File>} files 任务组下面的对比文件
+     */
     constructor({
                     id,
                     status,
                     fee,
-                    workCode,
                     title,
                     serialNumber,
                     createTime,
@@ -23,7 +38,6 @@ class OrderLog {
         this.id = id;
         this.status = status;
         this.fee = fee;
-        this.workCode = workCode;
         this.title = title;
         this.serialNumber = serialNumber;
         this.createTime = createTime;
@@ -37,4 +51,4 @@ class OrderLog {
     }
 }
 
-export default OrderLog;
+export default Order;

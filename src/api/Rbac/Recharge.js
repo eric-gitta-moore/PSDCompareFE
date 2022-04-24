@@ -22,8 +22,8 @@ function getUser() {
  * GET /recharge/getQRCode
  * 接口ID：16431685
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431685
- * @param size {string|null} 二维码大小默认250px
- * @param fee {string} 充值金额
+ * @param {string|null} size 二维码大小默认250px
+ * @param {string} fee 充值金额
  * @returns {axios}
  */
 function getQRCode({
@@ -45,7 +45,7 @@ function getQRCode({
  * GET /recharge/topay
  * 接口ID：16431705
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431705
- * @param id {string} 订单id
+ * @param {string} id 订单id
  * @returns {axios}
  */
 function topay({id}) {

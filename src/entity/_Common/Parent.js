@@ -9,19 +9,19 @@
 class Parent {
     /**
      * @description 所有业务对象的父类
-     * @param {string} id 对象的全局唯一id
+     * @param {string}  id对象的全局唯一id
      * @param {Date|string} createTime 对象数据的创建时间
      * @param {Date|string} modifyTime 对象数据的最近一次修改时间
      * @param {boolean} softDelete 是否软删除
      * @param {string} createUserId 对象的创建者id
      */
     constructor({
-        id,
-        createTime,
-        modifyTime,
-        softDelete,
-        createUserId
-    }) {
+                    id,
+                    createTime,
+                    modifyTime,
+                    softDelete,
+                    createUserId
+                }) {
         this.id = id;
         this.createTime = typeof (createTime) === 'string' ? Date(createTime) : createTime;
         this.modifyTime = typeof (modifyTime) === 'string' ? Date(modifyTime) : modifyTime;

@@ -307,16 +307,17 @@ export default {
     complete() {
       let left = deepClone(this.fileListLeft);
       let right = deepClone(this.fileListRight);
-      left.sort((a, b) => a.sortIndex - b.sortIndex)
-      right.sort((a, b) => a.sortIndex - b.sortIndex)
-      let compareArr = [];
-      for (let i = 0; i < Math.min(left.length, right.length); i++) {
-        compareArr.push({
-          reference: left[i].FileObj,
-          contrast: right[i].FileObj,
-        })
-      }
-      console.log(compareArr);
+      // left.sort((a, b) => a.sortIndex - b.sortIndex)
+      // right.sort((a, b) => a.sortIndex - b.sortIndex)
+      // let compareArr = [];
+      // for (let i = 0; i < Math.min(left.length, right.length); i++) {
+      //   compareArr.push({
+      //     reference: left[i].FileObj,
+      //     contrast: right[i].FileObj,
+      //   })
+      // }
+      // console.log(compareArr);
+
     },
     /**
      * @description 重新初始化sorttable
@@ -448,7 +449,7 @@ export default {
     },
     /**
      * @description 固定所有行
-     * @param side {String} Left|Right
+     * @param {String} side Left|Right
      */
     doFixedAll(side) {
       for (const item of this[`fileList${side}`]) {
@@ -470,15 +471,15 @@ export default {
 
     /**
      * @description 表头钉子样式回调
-     * @param a {leftTableDing|rightTableDing}
+     * @param {leftTableDing|rightTableDing} a
      * @returns {string}
      */
     headerDingStyle: (a) => (a ? "ding" : ""),
 
     /**
      * @description 普通钉子样式回调
-     * @param a {leftTableDing|rightTableDing}
-     * @param fileList {fileListLeft|fileListRight}
+     * @param {leftTableDing|rightTableDing} a
+     * @param {fileListLeft|fileListRight} fileList
      * @returns {string}
      */
     dingStyle(a, fileList) {
@@ -673,7 +674,7 @@ export default {
     handleDragOnMoveLeft(/**Event*/ evt, /**Event*/ originalEvent) {
       // Example: https://jsbin.com/nawahef/edit?js,output
       // evt.dragged; // 被拖动的元素
-      // evt.draggedRect; // DOMRect {left, top, right, bottom}
+      // evt.draggedRect; // {left, top, right, bottom} DOMRect
       // evt.related; // 将要被替换的元素
       // evt.relatedRect; // DOMRect
       // evt.willInsertAfter; // Boolean that is true if Sortable will insert drag element after target by default
