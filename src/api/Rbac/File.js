@@ -50,3 +50,8 @@ function download({ids}) {
         },
     }).then(ResHelper.handler);
 }
+
+export default {
+    upload,
+    download,
+}

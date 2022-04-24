@@ -15,3 +15,7 @@ function getUser() {
         method: 'get',
     }).then(ResHelper);
 }
+
+export default {
+    getUser
+}

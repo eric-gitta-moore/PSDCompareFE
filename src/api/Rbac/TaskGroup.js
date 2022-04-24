@@ -117,3 +117,10 @@ function download({
     }).then(ResHelper.handler);
 }
 
+export default {
+    getGroupById,
+    getGroups,
+    createGroup,
+    deleteGroup,
+    download,
+}

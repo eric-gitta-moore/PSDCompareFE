@@ -57,3 +57,9 @@ function topay({id}) {
         }
     }).then(ResHelper);
 }
+
+export default {
+    getUser,
+    getQRCode,
+    topay,
+}
