@@ -11,15 +11,14 @@ import SysError from "../sys/SysError.js"
 
 // 一般处理方法
 function handler(res) {
-    if (res.data.success) {
-        return res.data.result;
+    console.log(res);
+    if (res.data.code === 200) {
+        return res.data;
     } else {
         throw new SysError(
             res.data.code,
             res.data.message,
-            res.data.result,
-            res.data.success,
-            res.data.timestamp
+            res.data.data,
         );
     }
 }

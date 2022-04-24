@@ -2,17 +2,17 @@
   <el-aside style="flex-basis: 12.5%">
     <div class="aside">
       <el-row>
-        <el-col :span="24" v-for="(v, k) in this.routes" :key="k">
+        <el-col :span="24" v-for="v in this.routes" :key="v.id">
           <div
-            class="router"
-            v-bind:class="{ active: isActive(v.name) }"
-            @click="redirectTo(v.path)"
+              class="router"
+              v-bind:class="{ active: isActive(v.routerName) }"
+              @click="redirectTo(v.routerName)"
           >
             <SvgIcon
-              :icon-class="v.meta.iconClass"
-              :class="`${v.meta.iconClass}-icon`"
+                :icon-class="v.iconClass"
+                :class="`${v.iconClass}-icon`"
             ></SvgIcon>
-            <span>{{ v.meta.title }}</span>
+            <span>{{ v.title }}</span>
           </div>
         </el-col>
       </el-row>
@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import homeRoutes from "@/router/main";
+import MenuBiz from "@/biz/Menu";
+
 export default {
   name: "HomeAside",
   data() {
@@ -29,36 +30,23 @@ export default {
       routes: [],
     };
   },
-  created() {
-    console.log(homeRoutes);
-    for (const child of homeRoutes) {
-      let r = {
-        path: `/home/${child.path.replace("/", "")}`,
-        meta: child.meta,
-        name: child.name,
-      };
-      this.routes.push(r);
-    }
+  beforeMount() {
+    this.initMenus();
   },
   mounted() {
-    console.log("侧边连跳转的路由",this.routes);
+    console.log("侧边连跳转的路由", this.routes);
   },
-  computed: {
-    isHomeHistory() {
-      return this.$route.name == "HomeHistory";
-    },
-    isHomeCompare() {
-      return this.$route.name == "HomeCompare";
-    },
-  },
+  computed: {},
   methods: {
-    redirectTo(router) {
-      if (this.$route.path == router) return false;
-      this.$router.push(router);
+    redirectTo(routeName) {
+      if (this.$route.name === routeName) return false;
+      this.$router.push({name: routeName});
     },
     isActive(routeName) {
-      if (routeName == this.$route.name) return true;
-      return false;
+      return routeName === this.$route.meta.routeName;
+    },
+    async initMenus() {
+      this.routes = await MenuBiz.getMainMenuItems();
     },
   },
 };
@@ -66,12 +54,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/scss/_variables.scss";
+
 .el-aside {
   box-shadow: 2px 0px 10px rgb(0 0 0 / 10%);
 }
+
 .aside {
   background: $aside-background;
   height: 100%;
+
   .el-row {
     $height: 37px;
     box-sizing: content-box;
@@ -83,14 +74,17 @@ export default {
       right: $pad;
     }
     margin-bottom: 20px;
+
     &:first-child {
       padding: {
         top: 20px;
       }
     }
+
     &:last-child {
       margin-bottom: 0;
     }
+
     margin-bottom: 20px;
   }
 }
@@ -104,21 +98,26 @@ export default {
     margin-right: 9px;
     transform: scale(1.5) translateX(-80px);
   }
+
   [class$="-icon"] {
     filter: drop-shadow(#636d7e 80px 0);
   }
+
   .active {
     background: $aside-active-background;
     color: white;
+
     [class$="-icon"] {
       filter: drop-shadow(white 80px 0);
     }
   }
+
   div {
     padding-left: 20px;
     border-radius: 4px;
   }
 }
+
 .router {
   display: flex;
   align-items: center;

@@ -26,7 +26,9 @@
               style="width: 100%"
               :show-header="false"
               @expand-change="load"
+              @selection-change="handleSelectionChange"
             >
+              <el-table-column type="selection" width="10"> </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
@@ -40,7 +42,7 @@
               <el-table-column
                 label="流水帐号"
                 prop="id"
-                width="120"
+                width="110"
               ></el-table-column>
               <el-table-column
                 label="名称"
@@ -148,8 +150,10 @@
 
 <script>
 export default {
+  name: 'HomeCompareUp',
   data() {
     return {
+      multipleSelection: [],
       tableData: [
         {
           id: "001",
@@ -171,7 +175,7 @@ export default {
   methods: {
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({ name: "CompareLeft" });
+      this.$router.push({name: "HomeCompareLeft"});
     },
     load(row, expandedRows) {
       // console.log("数据懒加载",row,expandedRows);
@@ -207,6 +211,10 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
+    handleSelectionChange(val) {
+      console.log("val",val);
+      this.multipleSelection = val;
+    },
   },
 };
 </script>
@@ -239,6 +247,9 @@ export default {
       height: 500px;
       overflow: auto;
       overflow-x: hidden;
+      div{
+        overflow: hidden;
+      }
     }
   }
   .el-header {

@@ -185,9 +185,10 @@
       :work="this.workObj"
     ></ComparePayDialog> -->
     <UploadDialog
-      v-if="IsUploadDialogShow"
-      @onClose="closeUploadDialog"
-      task-id="1"
+        v-if="IsUploadDialogShow"
+        @onClose="closeUploadDialog"
+        task-id="1"
+        @onComplete="uploadOnComplete"
     ></UploadDialog>
 
     <UploadFileOrCreateTask />
@@ -208,7 +209,7 @@ import CreateTaskDialog from "@/components/Home/Compare/CreateTaskDialog";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 
 export default {
-  name: "CompareLeft",
+  name: "HomeCompareLeft",
   components: {
     UploadDialog,
     CreateTaskDialog,
@@ -241,6 +242,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 上传窗口上传完成
+     */
+    uploadOnComplete() {
+      this.IsUploadDialogShow = false;
+      // TODO:刷新页面，重新加载数据
+    },
     gotoCompareResult(compareId) {
       console.log(compareId);
       this.$store
@@ -329,7 +337,7 @@ export default {
     },
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
-      this.$router.push({ name: "CompareUp" });
+      this.$router.push({name: "HomeCompareUp"})
     },
   },
 };

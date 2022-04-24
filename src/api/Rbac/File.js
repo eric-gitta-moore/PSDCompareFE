@@ -7,9 +7,9 @@ import axios from "axios";
  * POST /file/upload
  * 接口ID：16431566
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431566
- * @param file1 {Array.<File>}
- * @param file2 {Array.<File>}
- * @param taskId {Number}
+ * @param {Array.<File>} file1
+ * @param {Array.<File>} file2
+ * @param {Number} taskId
  * @returns {axios}
  */
 function upload({
@@ -26,7 +26,7 @@ function upload({
     }
     data.append('taskId', taskId + '');
     return BaseAxios({
-        url: `/sys/login`,
+        url: `/file/upload`,
         method: "post",
         data,
     }).then(ResHelper.handler);
@@ -38,7 +38,7 @@ function upload({
  * GET /file/download
  * 接口ID：16431612
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431612
- * @param ids {Array.<number>}
+ * @param {Array.<number>} ids
  * @returns {axios}
  */
 function download({ids}) {

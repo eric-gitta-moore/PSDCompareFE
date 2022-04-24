@@ -7,7 +7,7 @@ import axios from "axios";
  * GET /taskGroup/getGroupById
  * 接口ID：16559787
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16559787
- * @param groupId {Number} 任务组id
+ * @param {Number} groupId 任务组id
  * @returns {axios}
  */
 function getGroupById({
@@ -29,12 +29,12 @@ function getGroupById({
  * POST /taskGroup/getGroups
  * 接口ID：16559807
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16559807
- * @param keyWords {string|null} 搜索关键字
- * @param startPage {number} 当前页
- * @param maxPage {number} 页面大小
- * @param startTime {string|null} 开始时间
- * @param endTime {string|null} 结束时间
- * @param sort {'asc'|'desc'} 排序方式
+ * @param {string|null} keyWords 搜索关键字
+ * @param {number} startPage 当前页
+ * @param {number} maxPage 页面大小
+ * @param {string|null} startTime 开始时间
+ * @param {string|null} endTime 结束时间
+ * @param {'asc'|'desc'} sort 排序方式
  * @returns {axios}
  */
 function getGroups({
@@ -64,7 +64,7 @@ function getGroups({
  * POST /taskGroup/create
  * 接口ID：16559829
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16559829
- * @param name {string} 任务组名称
+ * @param {string} name 任务组名称
  * @returns {axios}
  */
 function createGroup({
@@ -84,7 +84,7 @@ function createGroup({
  * DELETE /taskGroup/delete
  * 接口ID：16559854
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16559854
- * @param ids {Array.<number>}
+ * @param {Array.<number>} ids
  * @returns {axios}
  */
 function deleteGroup({
@@ -102,7 +102,7 @@ function deleteGroup({
  * GET /taskGroup/download
  * 接口ID：16981068
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16981068
- * @param ids {Array.<number>}
+ * @param {Array.<number>} ids
  * @returns {axios}
  */
 function download({
