@@ -3,7 +3,10 @@ import ResHelper from "../_ResponseHelper.js"
 import axios from "axios";
 
 /**
- * @description 上传文件
+ * 上传文件
+ * POST /file/upload
+ * 接口ID：16431566
+ * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431566
  * @param file1 {Array.<File>}
  * @param file2 {Array.<File>}
  * @param taskId {Number}
