@@ -44,7 +44,28 @@ function logout() {
     }).then(ResHelper.handler);
 }
 
+/**
+/**
+ * @description 获取全部对比组
+ * @param {string}endTime, 结束时间
+ * @param {string}startTime, 开始时间
+ * @param {string}keyWords, 关键字
+ * @param {int}startPages,当前页
+ * @param {int} maxPages,每页显示数量
+ * @param {string} sort,排序方式（asc）
+ */
+function getAll({endTime, startTime, keyWords, startPages, maxPages, sort}) {
+    return BaseAxios({
+        url: `/taskGroup/getGroups`,
+        method: "post",
+        data: {
+            endTime, startTime, keyWords, startPages, maxPages, sort
+        }
+    }).then(ResHelper.handler);
+}
+
 export default {
     login, // 登录方法
-    logout // 退出登录方法
+    logout, // 退出登录方法
+    getAll
 }

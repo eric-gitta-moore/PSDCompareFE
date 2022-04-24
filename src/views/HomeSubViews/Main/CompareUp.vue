@@ -26,7 +26,9 @@
               style="width: 100%"
               :show-header="false"
               @expand-change="load"
+              @selection-change="handleSelectionChange"
             >
+              <el-table-column type="selection" width="10"> </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
@@ -40,7 +42,7 @@
               <el-table-column
                 label="流水帐号"
                 prop="id"
-                width="120"
+                width="110"
               ></el-table-column>
               <el-table-column
                 label="名称"
@@ -150,6 +152,7 @@
 export default {
   data() {
     return {
+      multipleSelection: [],
       tableData: [
         {
           id: "001",
@@ -207,6 +210,10 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
+    handleSelectionChange(val) {
+      console.log("val",val);
+      this.multipleSelection = val;
+    },
   },
 };
 </script>
@@ -239,6 +246,9 @@ export default {
       height: 500px;
       overflow: auto;
       overflow-x: hidden;
+      div{
+        overflow: hidden;
+      }
     }
   }
   .el-header {

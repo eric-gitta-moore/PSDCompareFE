@@ -176,10 +176,16 @@
       :IsPayDialogShow="this.IsPayDialogShow"
       :work="this.workObj"
     ></ComparePayDialog> -->
+    
+    <UploadDialog
+      v-if="IsUploadDialogShow"
+      @onClose="closeUploadDialog"
+    ></UploadDialog>
   </el-container>
 </template>
 
 <script>
+import UploadDialog from "@/components/Home/Compare/UploadDialog.vue";
 // import CompareUploadDialog from "./components/compare-upload-dialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
 import { mapState } from "vuex";
@@ -187,12 +193,13 @@ import { mapState } from "vuex";
 export default {
   name: "CompareLeft",
   components: {
+    UploadDialog,
     // CompareUploadDialog,
     // ComparePayDialog,
   },
   data() {
     return {
-      IsUploadDialogShow: false,
+      IsUploadDialogShow: true,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,

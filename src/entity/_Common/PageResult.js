@@ -9,12 +9,18 @@
 class PageResult {
     /**
      * @description 分页获取数据的格式类
-     * @param {Array.<object>} rows 数据集合
-     * @param {number} count 数据总条数
+     * @param {number} total,数据总数
+     * @param {number} size,页面大小
+     * @param {number} current ,当前页
+     * @param {number} pages , 总页数
      */
-    constructor(rows, count) {
+    constructor(rows, count,startPages,maxPages,sort) {
         this.rows = rows;
         this.count = count;
+
+        this.startPages = startPages;
+        this.maxPages = maxPages;
+        this.sort  = sort;
     }
 }
 
