@@ -192,7 +192,7 @@ import UploadDialog from "@/components/Home/Compare/UploadDialog";
 import {mapState} from "vuex";
 
 export default {
-  name: "CompareLeft",
+  name: "HomeCompareLeft",
   components: {
     UploadDialog
     // CompareUploadDialog,
@@ -200,7 +200,7 @@ export default {
   },
   data() {
     return {
-      IsUploadDialogShow: true,
+      IsUploadDialogShow: false,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,
@@ -312,7 +312,7 @@ export default {
     },
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
-      this.$router.push({name: "CompareUp"})
+      this.$router.push({name: "HomeCompareUp"})
     },
   },
 };

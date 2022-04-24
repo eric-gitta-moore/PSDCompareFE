@@ -148,6 +148,7 @@
 
 <script>
 export default {
+  name: 'HomeCompareUp',
   data() {
     return {
       tableData: [
@@ -171,7 +172,7 @@ export default {
   methods: {
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({ name: "CompareLeft" });
+      this.$router.push({name: "HomeCompareLeft"});
     },
     load(row, expandedRows) {
       // console.log("数据懒加载",row,expandedRows);

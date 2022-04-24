@@ -1,31 +1,36 @@
-/*
- * @Author: Billy
- * @Date: 2021-12-20 11:09:19
- * @LastEditors: Billy
- * @LastEditTime: 2022-01-10 20:55:52
- * @Description: 请输入
- */
-
 export default [
     {
-        path: 'CompareLeft',
-        name: 'CompareLeft',
-        component: () => import('@/views/HomeSubViews/Main/CompareLeft.vue'),
+        path: 'Compare',
+        name: 'HomeCompare',
+        component: () => import('@/views/HomeSubViews/Main/Compare'),
         meta: {
             title: '图纸对比',
-            iconClass: 'compare',
-            keepAlive: true
         },
-    },
-    {
-        path: 'CompareUp',
-        name: 'CompareUp',
-        component: () => import('@/views/HomeSubViews/Main/CompareUp.vue'),
-        meta: {
-            title: '图纸对比',
-            iconClass: 'compare',
-            keepAlive: true
+        redirect: {
+            name: 'HomeCompareLeft'
         },
+        children: [
+            {
+                path: 'CompareLeft',
+                name: 'HomeCompareLeft',
+                component: () => import('@/views/HomeSubViews/Main/CompareLeft.vue'),
+                meta: {
+                    title: '图纸对比',
+                    // 便于侧边栏显示当前导航
+                    routeName: 'HomeCompare',
+                },
+            },
+            {
+                path: 'CompareUp',
+                name: 'HomeCompareUp',
+                component: () => import('@/views/HomeSubViews/Main/CompareUp.vue'),
+                meta: {
+                    title: '图纸对比',
+                    // 便于侧边栏显示当前导航
+                    routeName: 'HomeCompare',
+                },
+            },
+        ]
     },
     {
         path: 'history',
@@ -33,8 +38,7 @@ export default [
         component: () => import('@/views/HomeSubViews/Main/History.vue'),
         meta: {
             title: '历史记录',
-            iconClass: 'note',
-            keepAlive: true
+            routeName: 'HomeHistory',
         }
     },
-]
+];
