@@ -66,19 +66,19 @@
                   width="50px"
                   prop="index"
                   label="序号"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                   prop="title"
                   label="文件名"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   :index="3"
               ></el-table-column>
               <el-table-column
                   prop="size"
                   label="大小"
                   :formatter="showFormatFileSize"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   width="80px"
               ></el-table-column>
               <el-table-column width="40px">
@@ -147,19 +147,19 @@
                   width="50px"
                   prop="index"
                   label="序号"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
                   prop="title"
                   label="文件名"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   :index="3"
               ></el-table-column>
               <el-table-column
                   prop="size"
                   label="大小"
                   :formatter="showFormatFileSize"
-                  show-overflow-tooltip
+                  :show-overflow-tooltip="true"
                   width="80px"
               ></el-table-column>
               <el-table-column width="40px">
@@ -209,12 +209,12 @@
       <div class="footer-btn-group">
         <div class="left">
           <el-tooltip content="自动匹配文件名相同的文件并锁定" placement="top" :open-delay="500">
-            <el-button @click="autoMatchFileList" plain>自动匹配</el-button>
+            <el-button @click="autoMatchFileList" :plain="true">自动匹配</el-button>
           </el-tooltip>
           <el-tooltip content="恢复到最近一次自动匹配前的状态" placement="top" :open-delay="500">
-            <el-button @click="resetFileList" plain>重置匹配</el-button>
+            <el-button @click="resetFileList" :plain="true">重置匹配</el-button>
           </el-tooltip>
-          <el-button @click="clearFileList" plain>清空</el-button>
+          <el-button @click="clearFileList" :plain="true">清空</el-button>
         </div>
         <div class="right">
           <el-button @click="closeDialog">取消</el-button>
@@ -232,6 +232,7 @@ import {deepClone} from '@/util/DeepClone'
 
 Sortable.mount(new Swap());
 import BaseDialog from "@/components/_Common/BaseDialog.vue";
+import FileBiz from '@/biz/Rbac/File';
 
 export default {
   name: "UploadDialog",
@@ -302,21 +303,41 @@ export default {
     //   console.log(side, scope);
     // },
     /**
-     * @description 完成排序准备上传
+     * 点击完成按钮事件
      */
     complete() {
+      this.handleComplete();
+    },
+    /**
+     * 完成排序准备上传
+     */
+    async handleComplete() {
+      if (this.fileListRight.length === 0 || this.fileListLeft.length === 0) {
+        this.$message.error('文件不能为空');
+        return;
+      }
       let left = deepClone(this.fileListLeft);
       let right = deepClone(this.fileListRight);
-      left.sort((a, b) => a.sortIndex - b.sortIndex)
-      right.sort((a, b) => a.sortIndex - b.sortIndex)
-      let compareArr = [];
-      for (let i = 0; i < Math.min(left.length, right.length); i++) {
-        compareArr.push({
-          reference: left[i].FileObj,
-          contrast: right[i].FileObj,
-        })
-      }
-      console.log(compareArr);
+      // left.sort((a, b) => a.sortIndex - b.sortIndex)
+      // right.sort((a, b) => a.sortIndex - b.sortIndex)
+      // let compareArr = [];
+      // for (let i = 0; i < Math.min(left.length, right.length); i++) {
+      //   compareArr.push({
+      //     reference: left[i].FileObj,
+      //     contrast: right[i].FileObj,
+      //   })
+      // }
+      // console.log(compareArr);
+      let msg = await FileBiz.addCompareGroup({
+        referenceFiles: left,
+        compareFiles: right,
+        taskId: this.taskId,
+      });
+      this.$notify.success({
+        title: '消息',
+        message: msg
+      });
+      this.$emit('onComplete');
     },
     /**
      * @description 重新初始化sorttable
@@ -364,6 +385,11 @@ export default {
     clearFileList() {
       this.fileListLeft = [];
       this.fileListRight = [];
+      this.$message({
+        showClose: true,
+        message: '清空成功',
+        type: 'success',
+      });
     },
     /**
      * @description 自动配对文件
@@ -443,7 +469,7 @@ export default {
     },
     /**
      * @description 固定所有行
-     * @param side {String} Left|Right
+     * @param {String} side Left|Right
      */
     doFixedAll(side) {
       for (const item of this[`fileList${side}`]) {
@@ -465,15 +491,15 @@ export default {
 
     /**
      * @description 表头钉子样式回调
-     * @param a {leftTableDing|rightTableDing}
+     * @param {leftTableDing|rightTableDing} a
      * @returns {string}
      */
     headerDingStyle: (a) => (a ? "ding" : ""),
 
     /**
      * @description 普通钉子样式回调
-     * @param a {leftTableDing|rightTableDing}
-     * @param fileList {fileListLeft|fileListRight}
+     * @param {leftTableDing|rightTableDing} a
+     * @param {fileListLeft|fileListRight} fileList
      * @returns {string}
      */
     dingStyle(a, fileList) {
@@ -668,7 +694,7 @@ export default {
     handleDragOnMoveLeft(/**Event*/ evt, /**Event*/ originalEvent) {
       // Example: https://jsbin.com/nawahef/edit?js,output
       // evt.dragged; // 被拖动的元素
-      // evt.draggedRect; // DOMRect {left, top, right, bottom}
+      // evt.draggedRect; // {left, top, right, bottom} DOMRect
       // evt.related; // 将要被替换的元素
       // evt.relatedRect; // DOMRect
       // evt.willInsertAfter; // Boolean that is true if Sortable will insert drag element after target by default

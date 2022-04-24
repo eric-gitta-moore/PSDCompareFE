@@ -26,15 +26,11 @@ const routes = [{
   },
 }, {
   path: '/home',
-  // alias: '/home',
   name: 'Home',
   redirect: {
-    name: 'CompareLeft'
+    name: 'HomeCompare'
   },
   component: Home,
-  meta: {
-    title: ''
-  },
   children: [
     ...MainChildren,
   ]

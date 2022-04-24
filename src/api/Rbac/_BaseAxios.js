@@ -12,7 +12,7 @@ import AxiosInterceptors from '../_AxiosInterceptors.js'
 import {
     BASE_URL,
     TIMEOUT
-} from '../../const.js'
+} from '@/const'
 
 let requestConfig = {
     baseURL: BASE_URL, // `baseURL` will be prepended to `url` unless `url` is absolute.
