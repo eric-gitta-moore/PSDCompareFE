@@ -19,7 +19,7 @@ import MainChildren from "./main.js";
 Vue.use(VueRouter)
 
 const routes = [{
-  path: '/',
+  path: '/',                                                  
   name: 'Default',
   redirect: {
     name: 'Home'
@@ -29,7 +29,7 @@ const routes = [{
   // alias: '/home',
   name: 'Home',
   redirect: {
-    name: 'HomeCompare'
+    name: 'CompareLeft'
   },
   component: Home,
   meta: {
