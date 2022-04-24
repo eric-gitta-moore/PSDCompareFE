@@ -180,6 +180,7 @@
         v-if="IsUploadDialogShow"
         @onClose="closeUploadDialog"
         task-id="1"
+        @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
 </template>
@@ -220,6 +221,13 @@ export default {
     },
   },
   methods: {
+    /**
+     * 上传窗口上传完成
+     */
+    uploadOnComplete() {
+      this.IsUploadDialogShow = false;
+      // TODO:刷新页面，重新加载数据
+    },
     gotoCompareResult(compareId) {
       console.log(compareId);
       this.$store

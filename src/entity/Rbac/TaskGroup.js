@@ -2,7 +2,7 @@ import Order from "@/entity/Rbac/Order";
 
 class TaskGroup {
     /**
-     * 任务组模型
+     * 任务组实体
      * @param {Number} id 任务组id
      * @param {string} name 任务组名
      * @param {string} createTime 创建时间
@@ -19,7 +19,7 @@ class TaskGroup {
         }
         this.id = id;
         this.name = name;
-        this.createTime = createTime;
+        this.createTime = new Date(createTime);
         this.orders = orders;
     }
 }

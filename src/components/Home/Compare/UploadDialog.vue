@@ -232,6 +232,7 @@ import {deepClone} from '@/util/DeepClone'
 
 Sortable.mount(new Swap());
 import BaseDialog from "@/components/_Common/BaseDialog.vue";
+import FileBiz from '@/biz/Rbac/File';
 
 export default {
   name: "UploadDialog",
@@ -302,9 +303,19 @@ export default {
     //   console.log(side, scope);
     // },
     /**
-     * @description 完成排序准备上传
+     * 点击完成按钮事件
      */
     complete() {
+      this.handleComplete();
+    },
+    /**
+     * 完成排序准备上传
+     */
+    async handleComplete() {
+      if (this.fileListRight.length === 0 || this.fileListLeft.length === 0) {
+        this.$message.error('文件不能为空');
+        return;
+      }
       let left = deepClone(this.fileListLeft);
       let right = deepClone(this.fileListRight);
       // left.sort((a, b) => a.sortIndex - b.sortIndex)
@@ -317,7 +328,16 @@ export default {
       //   })
       // }
       // console.log(compareArr);
-
+      let msg = await FileBiz.addCompareGroup({
+        referenceFiles: left,
+        compareFiles: right,
+        taskId: this.taskId,
+      });
+      this.$notify.success({
+        title: '消息',
+        message: msg
+      });
+      this.$emit('onComplete');
     },
     /**
      * @description 重新初始化sorttable

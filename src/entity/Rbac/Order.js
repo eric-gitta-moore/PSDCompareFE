@@ -2,7 +2,7 @@ import File from "@/entity/Rbac/File";
 
 class Order {
     /**
-     * 订单模型，对比组模型
+     * 订单实体，对比组实体
      * @param {Number} id 订单记录id
      * @param {'complete'|'incomplete'} status 订单状态:complete 已完成,incomplete 未完成
      * @param {Number} fee 应付金额
@@ -40,7 +40,7 @@ class Order {
         this.fee = fee;
         this.title = title;
         this.serialNumber = serialNumber;
-        this.createTime = createTime;
+        this.createTime = new Date(createTime);
         this.url = url;
         this.size = size;
         this.resolution = resolution;

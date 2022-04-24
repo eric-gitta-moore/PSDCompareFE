@@ -26,7 +26,7 @@ function upload({
     }
     data.append('taskId', taskId + '');
     return BaseAxios({
-        url: `/sys/login`,
+        url: `/file/upload`,
         method: "post",
         data,
     }).then(ResHelper.handler);
