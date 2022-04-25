@@ -16,7 +16,7 @@
         <el-col :span="2">
           <span>日期范围：</span>
         </el-col>
-        <el-col :span="5">
+        <el-col :span="8">
           <el-date-picker
             v-model="daterange"
             type="daterange"
@@ -28,15 +28,23 @@
           >
           </el-date-picker>
         </el-col>
-        <el-col :span="2">
+        <el-col :span="8">
           <el-button type="primary" @click="clearAll">重置</el-button>
         </el-col>
+        <el-button type="primary" @click="downLoadTaskByCheck">下载</el-button>
       </el-row>
     </el-header>
     <el-main class="main">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        lazy:true
+        row-key="id"
+        :tree-props="{ children: 'orders', hasChildren: 'hasChildren' }"
+      >
+        >
         <el-table-column
-          prop="serialNumber"
+          prop="orders[0].serialNumber"
           label="流水编号"
           width="200"
         ></el-table-column>
@@ -77,16 +85,16 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200">
-          <template>
+          <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span>查看</span>
+              <span @click="checkTask(scope.row.id)">查看</span>
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span>下载</span>
+              <span @click="downLoadTask(scope.row.id)">下载</span>
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span>删除</span>
+              <span @click="handleDelete(scope)">删除</span>
             </div>
           </template>
         </el-table-column>
@@ -113,8 +121,13 @@
 </template>
 
 <script>
+import DateHelper from "../../../util/DateHelper";
+//引入下载文件的方法
+import DownloadHelper from "../../../util/DownloadHelper";
+//引入对返回数据处理的方法
+import TaskGroup from '../../../biz/Rbac/TaskGroup';
 export default {
-  name: "HomeHistory",
+  name: "History",
   components: {},
   computed: {},
   methods: {
@@ -124,50 +137,72 @@ export default {
       this.freshTable();
     },
     handleEdit(index, row) {
-      // console.log(index, row);
+      console.log(index, row);
     },
+    //查看该文件
+    checkTask(rowKey) {
+      this.$router.push({
+        name: "Home",
+        params: {
+          id: rowKey, //请求回来的任务组id
+        },
+      });
+      console.log(rowKey);
+    },
+    downLoadTaskByCheck() {},
     handleDelete(index, row) {
       // console.log(index, row);
+
+      console.log(index, row);
     },
     formatDatetime(datetime) {
-      return new Date(datetime).format("yyyy-MM-dd hh:mm:ss");
+      console.log(datetime);
+      console.log(DateHelper.format(new Date(datetime),"yyyy-MM-dd hh:mm:ss"));
+      return DateHelper.format(new Date(datetime),"yyyy-MM-dd hh:mm:ss");
     },
-    async getHistoryList({
-      pageSize,
-      currentPage,
-      keywords,
-      startTime,
-      endTime,
-    }) {
-      let result = await this.$api.SearchHistory({
-        pageSize,
-        currentPage,
-        keywords,
-        startTime,
-        endTime,
-      });
-      // console.log(result);
-      this.tableData = result.data.data.records;
-      this.total = parseInt(result.data.data.total);
-      return result;
-    },
+
+    // 获取历史信息  api接口还没有挂载上去，不知道写在哪里，未在全局进行引用
+    // async getHistoryList({
+    //   pageSize,
+    //   currentPage,
+    //   keywords,
+    //   startTime,
+    //   endTime,
+    // }) {
+    //   let result = await TaskGroup.getGroups({
+    //     pageSize,
+    //     currentPage,
+    //     keywords,
+    //     startTime,
+    //     endTime,
+    //   });
+    //   console.log("tttttttttttt",result.data.records);
+    //   this.tableData = result.data.records;
+    //   this.total = parseInt(result.data.total);
+    //   return result;
+    // },
+
     freshTable() {
       let startT, endT;
       if (this.daterange) {
         startT = this.formatDatetime(this.daterange[0]);
         endT = this.formatDatetime(this.daterange[1]);
       }
-      this.getHistoryList({
-        pageSize: this.pageSize,
-        currentPage: this.currentPage,
-        keywords: this.searchText,
-        startTime: startT ? startT : "",
-        endTime: endT ? endT : "",
-      });
+      TaskGroup(1).then(res=>{
+          this.tableData=res.records
+          console.log(this.tableData);
+    })
     },
+    //点击下载单个或者多个任务组
+    downLoadTask(row) {
+      DownloadHelper.downloadByAnchorTag({});
+      console.log(row);
+    },
+    deleteTask() {},
   },
   mounted() {
     this.freshTable();
+    
   },
   data() {
     return {
@@ -178,50 +213,7 @@ export default {
       pageSize: 10,
       total: 100,
       currentPage: 1,
-      tableData: [
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-        {
-          serial_number: "15881206583",
-          compare_file_1_name: "金天宇",
-          comparison_cost: "22854.87",
-          status: false,
-          create_time: "2000年09月01日 22:08",
-        },
-      ],
+      tableData: [],
     };
   },
 };
@@ -234,7 +226,7 @@ $radius: 4px;
 }
 .main-container {
   height: 100%;
-  align-items: stretch;
+
   padding: 18px;
   box-sizing: border-box;
   background: #f1f5f9;
@@ -242,6 +234,27 @@ $radius: 4px;
     background: white;
     border-top-left-radius: $radius;
     border-top-right-radius: $radius;
+
+    .el-col {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .main {
+      background: white;
+    }
+    .el-table {
+      padding: 0 17px;
+      .act {
+        display: flex;
+        align-items: center;
+        line-height: 100%;
+        .svg-icon {
+          width: 1.3em;
+          height: 1.3em;
+        }
+      }
+    }
   }
 }
 .main {
@@ -259,6 +272,7 @@ $radius: 4px;
     }
   }
 }
+
 .dot {
   position: relative;
   .red-dot,
