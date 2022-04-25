@@ -38,13 +38,13 @@ function getGroupById({
  * @returns {axios}
  */
 function getGroups({
-                       keyWords = null,
-                       startPage = 1,
-                       maxPage = 5,
-                       startTime = null,
-                       endTime = null,
-                       sort = 'asc'
-                   }) {
+    keyWords = null,
+    startPage = 1,
+    maxPage = 5,
+    startTime = null,
+    endTime = null,
+    sort = 'asc'
+}) {
     return BaseAxios({
         url: `/taskGroup/getGroups`,
         method: "post",

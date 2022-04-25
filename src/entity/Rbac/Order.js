@@ -58,9 +58,9 @@ class Order {
                     fileName,
                     files
                 }) {
-        if (files.length > 0 && !(files[0] instanceof File)) {
-            throw new Error('files不是File类');
-        }
+        // if (files.length > 0 && !(files[0] instanceof File)) {
+        //     throw new Error('files不是File类');
+        // }
         this.id = id;
         this.status = status;
         this.fee = fee;
@@ -78,4 +78,3 @@ class Order {
 }
 
 export default Order;
-// >>>>>>> 914bd5f56822f22c059a84077ca0709c376ce39e

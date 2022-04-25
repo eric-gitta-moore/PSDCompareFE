@@ -22,13 +22,13 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-table
-              :data="props.row.list"
+              :data="props.row.orders"
               style="width: 100%"
               :show-header="false"
               @expand-change="load"
               @selection-change="handleSelectionChange"
             >
-              <el-table-column type="selection" width="10"> </el-table-column>
+              <el-table-column type="selection" width="10" :border="false"> </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
@@ -41,37 +41,37 @@
               </el-table-column>
               <el-table-column
                 label="流水帐号"
-                prop="id"
+                prop="serialNumber"
                 width="110"
               ></el-table-column>
               <el-table-column
                 label="名称"
-                prop="name"
+                prop="title"
                 width="120"
               ></el-table-column>
               <el-table-column
                 label="对比费用"
-                prop="money"
+                prop="fee"
                 width="100"
               ></el-table-column>
               <el-table-column
                 label="支付状态"
-                prop="payState"
+                prop="status"
                 width="120"
               ></el-table-column>
               <el-table-column
                 label="对比状态"
-                prop="contrastState"
+                prop="`已完成`"
                 width="120"
               ></el-table-column>
               <el-table-column
                 label="对比结果"
-                prop="contrastResult"
+                prop="result"
                 width="120"
               ></el-table-column>
               <el-table-column
                 label="时间"
-                prop="time"
+                prop="createTime"
                 width="150"
               ></el-table-column>
               <el-table-column label="操作" prop="operation" width="297">
@@ -93,17 +93,9 @@
             </el-table>
           </template>
         </el-table-column>
-        <el-table-column
-          label="流水帐号"
-          prop="id"
-          width="140"
-        ></el-table-column>
+        <el-table-column label="流水帐号" width="140"></el-table-column>
         <el-table-column label="名称" prop="name" width="120"></el-table-column>
-        <el-table-column
-          label="对比费用"
-          prop="money"
-          width="100"
-        ></el-table-column>
+        <el-table-column label="对比费用" width="100"></el-table-column>
         <el-table-column
           label="支付状态"
           prop="payState"
@@ -119,7 +111,11 @@
           prop="contrastResult"
           width="120"
         ></el-table-column>
-        <el-table-column label="时间" prop="time" width="150"></el-table-column>
+        <el-table-column
+          label="时间"
+          prop="createTime"
+          width="150"
+        ></el-table-column>
         <el-table-column label="操作" prop="operation" width="297">
           <template slot-scope="scope">
             <el-button size="mini">查看</el-button>
@@ -149,24 +145,13 @@
 </template>
 
 <script>
+import getGroups from "../../../biz/Rbac/TaskGroup.js";
 export default {
-  name: 'HomeCompareUp',
+  name: "HomeCompareUp",
   data() {
     return {
       multipleSelection: [],
-      tableData: [
-        {
-          id: "001",
-          name: "xxx",
-          key: 1,
-          // money:100,
-          payState: "已支付",
-          contrastState: "已完成",
-          contrastResult: "已完成",
-          time: "2012-03-24",
-          list: [],
-        },
-      ],
+      tableData: [],
       pagination: {
         total: 220,
       },
@@ -175,46 +160,53 @@ export default {
   methods: {
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({name: "HomeCompareLeft"});
+      this.$router.push({ name: "HomeCompareLeft" });
     },
     load(row, expandedRows) {
       // console.log("数据懒加载",row,expandedRows);
       console.log("懒加载数据");
-      row.list.push(
-        {
-          id: "002",
-          name: "王安宇",
-          payState: "已支付",
-          contrastState: "已完成",
-          contrastResult: "已完成",
-          time: "2012-09-24",
-          url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          srcList: [
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          ],
-        },
-        {
-          id: "003",
-          name: "庞玉艳",
-          // money:100,
-          payState: "已支付",
-          contrastState: "已完成",
-          contrastResult: "已完成",
-          time: "2012-10-24",
-          url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          srcList: [
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          ],
-        }
-      );
+      // row.list.push(
+      //   {
+      //     id: "002",
+      //     name: "王安宇",
+      //     payState: "已支付",
+      //     contrastState: "已完成",
+      //     contrastResult: "已完成",
+      //     time: "2012-09-24",
+      //     url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      //     srcList: [
+      //       "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      //     ],
+      //   },
+      //   {
+      //     id: "003",
+      //     name: "庞玉艳",
+      //     // money:100,
+      //     payState: "已支付",
+      //     contrastState: "已完成",
+      //     contrastResult: "已完成",
+      //     time: "2012-10-24",
+      //     url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      //     srcList: [
+      //       "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      //     ],
+      //   }
+      // );
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
     handleSelectionChange(val) {
-      console.log("val",val);
+      console.log("val", val);
       this.multipleSelection = val;
     },
+  },
+  mounted() {
+    console.log("挂载了一个页面");
+    getGroups(1).then((res) => {
+      console.log("响应成功返回的是：", res);
+      this.tableData = res.records;
+    });
   },
 };
 </script>
@@ -247,7 +239,15 @@ export default {
       height: 500px;
       overflow: auto;
       overflow-x: hidden;
-      div{
+      .el-checkbox__inner{
+        position: absolute;
+        top:-9px;
+        left: -2px  ;
+      } 
+      &:before {
+        width: 0px;
+      }
+      div {
         overflow: hidden;
       }
     }
@@ -267,7 +267,6 @@ export default {
   }
   .el-table__expanded-cell {
     padding: 0 0px 0px 20px;
-    // padding-left: 20px;
   }
 }
 </style>
