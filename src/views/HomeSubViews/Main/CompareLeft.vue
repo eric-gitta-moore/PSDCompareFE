@@ -191,12 +191,9 @@
         @onComplete="uploadOnComplete"
     ></UploadDialog>
 
-    <UploadFileOrCreateTask />
 
-    <CreateTaskDialog
-      v-if="CreateTaskDialogVisible"
-      @click="openUploadDialog"
-    />
+
+
   </el-container>
 </template>
 
@@ -205,14 +202,12 @@ import UploadDialog from "@/components/Home/Compare/UploadDialog";
 // import CompareUploadDialog from "./components/compare-upload-dialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
 import { mapState } from "vuex";
-import CreateTaskDialog from "@/components/Home/Compare/CreateTaskDialog";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 
 export default {
   name: "HomeCompareLeft",
   components: {
     UploadDialog,
-    CreateTaskDialog,
     UploadFileOrCreateTask,
     // CompareUploadDialog,
     // ComparePayDialog,
