@@ -8,17 +8,25 @@
           </el-col>
           <el-col :span="12">
             <div class="right">
-              <svg-icon icon-class="show-eye" @click="changeLayout()"></svg-icon>
-              <svg-icon icon-class="add" @click="openUploadDialog()"></svg-icon>
+              <svg-icon
+                icon-class="show-eye"
+                @click="changeLayout()"
+              ></svg-icon>
+
+              <!-- <svg-icon
+                icon-class="add"
+                @click="openUploadFileOrCreateTask()"
+              ></svg-icon> -->
+              <UploadFileOrCreateTask class="upload-file-or-create-task"/>
             </div>
           </el-col>
         </el-row>
       </div>
       <div class="orders">
         <ul
-            v-infinite-scroll="load"
-            infinite-scroll-disabled="disableLoading"
-            infinite-scroll-immediate="false"
+          v-infinite-scroll="load"
+          infinite-scroll-disabled="disableLoading"
+          infinite-scroll-immediate="false"
         >
           <li v-for="val in compareLogData" :key="val.id">
             <el-row class="order">
@@ -28,8 +36,8 @@
                     <el-col :span="16">
                       <span class="notice">名称：</span>
                       <span>{{
-                          val.title ? val.title : "对比记录" + val.id
-                        }}</span>
+                        val.title ? val.title : "对比记录" + val.id
+                      }}</span>
                     </el-col>
 
                     <el-col :span="4" class="compare">
@@ -81,23 +89,23 @@
                     <el-row class="time-line">
                       <el-col :span="2">
                         <svg-icon
-                            v-if="val.status == '已完成' || true"
-                            icon-class="play"
+                          v-if="val.status == '已完成' || true"
+                          icon-class="play"
                         ></svg-icon>
                         <svg-icon v-else icon-class="clock"></svg-icon>
                       </el-col>
                       <el-col :span="19">
                         <el-progress
-                            :percentage="val.status == '已完成' || true ? 100 : 0"
-                            :stroke-width="10"
-                            :show-text="false"
+                          :percentage="val.status == '已完成' || true ? 100 : 0"
+                          :stroke-width="10"
+                          :show-text="false"
                         >
                         </el-progress>
                       </el-col>
                       <el-col :span="3">
                         <div>
                           <span
-                          >{{
+                            >{{
                               val.status == "已完成" || true ? 100 : 0
                             }}%</span
                           >
@@ -115,7 +123,7 @@
                   <el-row v-else>
                     <el-col class="more">
                       <span class="fold" @click="foldItem(val.id)"
-                      >查看更多
+                        >查看更多
                       </span>
                       <svg-icon icon-class="angle-bottom"></svg-icon>
                     </el-col>
@@ -161,7 +169,7 @@
         </el-header>
         <el-main>
           <div class="right-main-img">
-            <img :src="compareImgUrl" alt=""/>
+            <img :src="compareImgUrl" alt="" />
           </div>
         </el-main>
       </el-container>
@@ -182,6 +190,13 @@
         task-id="1"
         @onComplete="uploadOnComplete"
     ></UploadDialog>
+
+    <UploadFileOrCreateTask />
+
+    <CreateTaskDialog
+      v-if="CreateTaskDialogVisible"
+      @click="openUploadDialog"
+    />
   </el-container>
 </template>
 
@@ -189,18 +204,22 @@
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
 // import CompareUploadDialog from "./components/compare-upload-dialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
-import {mapState} from "vuex";
+import { mapState } from "vuex";
+import CreateTaskDialog from "@/components/Home/Compare/CreateTaskDialog";
+import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 
 export default {
   name: "HomeCompareLeft",
   components: {
-    UploadDialog
+    UploadDialog,
+    CreateTaskDialog,
+    UploadFileOrCreateTask,
     // CompareUploadDialog,
     // ComparePayDialog,
   },
   data() {
     return {
-      IsUploadDialogShow: true,
+      IsUploadDialogShow: false,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,
@@ -210,6 +229,8 @@ export default {
       isFoldArray: [],
       compareImgUrl: "",
       compareWorkName: "对比任务",
+      openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
+      CreateTaskDialogVisible: false, //创建任务框是否出现
     };
   },
   computed: {
@@ -231,25 +252,29 @@ export default {
     gotoCompareResult(compareId) {
       console.log(compareId);
       this.$store
-          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-          .then(() => {
-            this.compareImgUrl = this.workObj.compareResultUrl;
-            if (this.workObj.compareResultUrl) {
-              this.$notify.success({
-                title: "成功",
-                message: "获取对比结果",
-              });
-            }
-            console.log(this.compareImgUrl);
-          });
+        .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+        .then(() => {
+          this.compareImgUrl = this.workObj.compareResultUrl;
+          if (this.workObj.compareResultUrl) {
+            this.$notify.success({
+              title: "成功",
+              message: "获取对比结果",
+            });
+          }
+          console.log(this.compareImgUrl);
+        });
     },
     openUploadDialog() {
-      this.IsUploadDialogShow = true;
+      // this.IsUploadDialogShow = true;
+      // this.CreateTaskDialogVisible = true;
+    },
+    openUploadFileOrCreateTask() {
+      this.openUploadFileOrCreateTaskVisible = true;
     },
     getCompareResultUrl() {
       return !("workObj" in this) || !("compareResultUrl" in this.workObj)
-          ? `/public/images/251.png`
-          : this.workObj.compareResultUrl;
+        ? `/public/images/251.png`
+        : this.workObj.compareResultUrl;
     },
     foldItem(id) {
       this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
@@ -275,37 +300,37 @@ export default {
     },
     queryData() {
       this.$api
-          .selectCompareLog(this.currentPage, this.pageSize)
-          .then((res) => {
-            this.compareLogData = this.compareLogData.concat(
-                res.data.data.records
-            );
-            for (let datum of res.data.data.records) {
-              this.isFoldArray[datum.id] = false;
-            }
-            this.currentPage = res.data.data.current;
-            this.pageSize = res.data.data.size;
-            this.totalPages = res.data.data.pages;
-            this.isLoading = false;
-          });
+        .selectCompareLog(this.currentPage, this.pageSize)
+        .then((res) => {
+          this.compareLogData = this.compareLogData.concat(
+            res.data.data.records
+          );
+          for (let datum of res.data.data.records) {
+            this.isFoldArray[datum.id] = false;
+          }
+          this.currentPage = res.data.data.current;
+          this.pageSize = res.data.data.size;
+          this.totalPages = res.data.data.pages;
+          this.isLoading = false;
+        });
     },
     downloadCompareResult(compareId) {
       if (!this.workObj || !this.workObj.workCode) {
         this.$store
-            .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-            .then(() => {
-              this.compareImgUrl = this.workObj.compareResultUrl;
-              if (this.workObj.compareResultUrl) {
-                this.$notify.success({
-                  title: "成功",
-                  message: "获取对比结果",
-                });
-              }
-              console.log(this.compareImgUrl);
-              window.open(
-                  this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
-              );
-            });
+          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+          .then(() => {
+            this.compareImgUrl = this.workObj.compareResultUrl;
+            if (this.workObj.compareResultUrl) {
+              this.$notify.success({
+                title: "成功",
+                message: "获取对比结果",
+              });
+            }
+            console.log(this.compareImgUrl);
+            window.open(
+              this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
+            );
+          });
       } else {
         window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
       }
@@ -319,6 +344,10 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.upload-file-or-create-task{
+  display: inline-block;
+    margin-left: 5px;
+}
 $radius: 4px;
 .loading span {
   display: inline-block;
