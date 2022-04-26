@@ -66,7 +66,7 @@ class Order {
         this.fee = fee;
         this.title = title;
         this.serialNumber = serialNumber;
-        this.createTime = new Date(createTime);
+        this.createTime = createTime;
         this.url = url;
         this.size = size;
         this.resolution = resolution;
@@ -74,6 +74,7 @@ class Order {
         this.resolution = resolution;
         this.result = result;
         this.fileName = fileName;
+        this.files = files;
     }
 }
 

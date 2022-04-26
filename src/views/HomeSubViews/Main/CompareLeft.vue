@@ -12,11 +12,6 @@
                 icon-class="show-eye"
                 @click="changeLayout()"
               ></svg-icon>
-
-              <!-- <svg-icon
-                icon-class="add"
-                @click="openUploadFileOrCreateTask()"
-              ></svg-icon> -->
               <UploadFileOrCreateTask class="upload-file-or-create-task"/>
             </div>
           </el-col>
@@ -219,6 +214,7 @@ export default {
   },
   data() {
     return {
+      val:[],
       IsUploadDialogShow: false,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
@@ -340,6 +336,9 @@ export default {
       this.$router.push({name: "HomeCompareUp"})
     },
   },
+  mounted(){
+    
+  }
 };
 </script>
 

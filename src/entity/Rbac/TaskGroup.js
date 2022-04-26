@@ -38,7 +38,7 @@ class TaskGroup {
         }
         this.id = id;
         this.name = name;
-        this.createTime = new Date(createTime);
+        this.createTime = createTime;
         this.orders = orders;
     }
 }
