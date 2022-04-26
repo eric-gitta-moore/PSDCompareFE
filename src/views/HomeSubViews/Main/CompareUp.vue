@@ -8,7 +8,7 @@
           <svg-icon icon-class="add" @click="openUploadDialog()"></svg-icon>
         </div>
       </el-col>
-      <el-col :span="19">
+      <el-col :span="19"> 
         <div class="right">
           <el-button type="primary" @click="downLoad">
             <svg-icon icon-class="show-eye" @click="changeLayout()"></svg-icon>
@@ -162,7 +162,12 @@ export default {
   mounted() {
     console.log("挂载了一个页面");
     getGroups(1).then((res) => {
-      console.log("响应成功返回的是：", res.records[0].createTime);
+// <<<<<<< HEAD
+//       console.log("响应成功返回的是：", res.records[0].createTime);
+// =======
+      console.log("响应成功返回的是：", res);
+      console.log("COMPARE",res.records);
+// >>>>>>> 22ae39b39f1b77db169c987c662cc0a90eaf5ce7
       this.tableData = res.records;
       this.pagination.total = res.total;
     });

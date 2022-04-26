@@ -4,6 +4,12 @@ import PageResult from '../../entity/_Common/PageResult'
 import get from '../../api/Rbac/TaskGroup'
 import DateHelper from '../../util/DateHelper'
 // import  from ''
+// <<<<<<< HEAD
+// import DateHelper from '../../util/DateHelper'
+// // import  from ''
+// =======
+// import DateHelper from "../../util/DateHelper";
+// >>>>>>> 22ae39b39f1b77db169c987c662cc0a90eaf5ce7
 /**
  * @description 获取所有任务组方法
  * @param {int}startPages,当前页
@@ -21,12 +27,18 @@ async function getAll(startPages) {
     });
     let { records: records_use, total, size, current, pages } = res.data;
     let records = records_use.map(ele => {
+        ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
         delete ele.deleted;
         ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
         let orders = ele.orders.map(ele => {
             ele.status = ele.status === "complete" ? "已成功" : "未成功";
-            ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
+// <<<<<<< HEAD
+//             ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
+//             if (ele.files === null) ele.files = [];
+// =======
             if (ele.files === null) ele.files = [];
+            ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss")
+// >>>>>>> 22ae39b39f1b77db169c987c662cc0a90eaf5ce7
             let {
                 id,
                 status,
