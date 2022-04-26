@@ -1,7 +1,7 @@
 import TaskGroup from '../../entity/Rbac/TaskGroup';
 import Order from '../../entity/Rbac/Order';
 import PageResult from '../../entity/_Common/PageResult'
-import get from '../../api/Rbac/TaskGroup'
+import TaskGroupApi from '../../api/Rbac/TaskGroup'
 import DateHelper from '../../util/DateHelper'
 // import  from ''
 // <<<<<<< HEAD
@@ -17,7 +17,7 @@ import DateHelper from '../../util/DateHelper'
 async function getAll(startPages) {
     const maxPages = 10;//每页显示数量
     const sort = "asc";//排序方式（asc）
-    const res = await get.getGroups({
+    const res = await TaskGroupApi.getGroups({
         endTime: "2020-10-2",
         startTime: "2020-10-2",
         keyWords: null,
@@ -78,6 +78,18 @@ async function getAll(startPages) {
     return new PageResult(
         records, total, size, current, pages
     );
+}  
+async function deleteTaskByIds(Ids){
+    TaskGroupApi.deleteGroup(Ids)
+}        
+
+async function  download(Ids){
+    TaskGroupApi.download(Ids)
+    
 }
-export default getAll;
+export default {
+    deleteTaskByIds,
+    getAll,
+    download
+};
 
