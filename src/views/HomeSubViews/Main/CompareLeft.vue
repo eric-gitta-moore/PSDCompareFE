@@ -12,18 +12,14 @@
                 icon-class="show-eye"
                 @click="changeLayout()"
               ></svg-icon>
-              <UploadFileOrCreateTask class="upload-file-or-create-task"/>
+              <UploadFileOrCreateTask class="upload-file-or-create-task" />
             </div>
           </el-col>
         </el-row>
       </div>
       <div class="orders">
-        <ul
-          v-infinite-scroll="load"
-          infinite-scroll-disabled="disableLoading"
-          infinite-scroll-immediate="false"
-        >
-          <li v-for="val in compareLogData" :key="val.id">
+        <ul v-infinite-scroll="load" infinite-scroll-immediate="true">
+          <li v-for="(val, index) in compareLogData" :key="val.id">
             <el-row class="order">
               <el-col>
                 <div>
@@ -54,11 +50,75 @@
                   <el-row>
                     <el-col>
                       <span class="notice">时间：</span>
-                      <span>{{ formatDatetime(val.createTime) }}</span>
+                      <span>{{ val.createTime }}</span>
                     </el-col>
                   </el-row>
-                  <div v-if="!isFoldArray[val.id]">
-                    <el-row>
+                  <el-collapse>
+                    <!-- collapse -->
+                    <el-collapse-item
+                      :name="val.id"
+                      :title="isFoldArray[index]"
+                      @click.native="isShow(index)"
+                    >
+                      <!-- <template slot="title">
+                        <span v-if="isFoldArray[index]"  @click.native="isShow(index)">收起</span>
+                        <span v-else>展开</span>
+                      </template> -->
+                      <!-- <el-row>
+                        <el-col class="spilit-line">
+                          <span></span>
+                        </el-col>
+                      </el-row> -->
+
+                      <el-row class="file-list">
+                        <el-col :span="20">
+                          <span>{{ val.title ? val.title : "对比1" }}</span>
+                        </el-col>
+                        <el-col :span="4">
+                          <span class="success">已完成</span>
+                        </el-col>
+                      </el-row>
+
+                      <el-row class="file-list">
+                        <el-col :span="20">
+                          <span>{{ val.title ? val.title : "对比2" }}</span>
+                        </el-col>
+                        <el-col :span="4">
+                          <span class="normal">已完成</span>
+                        </el-col>
+                      </el-row>
+                      <el-row class="time-line">
+                        <el-col :span="2">
+                          <svg-icon
+                            v-if="val.status == '已完成' || true"
+                            icon-class="play"
+                          ></svg-icon>
+                          <svg-icon v-else icon-class="clock"></svg-icon>
+                        </el-col>
+                        <el-col :span="19">
+                          <el-progress
+                            :percentage="
+                              val.status == '已完成' || true ? 100 : 0
+                            "
+                            :stroke-width="10"
+                            :show-text="false"
+                          >
+                          </el-progress>
+                        </el-col>
+                        <el-col :span="3">
+                          <div>
+                            <span
+                              >{{
+                                val.status == "已完成" || true ? 100 : 0
+                              }}%</span
+                            >
+                          </div>
+                        </el-col>
+                      </el-row>
+                    </el-collapse-item>
+                  </el-collapse>
+                  <!-- <div v-if="!isFoldArray[val.index]"> -->
+                  <!-- <el-row>
                       <el-col class="spilit-line">
                         <span></span>
                       </el-col>
@@ -106,23 +166,25 @@
                           >
                         </div>
                       </el-col>
-                    </el-row>
-                  </div>
+                    </el-row> -->
+                  <!-- </div> -->
 
-                  <el-row v-if="!isFoldArray[val.id]">
+                  <!-- <el-row v-if="!isFoldArray[val.index]">
                     <el-col class="more">
-                      <span class="fold" @click="foldItem(val.id)">收起</span>
+                      <span class="fold" @click="foldItem(val.index)"
+                        >收起</span
+                      >
                     </el-col>
                   </el-row>
 
                   <el-row v-else>
                     <el-col class="more">
-                      <span class="fold" @click="foldItem(val.id)"
+                      <span class="fold" @click="foldItem(val.index)"
                         >查看更多
                       </span>
                       <svg-icon icon-class="angle-bottom"></svg-icon>
                     </el-col>
-                  </el-row>
+                  </el-row> -->
                 </div>
               </el-col>
             </el-row>
@@ -180,15 +242,11 @@
       :work="this.workObj"
     ></ComparePayDialog> -->
     <UploadDialog
-        v-if="IsUploadDialogShow"
-        @onClose="closeUploadDialog"
-        task-id="1"
-        @onComplete="uploadOnComplete"
+      v-if="IsUploadDialogShow"
+      @onClose="closeUploadDialog"
+      task-id="1"
+      @onComplete="uploadOnComplete"
     ></UploadDialog>
-
-
-
-
   </el-container>
 </template>
 
@@ -198,6 +256,8 @@ import UploadDialog from "@/components/Home/Compare/UploadDialog";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
 import { mapState } from "vuex";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
+import task from "../../../biz/Rbac/TaskGroup.js";
+// import DateHelper from '../../util/DateHelper'
 
 export default {
   name: "HomeCompareLeft",
@@ -209,7 +269,8 @@ export default {
   },
   data() {
     return {
-      val:[],
+      index: 1,
+      total: 0,
       IsUploadDialogShow: false,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
@@ -217,7 +278,7 @@ export default {
       pageSize: 3, //每页数据总数
       totalPages: 0, //总页数
       isLoading: false, //是否在加载中，绑定给loading图标用
-      isFoldArray: [],
+      isFoldArray: ["展开"],
       compareImgUrl: "",
       compareWorkName: "对比任务",
       openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
@@ -239,6 +300,11 @@ export default {
     uploadOnComplete() {
       this.IsUploadDialogShow = false;
       // TODO:刷新页面，重新加载数据
+    },
+    //控制每一个折叠面板的文字
+    isShow(index) {
+      if(this.isFoldArray[index] === "展开")  this.isFoldArray.splice(index,1,"收起");
+      else this.isFoldArray.splice(index,1,"展开");
     },
     gotoCompareResult(compareId) {
       console.log(compareId);
@@ -267,12 +333,9 @@ export default {
         ? `/public/images/251.png`
         : this.workObj.compareResultUrl;
     },
-    foldItem(id) {
-      this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
-    },
-    formatDatetime(datetime) {
-      return new Date(datetime).format("yyyy/MM/dd hh:mm:ss");
-    },
+    // foldItem(id) {
+    //   this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
+    // },
     closeUploadDialog() {
       this.IsUploadDialogShow = false;
     },
@@ -282,29 +345,51 @@ export default {
     closePayDialog() {
       this.IsPayDialogShow = false;
     },
+    // 获取全部对比组
+    getAll(val) {
+      task.getGroups(val).then((res) => {
+        this.compareLogData.push(...res.records);
+        this.total = res.total;
+        // for (var index in this.compareLogData) {
+        //   console.log("for in 循环的ele是：", index);
+        //   this.isFoldArray[index].name = "展开";
+        // }
+        console.log("我还可滚");
+      });
+      // for(var i)
+      // console.log("这是获取到的对比组个数", this.compareLogData.length);
+    },
+    // 滚轮下滑刷新数据
     load() {
-      this.isLoading = true;
-      setTimeout(() => {
-        this.currentPage++;
-        this.queryData();
-      }, 500);
+      if (this.compareLogData.length <= this.total) {
+        this.getAll(this.index);
+        this.index++;
+        console.log("我还可滚");
+      } else console.log("到底了");
     },
-    queryData() {
-      this.$api
-        .selectCompareLog(this.currentPage, this.pageSize)
-        .then((res) => {
-          this.compareLogData = this.compareLogData.concat(
-            res.data.data.records
-          );
-          for (let datum of res.data.data.records) {
-            this.isFoldArray[datum.id] = false;
-          }
-          this.currentPage = res.data.data.current;
-          this.pageSize = res.data.data.size;
-          this.totalPages = res.data.data.pages;
-          this.isLoading = false;
-        });
-    },
+    // load() {
+    //   this.isLoading = true;
+    //   setTimeout(() => {
+    //     this.currentPage++;
+    //     this.queryData();
+    //   }, 500);
+    // },
+    // queryData() {
+    //   this.$api
+    //     .selectCompareLog(this.currentPage, this.pageSize)
+    //     .then((res) => {
+    //       this.compareLogData = this.compareLogData.concat(
+    //         res.data.data.records
+    //       );
+    //       for (let datum of res.data.data.records) {
+    //         this.isFoldArray[datum.id] = false;
+    //       }
+    //       this.currentPage = res.data.data.current;
+    //       this.pageSize = res.data.data.size;
+    //       this.totalPages = res.data.data.pages;
+    //       this.isLoading = false;
+    //     });
+    // },
     downloadCompareResult(compareId) {
       if (!this.workObj || !this.workObj.workCode) {
         this.$store
@@ -328,19 +413,23 @@ export default {
     },
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
-      this.$router.push({name: "HomeCompareUp"})
+      this.$router.push({ name: "HomeCompareUp" });
     },
   },
-  mounted(){
-    
-  }
+  mounted() {
+    console.log("挂在页面完毕");
+    this.getAll(1);
+  },
 };
 </script>
 
 <style lang='scss' scoped>
-.upload-file-or-create-task{
+* {
+  list-style: none;
+}
+.upload-file-or-create-task {
   display: inline-block;
-    margin-left: 5px;
+  margin-left: 5px;
 }
 $radius: 4px;
 .loading span {

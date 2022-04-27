@@ -19,7 +19,11 @@ export default {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+    createTaskDialog(){
+      console.log("创建任务");
+    }
+  },
 };
 </script>
 

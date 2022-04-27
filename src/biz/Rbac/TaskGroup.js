@@ -3,18 +3,12 @@ import Order from '../../entity/Rbac/Order';
 import PageResult from '../../entity/_Common/PageResult'
 import get from '../../api/Rbac/TaskGroup'
 import DateHelper from '../../util/DateHelper'
-// import  from ''
-// <<<<<<< HEAD
-// import DateHelper from '../../util/DateHelper'
-// // import  from ''
-// =======
-// import DateHelper from "../../util/DateHelper";
-// >>>>>>> 22ae39b39f1b77db169c987c662cc0a90eaf5ce7
 /**
  * @description 获取所有任务组方法
  * @param {int}startPages,当前页
  */
-async function getAll(startPages) {
+
+async function getGroups(startPages) {
     const maxPages = 10;//每页显示数量
     const sort = "asc";//排序方式（asc）
     const res = await get.getGroups({
@@ -79,5 +73,15 @@ async function getAll(startPages) {
         records, total, size, current, pages
     );
 }
-export default getAll;
+
+async function getGroup(){
+
+}
+/** 
+ * @description 获取单个任务组
+*/
+export default {
+    getGroups,
+    getGroup,
+}
 

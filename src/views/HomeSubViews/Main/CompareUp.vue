@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import getGroups from "../../../biz/Rbac/TaskGroup.js";
+import taskGroup from "../../../biz/Rbac/TaskGroup.js";
 
 export default {
   name: "HomeCompareUp",
@@ -140,7 +140,7 @@ export default {
     },
     // 分页
     handleCurrentChange(val) {
-      getGroups(`${val}`).then((res) => {
+      taskGroup.getGroups(`${val}`).then((res) => {
         this.tableData = res.records;
       });
       console.log(`当前页: ${val}`);
@@ -161,13 +161,9 @@ export default {
   },
   mounted() {
     console.log("挂载了一个页面");
-    getGroups(1).then((res) => {
-// <<<<<<< HEAD
-//       console.log("响应成功返回的是：", res.records[0].createTime);
-// =======
+    taskGroup.getGroups(1).then((res) => {
       console.log("响应成功返回的是：", res);
       console.log("COMPARE",res.records);
-// >>>>>>> 22ae39b39f1b77db169c987c662cc0a90eaf5ce7
       this.tableData = res.records;
       this.pagination.total = res.total;
     });
