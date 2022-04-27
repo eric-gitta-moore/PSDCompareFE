@@ -140,7 +140,7 @@ export default {
     },
     // 分页
     handleCurrentChange(val) {
-      taskGroup.getGroups(`${val}`).then((res) => {
+      taskGroup.getAll(`${val}`).then((res) => {
         this.tableData = res.records;
       });
       console.log(`当前页: ${val}`);
@@ -161,7 +161,7 @@ export default {
   },
   mounted() {
     console.log("挂载了一个页面");
-    taskGroup.getGroups(1).then((res) => {
+    taskGroup.getAll(1).then((res) => {
       console.log("响应成功返回的是：", res);
       console.log("COMPARE",res.records);
       this.tableData = res.records;

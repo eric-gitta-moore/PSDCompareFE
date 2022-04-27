@@ -347,13 +347,13 @@ export default {
     },
     // 获取全部对比组
     getAll(val) {
-      task.getGroups(val).then((res) => {
+      task.getAll(val).then((res) => {
         this.compareLogData.push(...res.records);
         this.total = res.total;
-        // for (var index in this.compareLogData) {
-        //   console.log("for in 循环的ele是：", index);
-        //   this.isFoldArray[index].name = "展开";
-        // }
+        for (var index in this.compareLogData) {
+          console.log("for in 循环的ele是：", index);
+          this.isFoldArray[index] = "展开";
+        }
         console.log("我还可滚");
       });
       // for(var i)
