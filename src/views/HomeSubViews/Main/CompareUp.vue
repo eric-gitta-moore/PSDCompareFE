@@ -154,13 +154,20 @@
 
 
       <!-- 分页 -->
-      <el-pagination
-        @current-change="handleCurrentChange"
-        background
-        layout="total, prev, pager, next, jumper"
-        :total="pagination.total"
-      >
-      </el-pagination>
+      <el-footer>
+        <el-row class="pagination">
+          <el-col :span="24">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              background
+              layout="total, prev,sizes,pager, next, jumper"
+              :total="pagination.total"
+              :page-sizes="pageSizes"
+            >
+            </el-pagination>
+          </el-col>
+        </el-row>
+      </el-footer>
     </el-main>
   </el-container>
 </template>
@@ -176,6 +183,7 @@ export default {
       orders: [],
       srcList: [],
       tableData: [],
+      pageSizes: [10,20,30, 40],
       pagination: {
         total: 220,
       },
@@ -252,6 +260,7 @@ export default {
 </script>
 
 <style lang="scss">
+$radius: 4px;
 .main-container-main {
   height: 100%;
   width: 100%;
@@ -312,6 +321,20 @@ export default {
     .el-col {
       height: 60px;
       line-height: 60px;
+    }
+  }
+  .el-footer {
+  background: white;
+  border-bottom-left-radius: $radius;
+  border-bottom-right-radius: $radius;
+    .pagination {
+     
+      .el-col {
+        text-align: right;
+      }
+      position:absolute;
+      right:60px;
+      bottom:50px
     }
   }
   .right {
