@@ -2,7 +2,7 @@
   <el-container class="main-container">
     <el-header>
       <el-row>
-        <el-col :span="1">
+        <el-col :span="2">
           <span>关键词：</span>
         </el-col>
         <el-col :span="3">
@@ -16,7 +16,7 @@
         <el-col :span="2">
           <span>日期范围：</span>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="5">
           <el-date-picker
             v-model="daterange"
             type="daterange"
@@ -28,10 +28,10 @@
           >
           </el-date-picker>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="2">
           <el-button type="primary" @click="clearAll">重置</el-button>
         </el-col>
-        <el-button type="primary" @click="downLoadTaskByCheck">下载</el-button>
+        <el-button type="primary" @click="downLoadTaskByCheck" class="styleLoad">下载</el-button>
       </el-row>
     </el-header>
     <el-main class="main">
@@ -42,24 +42,37 @@
         row-key="id"
         :tree-props="{ children: 'orders' }"
         @selection-change="handleSelectionChange"
+        :header-row-style="{
+          background:'RGB(246,248,250)'
+        }"
+        :header-cell-style="{
+          background:'RGB(246,248,250)'
+        }"
       >
         <el-table-column>
           <template slot-scope="scope">
             <el-checkbox
-              @change="GetIdsByCheck(scope.row.id,$event)"
+              @change="GetIdsByCheck(scope.row.id, $event)"
             ></el-checkbox>
           </template>
         </el-table-column>
-        <el-table-column prop="serialNumber" label="流水编号" width="210">
+        <el-table-column prop="serialNumber" label="流水编号/任务ID" width="210">
+        <template slot-scope="scope">
+            {{ scope.row.serialNumber !==undefined ? scope.row.serialNumber : scope.row.id}}
+          </template>
         </el-table-column>
         <el-table-column
           prop="title"
-          label="对比文件"
+          label="名称"
           width="200"
-        ></el-table-column>
-        <el-table-column prop="fee" label="支付费用" width="200">
+        >
+     <template slot-scope="scope">
+            {{ scope.row.serialNumber !==undefined ? scope.row.title : scope.row.name}}
+          </template>
         </el-table-column>
-        <el-table-column prop="status" label="支付状态" width="200">
+        <el-table-column prop="fee" label="对比费用" width="150">
+        </el-table-column>
+        <el-table-column prop="status" label="支付状态" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status" class="dot"
               ><span class="blue-dot"></span>已支付</span
@@ -67,7 +80,7 @@
             <span v-else class="dot"><span class="red-dot"></span>未支付</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="支付状态" width="200">
+        <el-table-column prop="status" label="对比状态" width="180">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" class="dot"
               ><span class="blue-dot"></span>已完成</span
@@ -75,7 +88,7 @@
             <span v-else class="dot"><span class="red-dot"></span>未完成</span>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="支付结果" width="200">
+        <el-table-column prop="status" label="支付结果" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" style="color: #67c23a"
               >成功</span
@@ -88,7 +101,7 @@
             {{ scope.row.createTime }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="250">
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
@@ -125,11 +138,8 @@
 </template>
 
 <script>
-//引入下载文件的方法
-import DownloadHelper from "../../../util/DownloadHelper";
 //引入对返回数据处理的方法
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
-//引入删除数据和下载任务组的方法
 export default {
   name: "History",
   components: {},
@@ -139,9 +149,6 @@ export default {
       this.searchText = "";
       this.daterange = "";
       this.freshTable();
-    },
-    handleEdit(index, row) {
-      console.log(index, row);
     },
     //查看该文件
     checkTask(rowKey) {
@@ -153,45 +160,43 @@ export default {
       });
       console.log(rowKey);
     },
-    downLoadTaskByCheck() {},
+    //点击下载多个任务组
+    downLoadTaskByCheck() {
+      TaskGroup.download(this.IdsArr);
+    },
     freshTable() {
       let startT, endT;
       if (this.daterange) {
         startT = this.formatDatetime(this.daterange[0]);
         endT = this.formatDatetime(this.daterange[1]);
       }
-      TaskGroup.getAll(1).then((res) => {
+      TaskGroup.getAll(this.currentPage).then((res) => {
+        console.log(res.records);
         this.tableData = res.records;
         console.log(this.tableData);
       });
     },
-    //点击下载单个或者多个任务组
-    downLoadTask(row) {
-      DownloadHelper.downloadByAnchorTag({});
-      console.log(row);
+    //点击下载单个任务组
+    downLoadTask(id) {
+      TaskGroup.download(id);
     },
-    deleteTask(Ids) {
-          //获得勾选的id.
-      TaskGroup.deleteTaskByIds(Ids);
+    //批量下载或删除任务组
+    deleteTask() {
+      TaskGroup.deleteTaskByIds(this.IdsArr);
+       this.$message.success('删除成功')
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    GetIdsByCheck(Id,$event) {
-      console.log("ddddddddddddddddddddddddddddddd", Id);
-      console.log($event);  
-     // 如果需要使用到上下文this我们应该使用computed计算属性的或者一个method方法。
-
-       if($event){
-         this.IdsArr.push(Id)
-       }
-       else{
-         this.IdsArr= this.IdsArr.filter((x) => x !== Id);
-       }
+    GetIdsByCheck(Id, $event) {
+      // 如果需要使用到上下文this我们应该使用computed计算属性的或者一个method方法。
+      if ($event) {
+        this.IdsArr.push(Id);
+      } else {
+        this.IdsArr = this.IdsArr.filter((x) => x !== Id);
+      }
       console.log(this.IdsArr);
-
     },
-
   },
   mounted() {
     this.freshTable();
@@ -206,13 +211,13 @@ export default {
       total: 100,
       currentPage: 1,
       tableData: [],
-      IdsArr:[]
+      IdsArr: [],
     };
   },
 };
 </script>
 
-<style lang='scss' >
+<style lang='scss' scoped>
 $radius: 4px;
 .gray {
   color: #a8a8aa;
@@ -224,15 +229,20 @@ $radius: 4px;
   box-sizing: border-box;
   background: #f1f5f9;
   .el-header {
-    background: white;
+       padding-top: 20px;
+          background: white;
     border-top-left-radius: $radius;
     border-top-right-radius: $radius;
-
-    .el-col {
+    .el-row {
       display: flex;
-      justify-content: space-between;
+      justify-content:flex-start ;
+      position: relative;
+      .styleLoad{
+          position: absolute;
+          right: 20px;
+      }
+      align-items: center;
     }
-
     .main {
       background: white;
       .el-table {
@@ -257,8 +267,7 @@ $radius: 4px;
       }
     }
   }
-}
-.main {
+  .main {
   background: white;
 
   .el-checkbox__inner {
@@ -310,4 +319,6 @@ $radius: 4px;
     }
   }
 }
+}
+
 </style>

@@ -82,12 +82,12 @@ async function getAll(startPages) {
     // }
     // =======
 }
-async function deleteTaskByIds(Ids) {
-    TaskGroupApi.deleteGroup(Ids)
+async function deleteTaskByIds(ids) {
+    TaskGroupApi.deleteGroup({ ids })
 }
 
-async function download(Ids) {
-    TaskGroupApi.download(Ids)
+async function download(ids) {
+    await TaskGroupApi.download({ ids })
 
 }
 export default {

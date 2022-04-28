@@ -11,8 +11,8 @@ import axios from "axios";
  * @returns {axios}
  */
 function getGroupById({
-                          groupId
-                      }) {
+    groupId
+}) {
 
     return BaseAxios({
         url: `/taskGroup/getGroupById`,
@@ -68,8 +68,8 @@ function getGroups({
  * @returns {axios}
  */
 function createGroup({
-                         name
-                     }) {
+    name
+}) {
     return BaseAxios({
         url: `/taskGroup/create`,
         method: "post",
@@ -88,8 +88,8 @@ function createGroup({
  * @returns {axios}
  */
 function deleteGroup({
-                         ids
-                     }) {
+    ids
+}) {
     return BaseAxios({
         url: `/taskGroup/delete`,
         method: "delete",
@@ -106,8 +106,8 @@ function deleteGroup({
  * @returns {axios}
  */
 function download({
-                      ids
-                  }) {
+    ids
+}) {
     return BaseAxios({
         url: `/taskGroup/download`,
         method: "get",
