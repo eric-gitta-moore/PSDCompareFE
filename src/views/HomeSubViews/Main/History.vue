@@ -46,8 +46,7 @@
         <el-table-column>
           <template slot-scope="scope">
             <el-checkbox
-              @change="GetIdsByCheck(scope.row.id)"
-              :checked="false"
+              @change="GetIdsByCheck(scope.row.id,$event)"
             ></el-checkbox>
           </template>
         </el-table-column>
@@ -172,16 +171,27 @@ export default {
       console.log(row);
     },
     deleteTask(Ids) {
-      let IdsArr = [1, 2, 3];
-      //获得勾选的id.
-      TaskGroup.deleteTaskByIds(IdsArr);
+          //获得勾选的id.
+      TaskGroup.deleteTaskByIds(Ids);
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    GetIdsByCheck(IsChecked) {
-      console.log("ddddddddddddddddddddddddddddddd", IsChecked);
+    GetIdsByCheck(Id,$event) {
+      console.log("ddddddddddddddddddddddddddddddd", Id);
+      console.log($event);  
+     // 如果需要使用到上下文this我们应该使用computed计算属性的或者一个method方法。
+
+       if($event){
+         this.IdsArr.push(Id)
+       }
+       else{
+         this.IdsArr= this.IdsArr.filter((x) => x !== Id);
+       }
+      console.log(this.IdsArr);
+
     },
+
   },
   mounted() {
     this.freshTable();
@@ -196,6 +206,7 @@ export default {
       total: 100,
       currentPage: 1,
       tableData: [],
+      IdsArr:[]
     };
   },
 };
