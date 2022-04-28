@@ -8,7 +8,7 @@
           <svg-icon icon-class="add" @click="openUploadDialog()"></svg-icon>
         </div>
       </el-col>
-      <el-col :span="19"> 
+      <el-col :span="19">
         <div class="right">
           <el-button type="primary" @click="downLoad">
             <svg-icon icon-class="show-eye" @click="changeLayout()"></svg-icon>
@@ -17,19 +17,28 @@
         </div>
       </el-col>
     </el-header>
+
+
     <el-main>
-      <el-table :data="tableData" style="width: 100%" @expand-change="load">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @expand-change="load"
+        @select="selsecTaskGroup"
+      >
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-table
               :data="props.row.orders"
+              v-for="(item, index) in props.row.orders"
+              :key="index"
               style="width: 100%"
               :show-header="false"
               @expand-change="load"
               @selection-change="handleSelectionChange"
             >
-              <el-table-column type="selection" width="10" :border="false">
-              </el-table-column>
+              <!-- <el-table-column type="selection" width="10" :border="false">
+              </el-table-column> -->
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
@@ -41,68 +50,109 @@
                   </el-image>
                 </template>
               </el-table-column>
+              <el-table-column width="40">
+                <template slot-scope="scope">
+                  <el-checkbox
+                    @change="handleDelete(scope.$index, scope.row)"
+                  ></el-checkbox>
+                </template>
+              </el-table-column>
+             
               <el-table-column
                 label="流水帐号"
                 prop="serialNumber"
-                width="210"
+                width="170"
               ></el-table-column>
               <el-table-column
                 label="名称"
                 prop="title"
-                width="120"
+                width="100"
               ></el-table-column>
               <el-table-column
                 label="对比费用"
                 prop="fee"
-                width="150"
+                width="100"
               ></el-table-column>
               <el-table-column
                 label="支付状态"
                 prop="status"
-                width="150"
+                width="100"
               ></el-table-column>
               <el-table-column
                 label="对比状态"
                 prop="`已完成`"
-                width="150"
+                width="100"
               ></el-table-column>
               <el-table-column
                 label="对比结果"
                 prop="result"
-                width="150"
+                width="100"
               ></el-table-column>
               <el-table-column
                 label="时间"
                 prop="createTime"
-                width="240"
+                width="190"
               ></el-table-column>
+              <el-table-column width="240px">
+                 <template #default="scope">
+            <div class="act" >
+              <svg-icon icon-class="show-eye"></svg-icon>
+              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+              <el-divider direction="vertical"></el-divider>
+              <svg-icon icon-class="download"></svg-icon>
+              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+              <el-divider direction="vertical"></el-divider>
+              <svg-icon icon-class="bin"></svg-icon>
+              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+            </div>
+          </template>
+              </el-table-column>
             </el-table>
           </template>
         </el-table-column>
-        <el-table-column label="流水帐号" width="240"></el-table-column>
-        <el-table-column label="名称" prop="name" width="120"></el-table-column>
-        <el-table-column label="对比费用" width="150"></el-table-column>
+
+        <el-table-column type="selection"  width="30"></el-table-column>
+        <el-table-column label="流水帐号" prop="serialNumber" width="200"></el-table-column>
+        <el-table-column label="名称" prop="name" width="100"></el-table-column>
+        <el-table-column label="对比费用" prop="fee" width="100"></el-table-column>
         <el-table-column
           label="支付状态"
           prop="payState"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="对比状态"
           prop="contrastState"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="对比结果"
           prop="contrastResult"
-          width="150"
+          width="100"
         ></el-table-column>
         <el-table-column
           label="时间"
           prop="createTime"
-          width="240"
+          width="190"
         ></el-table-column>
+
+        <el-table-column label="操作" width="200">
+          <template #default="scope">
+            <div class="act">
+              <svg-icon icon-class="show-eye"></svg-icon>
+              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+              <el-divider direction="vertical"></el-divider>
+              <svg-icon icon-class="download"></svg-icon>
+              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+              <el-divider direction="vertical"></el-divider>
+              <svg-icon icon-class="bin"></svg-icon>
+              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+            </div>
+          </template>
+        </el-table-column>
       </el-table>
+
+
       <!-- 分页 -->
       <el-pagination
         @current-change="handleCurrentChange"
@@ -117,12 +167,13 @@
 
 <script>
 import taskGroup from "../../../biz/Rbac/TaskGroup.js";
-
+import DownloadHelper from "../../../util/DownloadHelper";
 export default {
   name: "HomeCompareUp",
   data() {
     return {
       multipleSelection: [],
+      orders: [],
       srcList: [],
       tableData: [],
       pagination: {
@@ -131,6 +182,30 @@ export default {
     };
   },
   methods: {
+       deleteTask(Ids) {
+          //获得勾选的id.
+      taskGroup.deleteTaskByIds(Ids);
+    },
+     downLoadTask(row) {
+      DownloadHelper.downloadByAnchorTag({});
+      console.log(row);
+    },
+     //查看该文件
+    checkTask(rowKey) {
+      this.$router.push({
+        name: "Home",
+        params: {
+          id: rowKey, //请求回来的任务组id
+        },
+      });
+      console.log(rowKey);
+    },
+    handleDelete(index, val) {
+      console.log("你还勾选了我们要选的", index, val);
+    },
+    selsecTaskGroup(selection, row) {
+      console.log("你勾选了某个任务组", selection, row);
+    },
     changeLayout() {
       console.log("打开左右布局");
       this.$router.push({ name: "HomeCompareLeft" });
@@ -149,21 +224,20 @@ export default {
     handleSelectionChange(val) {
       console.log("val", val);
       this.multipleSelection = val;
+      this.orders.push(...this.multipleSelection);
     },
     loadImg(val) {
       this.srcList = [];
       console.log("加载了图片", val);
       this.srcList.push(val);
     },
-    downLoad(){
-      
-    },
+    downLoad() {},
   },
   mounted() {
     console.log("挂载了一个页面");
     taskGroup.getAll(1).then((res) => {
       console.log("响应成功返回的是：", res);
-      console.log("COMPARE",res.records);
+      console.log("COMPARE", res.records);
       this.tableData = res.records;
       this.pagination.total = res.total;
     });
@@ -199,6 +273,21 @@ export default {
       height: 500px;
       overflow: auto;
       overflow-x: hidden;
+      // position: relative;
+      // .expand {
+      //   position: relative;
+      //   // position: absolute;
+      //   thead {
+      //     position: absolute;
+      //     top: -30px;
+      //     left: 0px;
+      //     // display: none;
+      //     background: pink;
+      //   }
+      //   .el-checkbox {
+      //     display: inline-block;
+      //   }
+      // }
       .el-checkbox__inner {
         position: absolute;
         top: -9px;
@@ -230,6 +319,3 @@ export default {
   }
 }
 </style>
-
-
-
