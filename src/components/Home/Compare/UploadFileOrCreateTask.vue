@@ -4,6 +4,7 @@
       <div slot="content">
         <div class="tooltip">
           <div class="but file"><a href="#">上传文件</a></div>
+          <div class="but file" @click="upload()"><a href="#">上传文件</a></div>
           <div class="but task">
             <a href="#" @click="createTaskDialog">创建任务</a>
           </div>
@@ -19,9 +20,15 @@ export default {
   data() {
     return {};
   },
+  props:{
+    id:Number,
+  },
   methods: {
     createTaskDialog(){
       console.log("创建任务");
+    },
+    upload(){
+      console.log("上传文件哎");
     }
   },
 };
