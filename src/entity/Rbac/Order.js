@@ -56,7 +56,7 @@ class Order {
                     taskId,
                     result,
                     fileName,
-                    files
+                    files = []
                 }) {
         // if (files.length > 0 && !(files[0] instanceof File)) {
         //     throw new Error('files不是File类');

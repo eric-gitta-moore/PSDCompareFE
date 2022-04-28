@@ -19,10 +19,6 @@
 export default {
   name: "BaseDialog",
   props: {
-    dialogTitle: {
-      type: String,
-      required: true,
-    },
     height: {
       type: String,
       default: "auto",

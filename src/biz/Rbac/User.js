@@ -9,6 +9,7 @@
 import User from "../../entity/Rbac/User.js";
 import CommonResult from "../../entity/_Common/CommonResult.js";
 import UserLoginApi from "../../api/Rbac/UserLogin.js"
+import UserAPI from '@/api/Rbac/User'
 
 /**
  * @description 登录方法
@@ -19,53 +20,53 @@ import UserLoginApi from "../../api/Rbac/UserLogin.js"
  * @returns {User} 用户类
  */
 async function login({
-  username,
-  password,
-  captcha,
-  checkKey
-}) {
-  // ----------以下是测试数据----------
+                         username,
+                         password,
+                         captcha,
+                         checkKey
+                     }) {
+    // ----------以下是测试数据----------
 
-  const user = new User({
-    id: 'a',
-    token: 't-o-k-e-n',
-    username: 'tom',
-    realname: '张三',
-  });
+    const user = new User({
+        id: 'a',
+        token: 't-o-k-e-n',
+        username: 'tom',
+        realname: '张三',
+    });
 
-  return user;
+    return user;
 
-  // ----------以上是测试数据----------
+    // ----------以上是测试数据----------
 
-  // const _user = await UserLoginApi.login({
-  //   username,
-  //   password,
-  //   captcha,
-  //   checkKey
-  // });
-  //
-  // const user = new User({
-  //   id: _user.userInfo.id,
-  //   token: _user.token,
-  //   username: _user.userInfo.username,
-  //   realname: _user.userInfo.realname,
-  // });
-  //
-  // return user;
+    // const _user = await UserLoginApi.login({
+    //   username,
+    //   password,
+    //   captcha,
+    //   checkKey
+    // });
+    //
+    // const user = new User({
+    //   id: _user.userInfo.id,
+    //   token: _user.token,
+    //   username: _user.userInfo.username,
+    //   realname: _user.userInfo.realname,
+    // });
+    //
+    // return user;
 }
 
 /**
  * @description 退出登录方法
  */
 async function logout() {
-  // ----------以下是测试数据----------
+    // ----------以下是测试数据----------
 
-  return new CommonResult(true, '退出登录成功');
+    return new CommonResult(true, '退出登录成功');
 
-  // ----------以上是测试数据----------
+    // ----------以上是测试数据----------
 
-  // const _result = await UserLoginApi.logout();
-  // return new CommonResult(_result.success, _result.message);
+    // const _result = await UserLoginApi.logout();
+    // return new CommonResult(_result.success, _result.message);
 }
 
 /**
@@ -74,31 +75,31 @@ async function logout() {
  * @returns {Array.<User>} 用户列表
  */
 async function findByName(name = '') {
-  return [{
-      name: "李杰",
-      department: "战略支持部",
-      role: "系统管理员",
-      status: "正常",
+    return [{
+        name: "李杰",
+        department: "战略支持部",
+        role: "系统管理员",
+        status: "正常",
     },
-    {
-      name: "李杰",
-      department: "战略支持部",
-      role: "系统管理员",
-      status: "正常",
-    },
-    {
-      name: "李杰",
-      department: "战略支持部",
-      role: "系统管理员",
-      status: "正常",
-    },
-    {
-      name: "李杰",
-      department: "战略支持部",
-      role: "系统管理员",
-      status: "异常",
-    },
-  ]
+        {
+            name: "李杰",
+            department: "战略支持部",
+            role: "系统管理员",
+            status: "正常",
+        },
+        {
+            name: "李杰",
+            department: "战略支持部",
+            role: "系统管理员",
+            status: "正常",
+        },
+        {
+            name: "李杰",
+            department: "战略支持部",
+            role: "系统管理员",
+            status: "异常",
+        },
+    ]
 }
 
 /**
@@ -112,14 +113,14 @@ async function findByName(name = '') {
  * @returns {string} 添加成功后的用户的id
  */
 async function add({
-  name,
-  password,
-  realName,
-  telephone,
-  email,
-  orgId
-}) {
-  return 'a';
+                       name,
+                       password,
+                       realName,
+                       telephone,
+                       email,
+                       orgId
+                   }) {
+    return 'a';
 }
 
 /**
@@ -133,14 +134,14 @@ async function add({
  * @returns 成功修改的个数
  */
 async function update({
-  id,
-  name,
-  softDelete,
-  realName,
-  telephone,
-  email
-}) {
-  return 1;
+                          id,
+                          name,
+                          softDelete,
+                          realName,
+                          telephone,
+                          email
+                      }) {
+    return 1;
 }
 
 /**
@@ -149,7 +150,7 @@ async function update({
  * @returns 成功删除的个数
  */
 async function delById(id) {
-  return 1;
+    return 1;
 }
 
 /**
@@ -157,15 +158,25 @@ async function delById(id) {
  * @returns 用户数量
  */
 async function countAll() {
-  return 3;
+    return 3;
+}
+
+/**
+ * @description 获取用户信息
+ * @returns {Number}
+ */
+async function getUserInfo() {
+    let r = await UserAPI.getUser();
+    return Number(r.data?.data?.balance);
 }
 
 export default {
-  login,
-  logout,
-  findByName,
-  add,
-  update,
-  delById,
-  countAll
+    login,
+    logout,
+    findByName,
+    add,
+    update,
+    delById,
+    countAll,
+    getUserInfo,
 }
