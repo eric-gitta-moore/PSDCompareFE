@@ -34,6 +34,8 @@
         <el-button type="primary" @click="downLoadTaskByCheck">下载</el-button>
       </el-row>
     </el-header>
+
+
     <el-main class="main">
       <el-table
         :data="tableData"
@@ -92,18 +94,20 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span @click="checkTask(scope.row.id)">查看</span>
+              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span @click="downLoadTask(scope.row.id)">下载</span>
+              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span @click="deleteTask(scope.row)">删除</span>
+              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
             </div>
           </template>
         </el-table-column>
       </el-table>
     </el-main>
+
+
     <el-footer>
       <el-row class="pagination">
         <el-col :span="24">
@@ -173,6 +177,10 @@ export default {
     deleteTask(Ids) {
           //获得勾选的id.
       TaskGroup.deleteTaskByIds(Ids);
+      this.$notify({
+          title: '删除成功！',
+          type: 'success'
+        });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;

@@ -3,7 +3,9 @@
     <el-tooltip effect="light">
       <div slot="content">
         <div class="tooltip">
-          <div class="but file"><a href="#" @click="uploadFile">上传文件</a></div>
+          <div class="but file">
+            <a href="#" @click="uploadFile">上传文件</a>
+          </div>
           <div class="but task">
             <a href="#" @click="createTaskDialog">创建任务</a>
           </div>
@@ -20,8 +22,10 @@ export default {
   data() {
     return {};
   },
+  props: {
+    id: Number,
+  },
   methods: {
-
     createTaskDialog() {
       setTimeout(() => {
         this.$prompt("任务名:", "创建任务", {
@@ -52,7 +56,7 @@ export default {
           });
       }, 100);
     },
-    uploadFile(){
+    uploadFile() {
       this.$router.push({
         name:'UploadDialog'
       })
