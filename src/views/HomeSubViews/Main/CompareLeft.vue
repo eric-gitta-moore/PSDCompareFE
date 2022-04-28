@@ -12,7 +12,7 @@
                 icon-class="show-eye"
                 @click="changeLayout()"
               ></svg-icon>
-              <UploadFileOrCreateTask class="upload-file-or-create-task" />
+              <UploadFileOrCreateTask class="upload-file-or-create-task" ref="createTask" />
             </div>
           </el-col>
         </el-row>
@@ -251,6 +251,7 @@
 </template>
 
 <script>
+// import { EventBus } from "../event-bus.js";
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
 // import CompareUploadDialog from "./components/compare-upload-dialog.vue";
 // import ComparePayDialog from "./components/compare-pay-dialog.vue";
@@ -271,6 +272,7 @@ export default {
     return {
       index: 1,
       total: 0,
+      newName:"",
       IsUploadDialogShow: false,
       IsPayDialogShow: false,
       compareLogData: [], //数据条目
@@ -285,6 +287,11 @@ export default {
       CreateTaskDialogVisible: false, //创建任务框是否出现
     };
   },
+  // 路由传参
+  // beforeRouteEnter(to,from,next){
+  //   // console.log("路由传参",from);
+  //   next();
+  // },
   computed: {
     noMore() {
       return this.currentPage >= this.totalPages;
@@ -415,10 +422,14 @@ export default {
       console.log("用另一种布局方式显示文件,上下布局");
       this.$router.push({ name: "HomeCompareUp" });
     },
+    createTask(value){
+      console.log("收到任务名",value);
+    }
   },
   mounted() {
-    console.log("挂在页面完毕");
-    this.getAll(1);
+    // console.log("挂在页面完毕");
+    // this.getAll(1);
+    this.$refs.createTask.$on('createTask',this.createTask)
   },
 };
 </script>
