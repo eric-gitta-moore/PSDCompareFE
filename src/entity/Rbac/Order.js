@@ -74,6 +74,7 @@ class Order {
         this.resolution = resolution;
         this.result = result;
         this.fileName = fileName;
+        this.files = files;
     }
 }
 

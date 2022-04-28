@@ -16,12 +16,12 @@
 </template>
 
 <script>
-import { TIMEOUT } from "../../../const";
 export default {
   data() {
     return {};
   },
   methods: {
+// <<<<<<< HEAD
     createTaskDialog() {
       setTimeout(() => {
         this.$prompt("任务名:", "创建任务", {
@@ -55,18 +55,16 @@ export default {
       this.$router.push({
         name:'UploadDialog'
       })
+// =======
+//     createTaskDialog(){
+//       console.log("创建任务");
+// >>>>>>> 41f4abfdd292f6162da0f39f2933a73d0e6b6c73
     }
   },
 };
 </script>
 
 <style lang="scss">
-// .createTaskDialog{     //最外层框
-//   // border: 10px red solid;
-//   // .el-message-box__container{
-//   //   // font-size: 20px;
-//   // }
-// }
 .el-tooltip__popper.is-light {
   border: none !important;
   box-shadow: rgb(0 0 0 / 20%) 0px 1px 14px 0px;

@@ -40,14 +40,18 @@
         style="width: 100%"
         lazy:true
         row-key="id"
-        :tree-props="{ children: 'orders', hasChildren: 'hasChildren' }"
+        :tree-props="{ children: 'orders' }"
+        @selection-change="handleSelectionChange"
       >
-        >
-        <el-table-column
-          prop="orders[0].serialNumber"
-          label="流水编号"
-          width="200"
-        ></el-table-column>
+        <el-table-column>
+          <template slot-scope="scope">
+            <el-checkbox
+              @change="GetIdsByCheck(scope.row.id,$event)"
+            ></el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column prop="serialNumber" label="流水编号" width="210">
+        </el-table-column>
         <el-table-column
           prop="title"
           label="对比文件"
@@ -65,7 +69,7 @@
         </el-table-column>
         <el-table-column prop="status" label="支付状态" width="200">
           <template slot-scope="scope">
-            <span v-if="scope.row.status == 'complete'" class="dot"
+            <span v-if="scope.row.status == '未成功'" class="dot"
               ><span class="blue-dot"></span>已完成</span
             >
             <span v-else class="dot"><span class="red-dot"></span>未完成</span>
@@ -73,7 +77,7 @@
         </el-table-column>
         <el-table-column prop="status" label="支付结果" width="200">
           <template slot-scope="scope">
-            <span v-if="scope.row.status == 'complete'" style="color: #67c23a"
+            <span v-if="scope.row.status == '未成功'" style="color: #67c23a"
               >成功</span
             >
             <span v-else style="color: #f56760">错误</span>
@@ -81,7 +85,7 @@
         </el-table-column>
         <el-table-column prop="createTime" label="时间" width="200">
           <template slot-scope="scope">
-            {{ formatDatetime(scope.row.createTime) }}
+            {{ scope.row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200">
@@ -94,7 +98,7 @@
               <span @click="downLoadTask(scope.row.id)">下载</span>
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span @click="handleDelete(scope)">删除</span>
+              <span @click="deleteTask(scope.row)">删除</span>
             </div>
           </template>
         </el-table-column>
@@ -121,11 +125,11 @@
 </template>
 
 <script>
-import DateHelper from "../../../util/DateHelper";
 //引入下载文件的方法
 import DownloadHelper from "../../../util/DownloadHelper";
 //引入对返回数据处理的方法
-import TaskGroup from '../../../biz/Rbac/TaskGroup';
+import TaskGroup from "../../../biz/Rbac/TaskGroup";
+//引入删除数据和下载任务组的方法
 export default {
   name: "History",
   components: {},
@@ -150,59 +154,47 @@ export default {
       console.log(rowKey);
     },
     downLoadTaskByCheck() {},
-    handleDelete(index, row) {
-      // console.log(index, row);
-
-      console.log(index, row);
-    },
-    formatDatetime(datetime) {
-      console.log(datetime);
-      console.log(DateHelper.format(new Date(datetime),"yyyy-MM-dd hh:mm:ss"));
-      return DateHelper.format(new Date(datetime),"yyyy-MM-dd hh:mm:ss");
-    },
-
-    // 获取历史信息  api接口还没有挂载上去，不知道写在哪里，未在全局进行引用
-    // async getHistoryList({
-    //   pageSize,
-    //   currentPage,
-    //   keywords,
-    //   startTime,
-    //   endTime,
-    // }) {
-    //   let result = await TaskGroup.getGroups({
-    //     pageSize,
-    //     currentPage,
-    //     keywords,
-    //     startTime,
-    //     endTime,
-    //   });
-    //   console.log("tttttttttttt",result.data.records);
-    //   this.tableData = result.data.records;
-    //   this.total = parseInt(result.data.total);
-    //   return result;
-    // },
-
     freshTable() {
       let startT, endT;
       if (this.daterange) {
         startT = this.formatDatetime(this.daterange[0]);
         endT = this.formatDatetime(this.daterange[1]);
       }
-      TaskGroup(1).then(res=>{
-          this.tableData=res.records
-          console.log(this.tableData);
-    })
+      TaskGroup.getAll(1).then((res) => {
+        this.tableData = res.records;
+        console.log(this.tableData);
+      });
     },
     //点击下载单个或者多个任务组
     downLoadTask(row) {
       DownloadHelper.downloadByAnchorTag({});
       console.log(row);
     },
-    deleteTask() {},
+    deleteTask(Ids) {
+          //获得勾选的id.
+      TaskGroup.deleteTaskByIds(Ids);
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    GetIdsByCheck(Id,$event) {
+      console.log("ddddddddddddddddddddddddddddddd", Id);
+      console.log($event);  
+     // 如果需要使用到上下文this我们应该使用computed计算属性的或者一个method方法。
+
+       if($event){
+         this.IdsArr.push(Id)
+       }
+       else{
+         this.IdsArr= this.IdsArr.filter((x) => x !== Id);
+       }
+      console.log(this.IdsArr);
+
+    },
+
   },
   mounted() {
     this.freshTable();
-    
   },
   data() {
     return {
@@ -214,12 +206,13 @@ export default {
       total: 100,
       currentPage: 1,
       tableData: [],
+      IdsArr:[]
     };
   },
 };
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss' >
 $radius: 4px;
 .gray {
   color: #a8a8aa;
@@ -242,6 +235,14 @@ $radius: 4px;
 
     .main {
       background: white;
+      .el-table {
+        // position: absolute;
+        .el-checkbox__inner {
+          position: absolute;
+          top: 12px;
+          left: -20px;
+        }
+      }
     }
     .el-table {
       padding: 0 17px;
@@ -259,6 +260,12 @@ $radius: 4px;
 }
 .main {
   background: white;
+
+  .el-checkbox__inner {
+    position: absolute;
+    top: -5px;
+    left: 8px;
+  }
 }
 .el-table {
   padding: 0 17px;
