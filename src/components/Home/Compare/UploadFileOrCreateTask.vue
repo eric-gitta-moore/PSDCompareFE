@@ -4,6 +4,7 @@
       <div slot="content">
         <div class="tooltip">
           <div class="but file"><a href="#">上传文件</a></div>
+          <div class="but file"><a href="#" @click="uploadFile">上传文件</a></div>
           <div class="but task">
             <a href="#" @click="createTaskDialog">创建任务</a>
           </div>
@@ -50,6 +51,11 @@ export default {
           });
       }, 100);
     },
+    uploadFile(){
+      this.$router.push({
+        name:'UploadDialog'
+      })
+    }
   },
 };
 </script>
