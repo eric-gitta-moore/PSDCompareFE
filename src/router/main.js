@@ -41,4 +41,14 @@ export default [
             routeName: 'HomeHistory',
         }
     },
+    {
+      path: 'history',
+      name: 'UploadDialog',
+      component: () => import('@/components/Home/Compare/UploadDialog'),
+    },
+    {
+      path:'history',
+      name:'HomeCompareLeft',
+      component:()=> import('@/views/HomeSubViews/Main/CompareLeft.vue')
+    }
 ];

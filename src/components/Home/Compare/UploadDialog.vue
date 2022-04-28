@@ -1,9 +1,8 @@
 <template>
   <BaseDialog
-    dialog-title="title"
-    height="800px"
-    width="1014px"
-    class="upload-dialog"
+      height="800px"
+      width="1014px"
+      class="upload-dialog"
   >
     <template #header>
       <el-row class="header">

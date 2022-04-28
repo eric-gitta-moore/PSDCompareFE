@@ -9,10 +9,10 @@
           <el-col :span="12">
             <div class="right">
               <svg-icon
-                icon-class="show-eye"
-                @click="changeLayout()"
+                  icon-class="show-eye"
+                  @click="changeLayout()"
               ></svg-icon>
-              <UploadFileOrCreateTask class="upload-file-or-create-task" />
+              <UploadFileOrCreateTask class="upload-file-or-create-task"/>
             </div>
           </el-col>
         </el-row>
@@ -27,8 +27,8 @@
                     <el-col :span="16">
                       <span class="notice">名称：</span>
                       <span>{{
-                        val.title ? val.title : "对比记录" + val.id
-                      }}</span>
+                          val.title ? val.title : "对比记录" + val.id
+                        }}</span>
                     </el-col>
 
                     <el-col :span="4" class="compare">
@@ -56,9 +56,9 @@
                   <el-collapse>
                     <!-- collapse -->
                     <el-collapse-item
-                      :name="val.id"
-                      :title="isFoldArray[index]"
-                      @click.native="isShow(index)"
+                        :name="val.id"
+                        :title="isFoldArray[index]"
+                        @click.native="isShow(index)"
                     >
                       <!-- <template slot="title">
                         <span v-if="isFoldArray[index]"  @click.native="isShow(index)">收起</span>
@@ -90,25 +90,25 @@
                       <el-row class="time-line">
                         <el-col :span="2">
                           <svg-icon
-                            v-if="val.status == '已完成' || true"
-                            icon-class="play"
+                              v-if="val.status == '已完成' || true"
+                              icon-class="play"
                           ></svg-icon>
                           <svg-icon v-else icon-class="clock"></svg-icon>
                         </el-col>
                         <el-col :span="19">
                           <el-progress
-                            :percentage="
+                              :percentage="
                               val.status == '已完成' || true ? 100 : 0
                             "
-                            :stroke-width="10"
-                            :show-text="false"
+                              :stroke-width="10"
+                              :show-text="false"
                           >
                           </el-progress>
                         </el-col>
                         <el-col :span="3">
                           <div>
                             <span
-                              >{{
+                            >{{
                                 val.status == "已完成" || true ? 100 : 0
                               }}%</span
                             >
@@ -226,37 +226,26 @@
         </el-header>
         <el-main>
           <div class="right-main-img">
-            <img :src="compareImgUrl" alt="" />
+            <img :src="compareImgUrl" alt=""/>
           </div>
         </el-main>
       </el-container>
     </el-main>
-    <!-- <CompareUploadDialog
-      v-if="IsUploadDialogShow"
-      @on-close="closeUploadDialog"
-    ></CompareUploadDialog>
-    <ComparePayDialog
-      v-if="IsPayDialogShow"
-      @on-close="closePayDialog"
-      :IsPayDialogShow="this.IsPayDialogShow"
-      :work="this.workObj"
-    ></ComparePayDialog> -->
+
     <UploadDialog
-      v-if="IsUploadDialogShow"
-      @onClose="closeUploadDialog"
-      task-id="1"
-      @onComplete="uploadOnComplete"
+        v-if="IsUploadDialogShow"
+        @onClose="IsUploadDialogShow=false"
+        task-id="1"
+        @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
 </template>
 
 <script>
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
-// import CompareUploadDialog from "./components/compare-upload-dialog.vue";
-// import ComparePayDialog from "./components/compare-pay-dialog.vue";
-import { mapState } from "vuex";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 import task from "../../../biz/Rbac/TaskGroup.js";
+
 // import DateHelper from '../../util/DateHelper'
 
 export default {
@@ -264,15 +253,12 @@ export default {
   components: {
     UploadDialog,
     UploadFileOrCreateTask,
-    // CompareUploadDialog,
-    // ComparePayDialog,
   },
   data() {
     return {
       index: 1,
       total: 0,
       IsUploadDialogShow: false,
-      IsPayDialogShow: false,
       compareLogData: [], //数据条目
       currentPage: 0,
       pageSize: 3, //每页数据总数
@@ -303,23 +289,23 @@ export default {
     },
     //控制每一个折叠面板的文字
     isShow(index) {
-      if(this.isFoldArray[index] === "展开")  this.isFoldArray.splice(index,1,"收起");
-      else this.isFoldArray.splice(index,1,"展开");
+      if (this.isFoldArray[index] === "展开") this.isFoldArray.splice(index, 1, "收起");
+      else this.isFoldArray.splice(index, 1, "展开");
     },
     gotoCompareResult(compareId) {
-      console.log(compareId);
-      this.$store
-        .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-        .then(() => {
-          this.compareImgUrl = this.workObj.compareResultUrl;
-          if (this.workObj.compareResultUrl) {
-            this.$notify.success({
-              title: "成功",
-              message: "获取对比结果",
-            });
-          }
-          console.log(this.compareImgUrl);
-        });
+      console.log("你点击了对比", compareId);
+      // this.$store
+      //   .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+      //   .then(() => {
+      //     this.compareImgUrl = this.workObj.compareResultUrl;
+      //     if (this.workObj.compareResultUrl) {
+      //       this.$notify.success({
+      //         title: "成功",
+      //         message: "获取对比结果",
+      //       });
+      //     }
+      //     console.log(this.compareImgUrl);
+      //   });
     },
     openUploadDialog() {
       // this.IsUploadDialogShow = true;
@@ -330,8 +316,8 @@ export default {
     },
     getCompareResultUrl() {
       return !("workObj" in this) || !("compareResultUrl" in this.workObj)
-        ? `/public/images/251.png`
-        : this.workObj.compareResultUrl;
+          ? `/public/images/251.png`
+          : this.workObj.compareResultUrl;
     },
     // foldItem(id) {
     //   this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
@@ -391,29 +377,32 @@ export default {
     //     });
     // },
     downloadCompareResult(compareId) {
-      if (!this.workObj || !this.workObj.workCode) {
-        this.$store
-          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-          .then(() => {
-            this.compareImgUrl = this.workObj.compareResultUrl;
-            if (this.workObj.compareResultUrl) {
-              this.$notify.success({
-                title: "成功",
-                message: "获取对比结果",
-              });
-            }
-            console.log(this.compareImgUrl);
-            window.open(
-              this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
-            );
-          });
-      } else {
-        window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
-      }
+      task.download(compareId).then(res => {
+        console.log("点击对比之后返回的是", res);
+      });
+      // if (!this.workObj || !this.workObj.workCode) {
+      //   this.$store
+      //     .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+      //     .then(() => {
+      //       this.compareImgUrl = this.workObj.compareResultUrl;
+      //       if (this.workObj.compareResultUrl) {
+      //         this.$notify.success({
+      //           title: "成功",
+      //           message: "获取对比结果",
+      //         });
+      //       }
+      //       console.log(this.compareImgUrl);
+      //       window.open(
+      //         this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
+      //       );
+      //     });
+      // } else {
+      //   window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
+      // }
     },
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
-      this.$router.push({ name: "HomeCompareUp" });
+      this.$router.push({name: "HomeCompareUp"});
     },
   },
   mounted() {
@@ -427,10 +416,12 @@ export default {
 * {
   list-style: none;
 }
+
 .upload-file-or-create-task {
   display: inline-block;
   margin-left: 5px;
 }
+
 $radius: 4px;
 .loading span {
   display: inline-block;

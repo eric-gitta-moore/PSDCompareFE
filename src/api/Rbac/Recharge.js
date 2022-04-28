@@ -22,22 +22,15 @@ function getUser() {
  * GET /recharge/getQRCode
  * 接口ID：16431685
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431685
- * @param {string|null} size 二维码大小默认250px
- * @param {string} fee 充值金额
- * @returns {axios}
+ * @param {String|null} size 二维码大小默认250px
+ * @param {String|Number} fee 充值金额
+ * @returns {String}
  */
 function getQRCode({
                        size,
                        fee
                    }) {
-    return BaseAxios({
-        url: `/recharge/getQRCode`,
-        method: 'get',
-        params: {
-            size,
-            fee,
-        }
-    }).then(ResHelper);
+    return `http://buchitang.top:8081/recharge/getQRCode?size=${size}&fee=${fee}`;
 }
 
 /**
@@ -45,12 +38,12 @@ function getQRCode({
  * GET /recharge/topay
  * 接口ID：16431705
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431705
- * @param {string} id 订单id
+ * @param {String} id 订单id
  * @returns {axios}
  */
 function topay({id}) {
     return BaseAxios({
-        url: `/recharge/getQRCode`,
+        url: `/recharge/topay`,
         method: 'get',
         params: {
             id,
