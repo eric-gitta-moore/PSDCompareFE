@@ -41,4 +41,9 @@ export default [
             routeName: 'HomeHistory',
         }
     },
+    {
+      path: 'history',
+      name: 'UploadDialog',
+      component: () => import('../components/Home/Compare/UploadDialog'),
+  },
 ];

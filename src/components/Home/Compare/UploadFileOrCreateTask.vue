@@ -3,7 +3,9 @@
     <el-tooltip effect="light">
       <div slot="content">
         <div class="tooltip">
-          <div class="but file"><a href="#">上传文件</a></div>
+          <div class="but file">
+            <a href="#" @click="uploadFile">上传文件</a>
+          </div>
           <div class="but task">
             <a href="#" @click="createTaskDialog">创建任务</a>
           </div>
@@ -19,10 +21,44 @@ export default {
   data() {
     return {};
   },
+  props: {
+    id: Number,
+  },
   methods: {
-    createTaskDialog(){
-      console.log("创建任务");
-    }
+    createTaskDialog() {
+      setTimeout(() => {
+        this.$prompt("任务名:", "创建任务", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputErrorMessage: "任务名格式不正确",
+          customClass: "createTaskDialog",
+        })
+          .then(({ value }) => {
+            if (value === null || value.trim() === "") {
+              this.$message({
+                type: "error",
+                message: "任务名不能为空！",
+              });
+              return;
+            }
+            this.$message({
+              type: "success",
+              message: "你的任务是: " + value,
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "取消输入",
+            });
+          });
+      }, 100);
+    },
+    uploadFile() {
+      this.$router.push({
+        name: "UploadDialog",
+      });
+    },
   },
 };
 </script>

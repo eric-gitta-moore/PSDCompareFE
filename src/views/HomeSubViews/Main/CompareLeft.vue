@@ -307,19 +307,19 @@ export default {
       else this.isFoldArray.splice(index,1,"展开");
     },
     gotoCompareResult(compareId) {
-      console.log(compareId);
-      this.$store
-        .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-        .then(() => {
-          this.compareImgUrl = this.workObj.compareResultUrl;
-          if (this.workObj.compareResultUrl) {
-            this.$notify.success({
-              title: "成功",
-              message: "获取对比结果",
-            });
-          }
-          console.log(this.compareImgUrl);
-        });
+      console.log("你点击了对比",compareId);
+      // this.$store
+      //   .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+      //   .then(() => {
+      //     this.compareImgUrl = this.workObj.compareResultUrl;
+      //     if (this.workObj.compareResultUrl) {
+      //       this.$notify.success({
+      //         title: "成功",
+      //         message: "获取对比结果",
+      //       });
+      //     }
+      //     console.log(this.compareImgUrl);
+      //   });
     },
     openUploadDialog() {
       // this.IsUploadDialogShow = true;
@@ -391,25 +391,28 @@ export default {
     //     });
     // },
     downloadCompareResult(compareId) {
-      if (!this.workObj || !this.workObj.workCode) {
-        this.$store
-          .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-          .then(() => {
-            this.compareImgUrl = this.workObj.compareResultUrl;
-            if (this.workObj.compareResultUrl) {
-              this.$notify.success({
-                title: "成功",
-                message: "获取对比结果",
-              });
-            }
-            console.log(this.compareImgUrl);
-            window.open(
-              this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
-            );
-          });
-      } else {
-        window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
-      }
+      task.download(compareId).then(res=>{
+        console.log("点击对比之后返回的是",res);
+      });
+      // if (!this.workObj || !this.workObj.workCode) {
+      //   this.$store
+      //     .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
+      //     .then(() => {
+      //       this.compareImgUrl = this.workObj.compareResultUrl;
+      //       if (this.workObj.compareResultUrl) {
+      //         this.$notify.success({
+      //           title: "成功",
+      //           message: "获取对比结果",
+      //         });
+      //       }
+      //       console.log(this.compareImgUrl);
+      //       window.open(
+      //         this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
+      //       );
+      //     });
+      // } else {
+      //   window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
+      // }
     },
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");

@@ -182,10 +182,16 @@ export default {
     };
   },
   methods: {
+    
        deleteTask(Ids) {
           //获得勾选的id.
       taskGroup.deleteTaskByIds(Ids);
+      this.$notify({
+          title: '删除成功！',
+          type: 'success'
+        });
     },
+
      downLoadTask(row) {
       DownloadHelper.downloadByAnchorTag({});
       console.log(row);
