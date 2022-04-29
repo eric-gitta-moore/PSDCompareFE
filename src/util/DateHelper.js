@@ -18,21 +18,21 @@
  *  (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
  *  (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
  */
-function format(date, fmt) {
-  var o = {
-    'M+': date.getMonth() + 1, //月份
-    'd+': date.getDate(), //日
-    'h+': date.getHours(), //小时
-    'm+': date.getMinutes(), //分
-    's+': date.getSeconds(), //秒
-    'q+': Math.floor((date.getMonth() + 3) / 3), //季度
-    S: date.getMilliseconds() //毫秒
-  }
-  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
-  for (var k in o)
-    if (new RegExp('(' + k + ')').test(fmt))
-      fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
-  return fmt
+function format(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
+    var o = {
+        'M+': date.getMonth() + 1, //月份
+        'd+': date.getDate(), //日
+        'h+': date.getHours(), //小时
+        'm+': date.getMinutes(), //分
+        's+': date.getSeconds(), //秒
+        'q+': Math.floor((date.getMonth() + 3) / 3), //季度
+        S: date.getMilliseconds() //毫秒
+    }
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
+    for (var k in o)
+        if (new RegExp('(' + k + ')').test(fmt))
+            fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
+    return fmt
 }
 
 /**
@@ -57,30 +57,30 @@ function format(date, fmt) {
  * @returns {string} 时间间隔，返回：如 1天/3分钟/2秒；如果endTime小于startTime，时间间隔将会是负数
  */
 function formatDateGap(startTime, endTime, pointLength = 0) {
-  const units = [{
-    unit: "毫秒",
-    multiple: 1000
-  }, {
-    unit: "秒",
-    multiple: 60
-  }, {
-    unit: "分钟",
-    multiple: 60
-  }, {
-    unit: "小时",
-    multiple: 24
-  }, {
-    unit: "天"
-  }];
-  let firstUnit = units[0].unit;
-  let gap = endTime - startTime;
-  if (gap === 0) return 0;
-  
-  let item;
-  while ((item = units.shift()) && item.multiple && gap > item.multiple) {
-    gap = gap / item.multiple;
-  }
-  return (item.unit === firstUnit ? gap : gap.toFixed(pointLength)) + item.unit;
+    const units = [{
+        unit: "毫秒",
+        multiple: 1000
+    }, {
+        unit: "秒",
+        multiple: 60
+    }, {
+        unit: "分钟",
+        multiple: 60
+    }, {
+        unit: "小时",
+        multiple: 24
+    }, {
+        unit: "天"
+    }];
+    let firstUnit = units[0].unit;
+    let gap = endTime - startTime;
+    if (gap === 0) return 0;
+
+    let item;
+    while ((item = units.shift()) && item.multiple && gap > item.multiple) {
+        gap = gap / item.multiple;
+    }
+    return (item.unit === firstUnit ? gap : gap.toFixed(pointLength)) + item.unit;
 }
 
 /**
@@ -89,9 +89,9 @@ function formatDateGap(startTime, endTime, pointLength = 0) {
  * @param {Number} month 月份
  */
 function getDaysInOneMonth(year, month) {
-  // month = parseInt(month, 10);
-  var d = new Date(year, month, 0)
-  return d.getDate()
+    // month = parseInt(month, 10);
+    var d = new Date(year, month, 0)
+    return d.getDate()
 }
 
 /**
@@ -99,11 +99,11 @@ function getDaysInOneMonth(year, month) {
  * @param {Number} time 时间戳
  */
 function timeRules(time) {
-  if (parseInt(time) && time.toString().length === 13) {
-    return true
-  } else {
-    return false
-  }
+    if (parseInt(time) && time.toString().length === 13) {
+        return true
+    } else {
+        return false
+    }
 }
 
 /**
@@ -111,7 +111,7 @@ function timeRules(time) {
  * @param {Number} time 时间戳
  */
 function setHour0(time) {
-  return new Date(new Date(time).setHours(0, 0, 0, 0)).getTime()
+    return new Date(new Date(time).setHours(0, 0, 0, 0)).getTime()
 }
 
 /**
@@ -119,15 +119,15 @@ function setHour0(time) {
  * @param {Number} time 时间戳
  */
 function setHour24(time) {
-  return new Date(new Date(time).setHours(23, 59, 59, 999)).getTime()
+    return new Date(new Date(time).setHours(23, 59, 59, 999)).getTime()
 }
 
 export default {
-  format,
-  // getGapDate,
-  formatDateGap,
-  getDaysInOneMonth,
-  timeRules,
-  setHour0,
-  setHour24
+    format,
+    // getGapDate,
+    formatDateGap,
+    getDaysInOneMonth,
+    timeRules,
+    setHour0,
+    setHour24
 }

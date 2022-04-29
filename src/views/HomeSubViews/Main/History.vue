@@ -144,6 +144,7 @@
 <script>
 //引入对返回数据处理的方法
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
+import DateHelper from "@/util/DateHelper";
 
 export default {
   name: "History",
@@ -172,8 +173,8 @@ export default {
     freshTable() {
       let startT, endT;
       if (this.daterange) {
-        startT = this.formatDatetime(this.daterange[0]);
-        endT = this.formatDatetime(this.daterange[1]);
+        startT = DateHelper.format(new Date(this.daterange[0]));
+        endT = DateHelper.format(new Date(this.daterange[1]));
       }
       TaskGroup.getAll(this.currentPage).then((res) => {
         console.log(res.records);
