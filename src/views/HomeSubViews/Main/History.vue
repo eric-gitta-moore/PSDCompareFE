@@ -7,10 +7,10 @@
         </el-col>
         <el-col :span="3">
           <el-input
-            placeholder="请输入内容"
-            v-model="searchText"
-            @change="freshTable"
-            clearable
+              placeholder="请输入内容"
+              v-model="searchText"
+              @change="freshTable"
+              clearable
           ></el-input>
         </el-col>
         <el-col :span="2">
@@ -18,13 +18,13 @@
         </el-col>
         <el-col :span="5">
           <el-date-picker
-            v-model="daterange"
-            type="daterange"
-            unlink-panels
-            range-separator="~"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            @change="freshTable"
+              v-model="daterange"
+              type="daterange"
+              unlink-panels
+              range-separator="~"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              @change="freshTable"
           >
           </el-date-picker>
         </el-col>
@@ -38,38 +38,38 @@
 
     <el-main class="main">
       <el-table
-        :data="tableData"
-        style="width: 100%"
-        lazy:true
-        row-key="id"
-        :tree-props="{ children: 'orders' }"
-        @selection-change="handleSelectionChange"
-        :header-row-style="{
+          :data="tableData"
+          style="width: 100%"
+          lazy:true
+          row-key="id"
+          :tree-props="{ children: 'orders' }"
+          @selection-change="handleSelectionChange"
+          :header-row-style="{
           background:'RGB(246,248,250)'
         }"
-        :header-cell-style="{
+          :header-cell-style="{
           background:'RGB(246,248,250)'
         }"
       >
         <el-table-column>
           <template slot-scope="scope">
             <el-checkbox
-              @change="GetIdsByCheck(scope.row.id, $event)"
+                @change="GetIdsByCheck(scope.row.id, $event)"
             ></el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="serialNumber" label="流水编号/任务ID" width="210">
-        <template slot-scope="scope">
-            {{ scope.row.serialNumber !==undefined ? scope.row.serialNumber : scope.row.id}}
+          <template slot-scope="scope">
+            {{ scope.row.serialNumber !== undefined ? scope.row.serialNumber : scope.row.id }}
           </template>
         </el-table-column>
         <el-table-column
-          prop="title"
-          label="名称"
-          width="200"
+            prop="title"
+            label="名称"
+            width="200"
         >
-     <template slot-scope="scope">
-            {{ scope.row.serialNumber !==undefined ? scope.row.title : scope.row.name}}
+          <template slot-scope="scope">
+            {{ scope.row.serialNumber !== undefined ? scope.row.title : scope.row.name }}
           </template>
         </el-table-column>
         <el-table-column prop="fee" label="对比费用" width="150">
@@ -77,7 +77,7 @@
         <el-table-column prop="status" label="支付状态" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status" class="dot"
-              ><span class="blue-dot"></span>已支付</span
+            ><span class="blue-dot"></span>已支付</span
             >
             <span v-else class="dot"><span class="red-dot"></span>未支付</span>
           </template>
@@ -85,7 +85,7 @@
         <el-table-column prop="status" label="对比状态" width="180">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" class="dot"
-              ><span class="blue-dot"></span>已完成</span
+            ><span class="blue-dot"></span>已完成</span
             >
             <span v-else class="dot"><span class="red-dot"></span>未完成</span>
           </template>
@@ -93,7 +93,7 @@
         <el-table-column prop="status" label="支付结果" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" style="color: #67c23a"
-              >成功</span
+            >成功</span
             >
             <span v-else style="color: #f56760">错误</span>
           </template>
@@ -125,14 +125,14 @@
       <el-row class="pagination">
         <el-col :span="24">
           <el-pagination
-            :page-sizes="pageSizes"
-            :page-size.sync="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @current-change="freshTable"
-            @size-change="freshTable"
-            :current-page.sync="currentPage"
-            background
+              :page-sizes="pageSizes"
+              :page-size.sync="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+              @current-change="freshTable"
+              @size-change="freshTable"
+              :current-page.sync="currentPage"
+              background
           >
           </el-pagination>
         </el-col>
@@ -144,6 +144,7 @@
 <script>
 //引入对返回数据处理的方法
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
+
 export default {
   name: "History",
   components: {},
@@ -187,7 +188,7 @@ export default {
     //批量下载或删除任务组
     deleteTask() {
       TaskGroup.deleteTaskByIds(this.IdsArr);
-       this.$message.success('删除成功')
+      this.$message.success('删除成功')
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -226,29 +227,36 @@ $radius: 4px;
 .gray {
   color: #a8a8aa;
 }
+
 .main-container {
   height: 100%;
 
   padding: 18px;
   box-sizing: border-box;
   background: #f1f5f9;
+
   .el-header {
-       padding-top: 20px;
-          background: white;
+    padding-top: 20px;
+    background: white;
     border-top-left-radius: $radius;
     border-top-right-radius: $radius;
+
     .el-row {
       display: flex;
-      justify-content:flex-start ;
+      justify-content: flex-start;
       position: relative;
-      .styleLoad{
-          position: absolute;
-          right: 20px;
+
+      .styleLoad {
+        position: absolute;
+        right: 20px;
       }
+
       align-items: center;
     }
+
     .main {
       background: white;
+
       .el-table {
         // position: absolute;
         .el-checkbox__inner {
@@ -258,12 +266,15 @@ $radius: 4px;
         }
       }
     }
+
     .el-table {
       padding: 0 17px;
+
       .act {
         display: flex;
         align-items: center;
         line-height: 100%;
+
         .svg-icon {
           width: 1.3em;
           height: 1.3em;
@@ -271,58 +282,67 @@ $radius: 4px;
       }
     }
   }
+
   .main {
-  background: white;
+    background: white;
 
-  .el-checkbox__inner {
-    position: absolute;
-    top: -5px;
-    left: 8px;
-  }
-}
-.el-table {
-  padding: 0 17px;
-  .act {
-    display: flex;
-    align-items: center;
-    line-height: 100%;
-    .svg-icon {
-      width: 1.3em;
-      height: 1.3em;
+    .el-checkbox__inner {
+      position: absolute;
+      top: -5px;
+      left: 8px;
     }
   }
-}
 
-.dot {
-  position: relative;
-  .red-dot,
-  .blue-dot {
-    position: absolute;
-    top: 50%;
-    left: -20%;
-    width: 5px;
-    height: 5px;
-    display: inline-block;
-    border-radius: 50%;
-    transform: translateY(-25%);
-  }
-  .red-dot {
-    background: #f56760;
-  }
-  .blue-dot {
-    background: #347eff;
-  }
-}
-.el-footer {
-  background: white;
-  border-bottom-left-radius: $radius;
-  border-bottom-right-radius: $radius;
-  .pagination {
-    .el-col {
-      text-align: right;
+  .el-table {
+    padding: 0;
+
+    .act {
+      display: flex;
+      align-items: center;
+      line-height: 100%;
+
+      .svg-icon {
+        width: 1.3em;
+        height: 1.3em;
+      }
     }
   }
-}
+
+  .dot {
+    position: relative;
+
+    .red-dot,
+    .blue-dot {
+      position: absolute;
+      top: 50%;
+      left: -20%;
+      width: 5px;
+      height: 5px;
+      display: inline-block;
+      border-radius: 50%;
+      transform: translateY(-25%);
+    }
+
+    .red-dot {
+      background: #f56760;
+    }
+
+    .blue-dot {
+      background: #347eff;
+    }
+  }
+
+  .el-footer {
+    background: white;
+    border-bottom-left-radius: $radius;
+    border-bottom-right-radius: $radius;
+
+    .pagination {
+      .el-col {
+        text-align: right;
+      }
+    }
+  }
 }
 
 </style>
