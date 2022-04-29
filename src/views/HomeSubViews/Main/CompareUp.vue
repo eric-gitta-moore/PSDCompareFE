@@ -6,30 +6,35 @@
         <div class="left-panel-right">
           <a @click="changeLayout()" title="切换布局">
             <svg-icon
-                class-name="svg-transform"
-                icon-class="transform"
+              class-name="svg-transform"
+              icon-class="transform"
             ></svg-icon>
           </a>
-          <UploadFileOrCreateTask class="upload-file-or-create-task" @on-click-upload='handleOnClickUpload'/>
+          <UploadFileOrCreateTask
+            class="upload-file-or-create-task"
+            @on-click-upload="handleOnClickUpload"
+          />
         </div>
       </div>
       <div class="container-header-right">
-        <el-button type="primary" @click="downLoad" icon="el-icon-download">下载</el-button>
+        <el-button type="primary" @click="downLoad" icon="el-icon-download"
+          >下载</el-button
+        >
       </div>
     </el-header>
 
-
     <el-main class="compare-up-el-main">
       <el-table
-          :data="tableData"
-          style="width: 100%"
-          @expand-change="load"
-          @select="selsecTaskGroup"
-          :header-row-style="{
-          background:'RGB(246,248,250)'
+        :data="tableData"
+        style="width: 100%"
+        @expand-change="expand"
+        @select="selsecTaskGroup"
+        :header-row-style="{
+          background: 'RGB(246,248,250)',
         }"
-          :header-cell-style="{
-          background:'RGB(246,248,250)'
+        :row-class-name="tableCellClassName"
+        :header-cell-style="{
+          background: 'RGB(246,248,250)',
         }"
       >
         <el-table-column type="expand">
@@ -41,35 +46,29 @@
               @selection-change="
                 (selection) => handleSelectionChange(selection, props.row.index)
               "
+              :row-class-name="tableCellClassName"
+              @select="
+                (selection, row) => userSelect(selection, row, props.row.index)
+              "
               ref="multipleTable"
             >
-              <!-- <el-table-column type="selection" width="10" :border="false" class="select">
-              </el-table-column> -->
               <el-table-column type="selection" width="10" :border="false">
               </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
-                      style="width: 100%; height: 300px"
-                      :src="props.row.url"
-                      @load="loadImg(props.row.url)"
-                      :preview-src-list="srcList"
+                    style="width: 100%; height: 300px"
+                    :src="props.row.url"
+                    @load="loadImg(props.row.url)"
+                    :preview-src-list="srcList"
                   >
                   </el-image>
                 </template>
               </el-table-column>
-              <!-- <el-table-column width="40">
-                <template slot-scope="scope">
-                  <el-checkbox
-                    v-model="isChecked[props.$index]"
-                    @change="select(scope.$index, scope.row)"
-                  ></el-checkbox>
-                </template>
-              </el-table-column> -->
               <el-table-column
-                  label="流水帐号"
-                  prop="serialNumber"
-                  width="170"
+                label="流水帐号"
+                prop="serialNumber"
+                width="170"
               ></el-table-column>
               <el-table-column
                 label="名称"
@@ -77,41 +76,51 @@
                 width="120"
               ></el-table-column>
               <el-table-column
-                  label="对比费用"
-                  prop="fee"
-                  width="100"
+                label="对比费用"
+                prop="fee"
+                width="100"
               ></el-table-column>
               <el-table-column
-                  label="支付状态"
-                  prop="status"
-                  width="100"
+                label="支付状态"
+                prop="status"
+                width="100"
               ></el-table-column>
               <el-table-column
-                  label="对比状态"
-                  prop="`已完成`"
-                  width="100"
+                label="对比状态"
+                prop="`已完成`"
+                width="100"
               ></el-table-column>
               <el-table-column
-                  label="对比结果"
-                  prop="result"
-                  width="100"
+                label="对比结果"
+                prop="result"
+                width="100"
               ></el-table-column>
               <el-table-column
-                  label="时间"
-                  prop="createTime"
-                  width="190"
+                label="时间"
+                prop="createTime"
+                width="190"
               ></el-table-column>
               <el-table-column width="240px">
                 <template #default="scope">
                   <div class="act">
                     <svg-icon icon-class="show-eye"></svg-icon>
-                    <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+                    <span
+                      style="cursor: pointer"
+                      @click="checkTask(scope.row.id)"
+                      >查看</span
+                    >
                     <el-divider direction="vertical"></el-divider>
                     <svg-icon icon-class="download"></svg-icon>
-                    <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+                    <span
+                      style="cursor: pointer"
+                      @click="downLoadTask(scope.row.id)"
+                      >下载</span
+                    >
                     <el-divider direction="vertical"></el-divider>
                     <svg-icon icon-class="bin"></svg-icon>
-                    <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+                    <span style="cursor: pointer" @click="deleteTask(scope.row)"
+                      >删除</span
+                    >
                   </div>
                 </template>
               </el-table-column>
@@ -122,55 +131,64 @@
         <el-table-column type="selection" width="30"></el-table-column>
         <el-table-column label="流水编号/任务ID" width="210"></el-table-column>
         <el-table-column label="名称" prop="name"></el-table-column>
-        <el-table-column label="对比费用" prop="fee" width="150"></el-table-column>
         <el-table-column
-            label="支付状态"
-            prop="payState"
-            width="150"
+          label="对比费用"
+          prop="fee"
+          width="150"
         ></el-table-column>
         <el-table-column
-            label="对比状态"
-            prop="contrastState"
-            width="180"
+          label="支付状态"
+          prop="payState"
+          width="150"
         ></el-table-column>
         <el-table-column
-            label="对比结果"
-            prop="contrastResult"
-            width="150"
+          label="对比状态"
+          prop="contrastState"
+          width="180"
         ></el-table-column>
         <el-table-column
-            label="时间"
-            prop="createTime"
-            width="200"
+          label="对比结果"
+          prop="contrastResult"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          label="时间"
+          prop="createTime"
+          width="200"
         ></el-table-column>
 
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+              <span style="cursor: pointer" @click="checkTask(scope.row.id)"
+                >查看</span
+              >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+              <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
+                >下载</span
+              >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+              <span style="cursor: pointer" @click="deleteTask(scope.row)"
+                >删除</span
+              >
             </div>
           </template>
         </el-table-column>
       </el-table>
-
 
       <!-- 分页 -->
       <el-footer>
         <el-row class="pagination">
           <el-col :span="24">
             <el-pagination
-                @current-change="handleCurrentChange"
-                background
-                layout="total, prev,sizes,pager, next, jumper"
-                :total="pagination.total"
-                :page-sizes="pageSizes"
+              @current-change="handleCurrentChange"
+              background
+              layout="total, prev,sizes,pager, next, jumper"
+              :total="pagination.total"
+              :page-sizes="pageSizes"
             >
             </el-pagination>
           </el-col>
@@ -179,10 +197,10 @@
     </el-main>
 
     <UploadDialog
-        v-if="IsUploadDialogShow"
-        @onClose="IsUploadDialogShow=false"
-        task-id="1"
-        @onComplete="uploadOnComplete"
+      v-if="IsUploadDialogShow"
+      @onClose="IsUploadDialogShow = false"
+      task-id="1"
+      @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
 </template>
@@ -201,10 +219,13 @@ export default {
   },
   data() {
     return {
+      /**
+       * @description 判断订单是否能被选中
+       */
+      isChecked: {},
       IsUploadDialogShow: false,
-      isChecked: [false],
       multipleSelection: [],
-      orders: [],
+      ordersId: [],
       srcList: [],
       tableData: [],
       pageSizes: [10, 20, 30, 40],
@@ -217,6 +238,16 @@ export default {
     /**
      * @description 上传窗口上传完成
      */
+    expand(row, val) {
+      if (this.isChecked[row.index].item) {
+        this.$nextTick(() => {
+          if (this.$refs.multipleTable) {
+            this.$refs.multipleTable.toggleAllSelection();
+            console.log("this.$refs.multipleTable", this.$refs.multipleTable);
+          }
+        });
+      }
+    },
     uploadOnComplete() {
       this.IsUploadDialogShow = false;
       // TODO:刷新页面，重新加载数据
@@ -231,8 +262,8 @@ export default {
       //获得勾选的id.
       taskGroup.deleteTaskByIds(Ids);
       this.$notify({
-        title: '删除成功！',
-        type: 'success'
+        title: "删除成功！",
+        type: "success",
       });
     },
 
@@ -259,27 +290,42 @@ export default {
       // row.itemDetailRefKey = `items${rowIndex}`
     },
     selsecTaskGroup(selecttion, row) {
-      debugger;
-      console.log(this.$refs.multipleTable, "你打开了某一个任务组",row.index);
-      this.$refs.multipleTable.toggleAllSelection();
+      // 如果选中
+      if (!this.isChecked[row.index].item) {
+        let a = this.isChecked[row.index];
+        a.item = true;
+        this.$set(this.isChecked, row.index, a);
+        // 如果展开
+        if (this.$refs.multipleTable) {
+          this.$refs.multipleTable.toggleAllSelection();
+        }
+      } else {
+        let a = this.isChecked[row.index];
+        a.item = false;
+        this.$set(this.isChecked, row.index, a);
+      }
     },
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({name: "HomeCompareLeft"});
+      this.$router.push({ name: "HomeCompareLeft" });
     },
     getAll(val) {
       taskGroup.getAll(val).then((res) => {
-        console.log("响应成功返回的是：", res.records);
-        // res.records.forEach(element => {
-
-        // });
-        // for (var index in res.records) {
-        //   for(var index1 in res.records.orders){
-
-        //   }
-        // }
+        debugger;
+        console.log("响应成功返回的是:", res.records);
         this.tableData = res.records;
         this.pagination.total = res.total;
+        let checkTaskTop = {};
+        res.records.forEach((ele, index) => {
+          let checkOrders = {};
+          checkOrders.item = false;
+          ele.orders.forEach((ele, index) => {
+            checkOrders[index] = false;
+          });
+          checkTaskTop[index] = checkOrders;
+        });
+        this.isChecked = checkTaskTop;
+        console.log("checkTaskTop[index] = checkOrders;", this.isChecked);
       });
     },
     // 分页
@@ -287,20 +333,26 @@ export default {
       this.getAll(val);
       console.log(`当前页: ${val}`);
     },
-    // 勾选框
+    // 勾选状态改变
     handleSelectionChange(val, index) {
-      // this.$nextTick(() => {
-      //   console.log("该订单对应的任务组是？：", this.$refs.multipleTable);
-      // });
       console.log("某个order被勾选", val, index);
+      let ids = val.map((ele) => {
+        console.log("id", ele.id);
+        return ele.id;
+      });
+      this.ordersId.push(...ids);
+    },
+    // 用户手动更改状态
+    userSelect(arr, row, index) {
+      console.log("手动勾选了某个订单", this.isChecked[index][row.index]);
+      this.isChecked[index][row.index] = true;
     },
     loadImg(val) {
       this.srcList = [];
       console.log("加载了图片", val);
       this.srcList.push(val);
     },
-    downLoad() {
-    },
+    downLoad() {},
   },
   mounted() {
     console.log("挂载了一个页面");
@@ -312,7 +364,6 @@ export default {
 <style lang="scss">
 $radius: 4px;
 .compare-up-container-main {
-
   height: 100%;
   width: 100%;
   align-items: stretch;
@@ -321,13 +372,11 @@ $radius: 4px;
   background: #f1f5f9;
 
   & > .container-el-header {
-
     font-size: 16px;
 
     background: #fff;
     display: flex;
     justify-content: space-between;
-
 
     .container-header-left {
       display: flex;
@@ -391,21 +440,19 @@ $radius: 4px;
   & > .compare-up-el-main {
     background: #fff;
 
-
     .el-footer {
       background: white;
       border-bottom-left-radius: $radius;
       border-bottom-right-radius: $radius;
 
       .pagination {
-
         .el-col {
           text-align: right;
         }
 
         position: absolute;
         right: 60px;
-        bottom: 50px
+        bottom: 50px;
       }
     }
 
@@ -413,6 +460,5 @@ $radius: 4px;
       padding: 0 0px 0px 20px;
     }
   }
-
 }
 </style>
