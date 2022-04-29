@@ -6,9 +6,8 @@
           <el-col :span="16">
             <div class="left">
               <span>对比记录</span>
-              <span class="gray" style="marginleft: 10px">{{
-                compareLogData.name
-              }}</span>
+              <span class="gray" :style="{'margin-left': '10px','font-size':'14px'}">
+                对比组: {{ compareLogData.name }}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -33,9 +32,7 @@
                   <el-row>
                     <el-col :span="16">
                       <span class="notice">名称：</span>
-                      <span>{{
-                          val.title ? val.title : "对比记录" + val.id
-                        }}</span>
+                      <span>{{ val.title ? val.title : "对比记录" + val.id }}</span>
                     </el-col>
                     <el-col :span="4" class="compare">
                       <a @click="gotoCompareResult(index)">对比</a>
@@ -131,33 +128,68 @@
         <el-header height="auto">
           <el-row class="main-right-header">
             <el-col :span="4">
-              <span class="gray">图纸名称：</span>
-              <span>{{ compareWorkName }}</span>
+              <el-tooltip placement="top-start" :content="compareResultReferenceFileName">
+                <template>
+                  <div>
+                    <span class="gray">参考图纸名称: </span>
+                    <span>{{ compareResultReferenceFileName }}</span>
+                  </div>
+                </template>
+              </el-tooltip>
             </el-col>
-            <el-col :span="5">
-              <span class="gray">图纸大小：</span>
-              <span>20M</span>
+            <el-col :span="3">
+              <el-tooltip placement="top-start" :content="compareResult.size">
+                <template>
+                  <div>
+                    <span class="gray">大小: </span>
+                    <span>{{ compareResult.size }}</span>
+                  </div>
+                </template>
+              </el-tooltip>
             </el-col>
-            <el-col :span="5">
-              <span class="gray">图纸分辨率：</span>
-              <span>3000*4000</span>
+            <el-col :span="4">
+              <el-tooltip placement="top-start" :content="compareResultCompareFileName">
+                <template>
+                  <div>
+                    <span class="gray">对比图纸名称: </span>
+                    <span>{{ compareResultCompareFileName }}</span>
+                  </div>
+                </template>
+              </el-tooltip>
             </el-col>
-            <el-col :span="5">
-              <span class="gray">红色：</span>
+            <el-col :span="3">
+              <el-tooltip placement="top-start" :content="compareResult.size">
+                <template>
+                  <div>
+                    <span class="gray">大小: </span>
+                    <span>{{ compareResult.size }}</span>
+                  </div>
+                </template>
+              </el-tooltip>
+            </el-col>
+            <el-col :span="4">
+              <el-tooltip placement="top-start" :content="compareResult.resolution">
+                <template>
+                  <div>
+                    <span class="gray">图纸分辨率: </span>
+                    <span>{{ compareResult.resolution }}</span>
+                  </div>
+                </template>
+              </el-tooltip>
+            </el-col>
+            <el-col :span="3" :style="{color:'#FF0000'}">
+              <span>红色: </span>
               <span>代表修改部分</span>
             </el-col>
-            <el-col :span="5">
-              <span class="gray">绿色：</span>
+            <el-col :span="3" :style="{color:'#7ebf50'}">
+              <span>绿色: </span>
               <span>代表删除部分</span>
             </el-col>
           </el-row>
         </el-header>
         <el-main>
           <div class="right-main-img">
-            <span v-if="compareImgUrl.length === 0" class="gray"
-              >请选择要对比的文件</span
-            >
-            <img :src="compareImgUrl" v-else />
+            <el-image :src="compareResultImgUrl" :previewSrcList="[compareResultImgUrl]"/>
           </div>
         </el-main>
       </el-container>
@@ -199,15 +231,19 @@ export default {
 
       /**
        * @description 对比组数组
-       * @type {Array.<TaskGroupEntity>}
+       * @type {TaskGroupEntity|Object}
        */
-      compareLogData: [],
+      compareLogData: {},
+      /**
+       * @description 当前用户查看的对比组索引，默认第一个
+       * @type {Number}
+       */
+      currentLookUpCompareGroupIndex: 0,
       currentPage: 0,
       pageSize: 3, //每页数据总数
       totalPages: 0, //总页数
       isLoading: false, //是否在加载中，绑定给loading图标用
       isFoldArray: ["展开"],
-      compareImgUrl: "",
       compareWorkName: "对比任务",
       openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
       CreateTaskDialogVisible: false, //创建任务框是否出现
@@ -226,13 +262,59 @@ export default {
     disableLoading() {
       return this.noMore || this.isLoading;
     },
+
     /**
      * @description 主内容面板高度限制需要返回一个字符串
-     * @returns {string}
+     * @returns {String}
      */
     heightPXLimit() {
       return `${this.heightLimit}px`
     },
+    /**
+     * 当前对比结果 图片链接
+     * @returns {String}
+     */
+    compareResultImgUrl() {
+      return this.compareResult.url;
+    },
+
+    /**
+     * 当前对比结果参 考图纸名称
+     * @returns {String}
+     */
+    compareResultReferenceFileName() {
+      try {
+        return this.compareResult.files[0].name;
+      } catch (e) {
+
+      }
+      return '';
+    },
+
+    /**
+     * 当前对比结果 对比图纸名称
+     * @returns {String}
+     */
+    compareResultCompareFileName() {
+      try {
+        return this.compareResult.files[1].name;
+      } catch (e) {
+
+      }
+      return '';
+    },
+    /**
+     * @description 当前查看的对比结果
+     * @returns {OrderEntity|Object}
+     */
+    compareResult() {
+      try {
+        return this.compareLogData.orders[this.currentLookUpCompareGroupIndex];
+      } catch (e) {
+
+      }
+      return {};
+    }
   },
   methods: {
     /**
@@ -254,12 +336,17 @@ export default {
         this.isFoldArray.splice(index, 1, "收起");
       else this.isFoldArray.splice(index, 1, "展开");
     },
+    /**
+     * @description 点击左侧对比组的“对比”或“查看”按钮
+     * @param {Number} index
+     */
     gotoCompareResult(index) {
-      this.compareImgUrl = this.compareLogData.orders[index].url;
-      this.$notify.success({
-        title: "成功",
-        message: "获取对比结果",
-      });
+      this.currentLookUpCompareGroupIndex = index;
+      // this.compareResultImgUrl = this.compareLogData.orders[index].url;
+      // this.$notify.success({
+      //   title: "成功",
+      //   message: "获取对比结果",
+      // });
     },
     openUploadFileOrCreateTask() {
       this.openUploadFileOrCreateTaskVisible = true;
@@ -326,14 +413,14 @@ export default {
       //   this.$store
       //     .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
       //     .then(() => {
-      //       this.compareImgUrl = this.workObj.compareResultUrl;
+      //       this.compareResultImgUrl = this.workObj.compareResultUrl;
       //       if (this.workObj.compareResultUrl) {
       //         this.$notify.success({
       //           title: "成功",
       //           message: "获取对比结果",
       //         });
       //       }
-      //       console.log(this.compareImgUrl);
+      //       console.log(this.compareResultImgUrl);
       //       window.open(
       //         this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
       //       );
@@ -347,15 +434,12 @@ export default {
       this.$router.push({name: "HomeCompareUp"});
     },
   },
-  mounted() {
-    console.log("挂在页面完毕");
+  created() {
     task.getAll(1).then((res) => {
       this.compareLogData = res.records[0];
-      for (var index in res.records[0].orders) {
-        console.log("for in 循环的ele是：", index);
+      for (let index in res.records[0].orders) {
         this.isFoldArray[index] = "展开";
       }
-      console.log(res);
     });
   },
 };
@@ -535,14 +619,22 @@ $radius: 4px;
   .el-container {
     height: 100%;
   }
+
+  .el-main {
+    padding: 0;
+    margin: 20px;
+  }
+
   .right-main-img {
     width: 100%;
     height: 100%;
-    img {
+
+    .el-image {
       height: auto;
       width: 100%;
     }
   }
+
   flex: {
     basis: 77%;
   }
@@ -557,8 +649,15 @@ $radius: 4px;
       text-align: left;
     }
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     &:last-of-type {
       text-align: right;
+    }
+
+    span {
+      white-space: nowrap;
     }
   }
 }

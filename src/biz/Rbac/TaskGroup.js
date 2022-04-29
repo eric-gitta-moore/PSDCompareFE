@@ -92,8 +92,12 @@ async function getAll(startPages = 1,
             })
         })
         let {id, name, createTime} = ele;
+
         return new TaskGroup({
-            id, name, createTime, orders
+            id,
+            name,
+            createTime,
+            orders
         })
     })
     return new PageResult(
