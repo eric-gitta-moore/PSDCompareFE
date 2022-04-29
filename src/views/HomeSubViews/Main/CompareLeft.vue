@@ -1,18 +1,20 @@
 <template>
-  <el-container class="main-container">
+  <el-container class="main-container" :style="{height:heightPXLimit}">
     <el-aside class="main-left" width="0">
       <div>
         <el-row class="header-row">
-          <el-col :span="12">
-            <div class="left">对比记录</div>
+          <el-col :span="12" class="left">
+            <span>对比记录</span>
           </el-col>
           <el-col :span="12">
             <div class="right">
-              <svg-icon
-                  icon-class="show-eye"
-                  @click="changeLayout()"
-              ></svg-icon>
-              <UploadFileOrCreateTask class="upload-file-or-create-task"/>
+              <a @click="changeLayout()" title="切换布局">
+                <svg-icon
+                    class-name="svg-transform"
+                    icon-class="transform"
+                ></svg-icon>
+              </a>
+              <UploadFileOrCreateTask class="upload-file-or-create-task" @on-click-upload='handleOnClickUpload'/>
             </div>
           </el-col>
         </el-row>
@@ -200,7 +202,7 @@
     </el-aside>
     <el-main class="main-right">
       <el-container>
-        <el-header>
+        <el-header height="auto">
           <el-row class="main-right-header">
             <el-col :span="4">
               <span class="gray">图纸名称：</span>
@@ -269,6 +271,8 @@ export default {
       compareWorkName: "对比任务",
       openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
       CreateTaskDialogVisible: false, //创建任务框是否出现
+      heightLimit: document.body.clientHeight - 66
+
     };
   },
   computed: {
@@ -278,8 +282,14 @@ export default {
     disableLoading() {
       return this.noMore || this.isLoading;
     },
+    heightPXLimit() {
+      return `${this.heightLimit}px`
+    },
   },
   methods: {
+    handleOnClickUpload() {
+      this.IsUploadDialogShow = true;
+    },
     /**
      * 上传窗口上传完成
      */
@@ -457,7 +467,6 @@ $radius: 4px;
 }
 
 .main-container {
-  height: 100%;
   align-items: stretch;
   padding: 18px;
   box-sizing: border-box;
@@ -488,8 +497,18 @@ $radius: 4px;
   }
 
   .right {
-    .svg-icon {
+    a {
       cursor: pointer;
+      margin-right: 5px;
+
+      .svg-transform {
+        height: 14px;
+        width: 14px;
+        cursor: pointer;
+        vertical-align: 0;
+        filter: drop-shadow(#636d7e 9999rem 0);
+        transform: translateX(-9999rem);
+      }
     }
 
     text-align: right;
@@ -499,6 +518,10 @@ $radius: 4px;
 .orders {
   height: 90%;
   overflow-y: auto;
+
+  ul {
+    padding: 0;
+  }
 }
 
 .order {
@@ -575,7 +598,6 @@ $radius: 4px;
   }
 
   .right-main-img {
-    padding: 20px;
     width: 100%;
     height: 100%;
 

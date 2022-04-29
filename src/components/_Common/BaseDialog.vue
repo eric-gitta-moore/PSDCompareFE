@@ -38,6 +38,8 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 10;
+
   .dialog-mask {
     position: fixed;
     top: 0;
@@ -45,7 +47,7 @@ export default {
     width: 100%;
     height: 100%;
     background: rgba($color: #000000, $alpha: 0.4);
-    z-index: 10;
+    z-index: 11;
   }
 
   .el-container {

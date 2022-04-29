@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="actionTips">
     <el-tooltip effect="light">
       <div slot="content">
         <div class="tooltip">
           <div class="but file">
-            <a href="#" @click="uploadFile">上传文件</a>
+            <a @click="uploadFile">上传文件</a>
           </div>
           <div class="but task">
-            <a href="#" @click="createTaskDialog">创建任务</a>
+            <a @click="createTaskDialog">创建任务</a>
           </div>
         </div>
       </div>
-      <svg-icon icon-class="add"></svg-icon>
+      <svg-icon class-name="svg-add" icon-class="add"></svg-icon>
     </el-tooltip>
   </div>
 </template>
@@ -34,46 +34,43 @@ export default {
           inputErrorMessage: "任务名格式不正确",
           customClass: "createTaskDialog",
         })
-          .then(({ value }) => {
-            if (value === null || value.trim() === "") {
+            .then(({value}) => {
+              if (value === null || value.trim() === "") {
+                this.$message({
+                  type: "error",
+                  message: "任务名不能为空！",
+                });
+                return;
+              }
               this.$message({
-                type: "error",
-                message: "任务名不能为空！",
+                type: "success",
+                message: "你的任务是: " + value,
               });
-              return;
-            }
-            this.$message({
-              type: "success",
-              message: "你的任务是: " + value,
+              this.$emit("createTask", value)
+            },)
+            .catch(() => {
             });
-            this.$emit("createTask",value)
-          },)
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "取消输入",
-            });
-          });
       }, 100);
     },
     uploadFile() {
-      this.$router.push({
-        name:'UploadDialog'
-      })
-
+      this.$emit('on-click-upload');
     }
   },
 };
 </script>
 
 <style lang="scss">
+
 .el-tooltip__popper.is-light {
   border: none !important;
-  box-shadow: rgb(0 0 0 / 20%) 0px 1px 14px 0px;
+  box-shadow: rgb(0 0 0 / 20%) 0 1px 14px 0;
+  z-index: 9 !important;
+
   .popper__arrow {
     border: none;
   }
 }
+
 .tooltip {
   .but {
     width: 76px;
@@ -82,17 +79,29 @@ export default {
     line-height: 26px;
     background: #fff;
     border-radius: 2px;
+
     &:hover {
       background: #347eff;
+
       a {
         color: #fff;
       }
     }
+
     a {
+      cursor: pointer;
       text-decoration: none;
       color: #347eff;
       font-size: 15px;
     }
+  }
+}
+
+.actionTips {
+
+  .svg-add {
+    width: 18px;
+    height: 18px;
   }
 }
 </style>

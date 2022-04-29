@@ -1,51 +1,57 @@
 <template>
-  <el-container class="main-container-main">
-    <el-header width="0">
-      <el-col :span="5">
-        <span class="left">对比记录</span>
-        <div class="right">
-          <svg-icon icon-class="show-eye" @click="changeLayout()"></svg-icon>
-          <svg-icon icon-class="add" @click="openUploadDialog()"></svg-icon>
+  <el-container class="compare-up-container-main">
+    <el-header width="0" class="container-el-header">
+      <div class="container-header-left">
+        <div class="left">对比记录</div>
+        <div class="left-panel-right">
+          <a @click="changeLayout()" title="切换布局">
+            <svg-icon
+                class-name="svg-transform"
+                icon-class="transform"
+            ></svg-icon>
+          </a>
+          <UploadFileOrCreateTask class="upload-file-or-create-task" @on-click-upload='handleOnClickUpload'/>
         </div>
-      </el-col>
-      <el-col :span="19">
-        <div class="right">
-          <el-button type="primary" @click="downLoad">
-            <svg-icon icon-class="show-eye" @click="changeLayout()"></svg-icon>
-            下载
-          </el-button>
-        </div>
-      </el-col>
+      </div>
+      <div class="container-header-right">
+        <el-button type="primary" @click="downLoad" icon="el-icon-download">下载</el-button>
+      </div>
     </el-header>
 
 
-    <el-main>
+    <el-main class="compare-up-el-main">
       <el-table
-        :data="tableData"
-        style="width: 100%"
-        @expand-change="load"
-        @select="selsecTaskGroup"
+          :data="tableData"
+          style="width: 100%"
+          @expand-change="load"
+          @select="selsecTaskGroup"
+          :header-row-style="{
+          background:'RGB(246,248,250)'
+        }"
+          :header-cell-style="{
+          background:'RGB(246,248,250)'
+        }"
       >
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-table
-              :data="props.row.orders"
-              v-for="(item, index) in props.row.orders"
-              :key="index"
-              style="width: 100%"
-              :show-header="false"
-              @expand-change="load"
-              @selection-change="handleSelectionChange"
+                :data="props.row.orders"
+                v-for="(item, index) in props.row.orders"
+                :key="index"
+                style="width: 100%"
+                :show-header="false"
+                @expand-change="load"
+                @selection-change="handleSelectionChange"
             >
               <!-- <el-table-column type="selection" width="10" :border="false">
               </el-table-column> -->
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
-                    style="width: 100%; height: 300px"
-                    :src="props.row.url"
-                    @load="loadImg(props.row.url)"
-                    :preview-src-list="srcList"
+                      style="width: 100%; height: 300px"
+                      :src="props.row.url"
+                      @load="loadImg(props.row.url)"
+                      :preview-src-list="srcList"
                   >
                   </el-image>
                 </template>
@@ -53,87 +59,87 @@
               <el-table-column width="40">
                 <template slot-scope="scope">
                   <el-checkbox
-                    @change="handleDelete(scope.$index, scope.row)"
+                      @change="handleDelete(scope.$index, scope.row)"
                   ></el-checkbox>
                 </template>
               </el-table-column>
-             
+
               <el-table-column
-                label="流水帐号"
-                prop="serialNumber"
-                width="170"
+                  label="流水帐号"
+                  prop="serialNumber"
+                  width="170"
               ></el-table-column>
               <el-table-column
-                label="名称"
-                prop="title"
-                width="100"
+                  label="名称"
+                  prop="title"
+                  width="100"
               ></el-table-column>
               <el-table-column
-                label="对比费用"
-                prop="fee"
-                width="100"
+                  label="对比费用"
+                  prop="fee"
+                  width="100"
               ></el-table-column>
               <el-table-column
-                label="支付状态"
-                prop="status"
-                width="100"
+                  label="支付状态"
+                  prop="status"
+                  width="100"
               ></el-table-column>
               <el-table-column
-                label="对比状态"
-                prop="`已完成`"
-                width="100"
+                  label="对比状态"
+                  prop="`已完成`"
+                  width="100"
               ></el-table-column>
               <el-table-column
-                label="对比结果"
-                prop="result"
-                width="100"
+                  label="对比结果"
+                  prop="result"
+                  width="100"
               ></el-table-column>
               <el-table-column
-                label="时间"
-                prop="createTime"
-                width="190"
+                  label="时间"
+                  prop="createTime"
+                  width="190"
               ></el-table-column>
               <el-table-column width="240px">
-                 <template #default="scope">
-            <div class="act" >
-              <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
-              <el-divider direction="vertical"></el-divider>
-              <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
-              <el-divider direction="vertical"></el-divider>
-              <svg-icon icon-class="bin"></svg-icon>
-              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
-            </div>
-          </template>
+                <template #default="scope">
+                  <div class="act">
+                    <svg-icon icon-class="show-eye"></svg-icon>
+                    <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+                    <el-divider direction="vertical"></el-divider>
+                    <svg-icon icon-class="download"></svg-icon>
+                    <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+                    <el-divider direction="vertical"></el-divider>
+                    <svg-icon icon-class="bin"></svg-icon>
+                    <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+                  </div>
+                </template>
               </el-table-column>
             </el-table>
           </template>
         </el-table-column>
 
-        <el-table-column type="selection"  width="30"></el-table-column>
-        <el-table-column label="流水帐号" prop="serialNumber" width="200"></el-table-column>
-        <el-table-column label="名称" prop="name" width="100"></el-table-column>
-        <el-table-column label="对比费用" prop="fee" width="100"></el-table-column>
+        <el-table-column type="selection" width="30"></el-table-column>
+        <el-table-column label="流水编号/任务ID" width="210"></el-table-column>
+        <el-table-column label="名称" prop="name"></el-table-column>
+        <el-table-column label="对比费用" prop="fee" width="150"></el-table-column>
         <el-table-column
-          label="支付状态"
-          prop="payState"
-          width="100"
+            label="支付状态"
+            prop="payState"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="对比状态"
-          prop="contrastState"
-          width="100"
+            label="对比状态"
+            prop="contrastState"
+            width="180"
         ></el-table-column>
         <el-table-column
-          label="对比结果"
-          prop="contrastResult"
-          width="100"
+            label="对比结果"
+            prop="contrastResult"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="时间"
-          prop="createTime"
-          width="190"
+            label="时间"
+            prop="createTime"
+            width="200"
         ></el-table-column>
 
         <el-table-column label="操作" width="200">
@@ -158,53 +164,80 @@
         <el-row class="pagination">
           <el-col :span="24">
             <el-pagination
-              @current-change="handleCurrentChange"
-              background
-              layout="total, prev,sizes,pager, next, jumper"
-              :total="pagination.total"
-              :page-sizes="pageSizes"
+                @current-change="handleCurrentChange"
+                background
+                layout="total, prev,sizes,pager, next, jumper"
+                :total="pagination.total"
+                :page-sizes="pageSizes"
             >
             </el-pagination>
           </el-col>
         </el-row>
       </el-footer>
     </el-main>
+
+    <UploadDialog
+        v-if="IsUploadDialogShow"
+        @onClose="IsUploadDialogShow=false"
+        task-id="1"
+        @onComplete="uploadOnComplete"
+    ></UploadDialog>
   </el-container>
 </template>
 
 <script>
 import taskGroup from "../../../biz/Rbac/TaskGroup.js";
 import DownloadHelper from "../../../util/DownloadHelper";
+import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
+import UploadDialog from "@/components/Home/Compare/UploadDialog";
+
 export default {
   name: "HomeCompareUp",
+  components: {
+    UploadDialog,
+    UploadFileOrCreateTask,
+  },
   data() {
     return {
+      IsUploadDialogShow: false,
       multipleSelection: [],
       orders: [],
       srcList: [],
       tableData: [],
-      pageSizes: [10,20,30, 40],
+      pageSizes: [10, 20, 30, 40],
       pagination: {
         total: 220,
       },
     };
   },
   methods: {
-    
-       deleteTask(Ids) {
-          //获得勾选的id.
+    /**
+     * @description 上传窗口上传完成
+     */
+    uploadOnComplete() {
+      this.IsUploadDialogShow = false;
+      // TODO:刷新页面，重新加载数据
+    },
+    /**
+     * @description 点击上传文件
+     */
+    handleOnClickUpload() {
+      this.IsUploadDialogShow = true;
+    },
+    deleteTask(Ids) {
+      //获得勾选的id.
       taskGroup.deleteTaskByIds(Ids);
       this.$notify({
-          title: '删除成功！',
-          type: 'success'
-        });
+        title: '删除成功！',
+        type: 'success'
+      });
     },
 
-     downLoadTask(row) {
+    downLoadTask(row) {
       DownloadHelper.downloadByAnchorTag({});
       console.log(row);
     },
-     //查看该文件
+    //查看该文件
     checkTask(rowKey) {
       this.$router.push({
         name: "Home",
@@ -222,7 +255,7 @@ export default {
     },
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({ name: "HomeCompareLeft" });
+      this.$router.push({name: "HomeCompareLeft"});
     },
     load(row, expandedRows) {
       console.log("懒加载数据");
@@ -245,7 +278,8 @@ export default {
       console.log("加载了图片", val);
       this.srcList.push(val);
     },
-    downLoad() {},
+    downLoad() {
+    },
   },
   mounted() {
     console.log("挂载了一个页面");
@@ -261,90 +295,108 @@ export default {
 
 <style lang="scss">
 $radius: 4px;
-.main-container-main {
+.compare-up-container-main {
+
   height: 100%;
   width: 100%;
   align-items: stretch;
   padding: 18px;
   box-sizing: border-box;
   background: #f1f5f9;
-  .el-image {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    img {
-      height: auto;
-    }
-  }
-  .svg-icon {
-    cursor: pointer;
-  }
-  .el-header,
-  .el-main {
-    background: #fff;
-    text-align: left;
-    padding: 0px 20px;
-    & > .el-table {
-      height: 500px;
-      overflow: auto;
-      overflow-x: hidden;
-      // position: relative;
-      // .expand {
-      //   position: relative;
-      //   // position: absolute;
-      //   thead {
-      //     position: absolute;
-      //     top: -30px;
-      //     left: 0px;
-      //     // display: none;
-      //     background: pink;
-      //   }
-      //   .el-checkbox {
-      //     display: inline-block;
-      //   }
-      // }
-      .el-checkbox__inner {
-        position: absolute;
-        top: -9px;
-        left: -2px;
-      }
-      &:before {
-        width: 0px;
-      }
-      div {
-        overflow: hidden;
-      }
-    }
-  }
-  .el-header {
+
+  & > .container-el-header {
+
     font-size: 16px;
-    .el-col {
-      height: 60px;
-      line-height: 60px;
-    }
-  }
-  .el-footer {
-  background: white;
-  border-bottom-left-radius: $radius;
-  border-bottom-right-radius: $radius;
-    .pagination {
-     
-      .el-col {
-        text-align: right;
+
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+
+
+    .container-header-left {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-basis: 24%;
+      transform: translateY(-1px);
+
+      .svg-add {
+        width: 18px;
+        height: 18px;
       }
-      position:absolute;
-      right:60px;
-      bottom:50px
+    }
+
+    .upload-file-or-create-task {
+      display: inline;
+    }
+
+    .container-header-right {
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+      flex-basis: 77%;
+    }
+
+    .el-image {
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+
+      img {
+        height: auto;
+      }
+    }
+
+    .svg-icon {
+      cursor: pointer;
+    }
+
+    .left-panel-right {
+      margin-right: 27px;
+
+      a {
+        cursor: pointer;
+        margin-right: 10px;
+
+        .svg-transform {
+          height: 14px;
+          width: 14px;
+          cursor: pointer;
+          vertical-align: 0;
+          filter: drop-shadow(#636d7e 9999rem 0);
+          transform: translateX(-9999rem);
+        }
+      }
+
+      text-align: right;
     }
   }
-  .right {
-    float: right;
+
+  & > .compare-up-el-main {
+    background: #fff;
+
+
+    .el-footer {
+      background: white;
+      border-bottom-left-radius: $radius;
+      border-bottom-right-radius: $radius;
+
+      .pagination {
+
+        .el-col {
+          text-align: right;
+        }
+
+        position: absolute;
+        right: 60px;
+        bottom: 50px
+      }
+    }
+
+    .el-table__expanded-cell {
+      padding: 0 0px 0px 20px;
+    }
   }
-  .left {
-    float: left;
-  }
-  .el-table__expanded-cell {
-    padding: 0 0px 0px 20px;
-  }
+
 }
 </style>

@@ -21,7 +21,7 @@
           </el-tooltip>
         </el-col>
         <el-col :span="4" class="close">
-          <svg-icon icon-class="close" @click="closeDialog"></svg-icon>
+          <svg-icon class-name="svg-close" icon-class="close" @click="closeDialog"></svg-icon>
         </el-col>
       </el-row>
     </template>
@@ -856,6 +856,10 @@ export default {
 
     .close {
       text-align: right;
+
+      .svg-close {
+        cursor: pointer;
+      }
     }
   }
 
