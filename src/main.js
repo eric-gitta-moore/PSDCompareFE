@@ -1,10 +1,3 @@
-/*
- * @Author: Billy
- * @Date: 2020-09-10 09:12:00
- * @LastEditors: Billy
- * @LastEditTime: 2022-03-07 15:03:20
- * @Description: 请输入
- */
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router/_index.js';

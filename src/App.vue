@@ -1,10 +1,3 @@
-<!--
- * @Author: Billy
- * @Date: 2020-09-10 09:12:00
- * @LastEditors: Billy
- * @LastEditTime: 2022-01-05 19:55:32
- * @Description: 请输入
--->
 <template>
   <div id="app">
     <router-view />
