@@ -35,13 +35,13 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-table
-              :data="props.row.orders"
-              style="width: 100%"
-              :show-header="false"
-              @selection-change="
+                :data="props.row.orders"
+                style="width: 100%"
+                :show-header="false"
+                @selection-change="
                 (selection) => handleSelectionChange(selection, props.row.index)
               "
-              ref="multipleTable"
+                ref="multipleTable"
             >
               <!-- <el-table-column type="selection" width="10" :border="false" class="select">
               </el-table-column> -->
@@ -72,9 +72,9 @@
                   width="170"
               ></el-table-column>
               <el-table-column
-                label="名称"
-                prop="title"
-                width="120"
+                  label="名称"
+                  prop="title"
+                  width="120"
               ></el-table-column>
               <el-table-column
                   label="对比费用"
@@ -254,13 +254,13 @@ export default {
       console.log("你还勾选了我们要选的", index, val);
     },
     // 为每行数据设置索引 rowIndex 就是当前所在行的索引
-    tableCellClassName({ row, rowIndex }) {
+    tableCellClassName({row, rowIndex}) {
       row.index = rowIndex;
       // row.itemDetailRefKey = `items${rowIndex}`
     },
     selsecTaskGroup(selecttion, row) {
       debugger;
-      console.log(this.$refs.multipleTable, "你打开了某一个任务组",row.index);
+      console.log(this.$refs.multipleTable, "你打开了某一个任务组", row.index);
       this.$refs.multipleTable.toggleAllSelection();
     },
     changeLayout() {
@@ -390,7 +390,10 @@ $radius: 4px;
 
   & > .compare-up-el-main {
     background: #fff;
+    padding: {
+      top: 0;
 
+    };
 
     .el-footer {
       background: white;
