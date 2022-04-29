@@ -34,7 +34,7 @@
                     </el-col>
 
                     <el-col :span="4" class="compare">
-                      <a @click="gotoCompareResult(val.id)">对比</a>
+                      <a @click="gotoCompareResult(val.id)">查看</a>
                     </el-col>
 
                     <el-col :span="4" class="download">
@@ -119,74 +119,6 @@
                       </el-row>
                     </el-collapse-item>
                   </el-collapse>
-                  <!-- <div v-if="!isFoldArray[val.index]"> -->
-                  <!-- <el-row>
-                      <el-col class="spilit-line">
-                        <span></span>
-                      </el-col>
-                    </el-row>
-
-                    <el-row class="file-list">
-                      <el-col :span="20">
-                        <span>{{ val.title ? val.title : "对比1" }}</span>
-                      </el-col>
-                      <el-col :span="4">
-                        <span class="success">已完成</span>
-                      </el-col>
-                    </el-row>
-
-                    <el-row class="file-list">
-                      <el-col :span="20">
-                        <span>{{ val.title ? val.title : "对比2" }}</span>
-                      </el-col>
-                      <el-col :span="4">
-                        <span class="normal">已完成</span>
-                      </el-col>
-                    </el-row>
-                    <el-row class="time-line">
-                      <el-col :span="2">
-                        <svg-icon
-                          v-if="val.status == '已完成' || true"
-                          icon-class="play"
-                        ></svg-icon>
-                        <svg-icon v-else icon-class="clock"></svg-icon>
-                      </el-col>
-                      <el-col :span="19">
-                        <el-progress
-                          :percentage="val.status == '已完成' || true ? 100 : 0"
-                          :stroke-width="10"
-                          :show-text="false"
-                        >
-                        </el-progress>
-                      </el-col>
-                      <el-col :span="3">
-                        <div>
-                          <span
-                            >{{
-                              val.status == "已完成" || true ? 100 : 0
-                            }}%</span
-                          >
-                        </div>
-                      </el-col>
-                    </el-row> -->
-                  <!-- </div> -->
-
-                  <!-- <el-row v-if="!isFoldArray[val.index]">
-                    <el-col class="more">
-                      <span class="fold" @click="foldItem(val.index)"
-                        >收起</span
-                      >
-                    </el-col>
-                  </el-row>
-
-                  <el-row v-else>
-                    <el-col class="more">
-                      <span class="fold" @click="foldItem(val.index)"
-                        >查看更多
-                      </span>
-                      <svg-icon icon-class="angle-bottom"></svg-icon>
-                    </el-col>
-                  </el-row> -->
                 </div>
               </el-col>
             </el-row>
@@ -247,6 +179,8 @@
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 import task from "../../../biz/Rbac/TaskGroup.js";
+import OrderEntity from "@/entity/Rbac/Order";
+import TaskGroupEntity from "@/entity/Rbac/TaskGroup";
 
 // import DateHelper from '../../util/DateHelper'
 
@@ -260,8 +194,17 @@ export default {
     return {
       index: 1,
       total: 0,
+
+      /**
+       * @description 上传窗口是否显示
+       */
       IsUploadDialogShow: false,
-      compareLogData: [], //数据条目
+
+      /**
+       * @description 对比组数组
+       * @type {Array.<TaskGroupEntity>}
+       */
+      compareLogData: [],
       currentPage: 0,
       pageSize: 3, //每页数据总数
       totalPages: 0, //总页数
@@ -271,7 +214,11 @@ export default {
       compareWorkName: "对比任务",
       openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
       CreateTaskDialogVisible: false, //创建任务框是否出现
-      heightLimit: document.body.clientHeight - 66
+
+      /**
+       * @description 主内容面板高度
+       */
+      heightLimit: document.body.clientHeight - 66,
 
     };
   },
@@ -282,11 +229,18 @@ export default {
     disableLoading() {
       return this.noMore || this.isLoading;
     },
+    /**
+     * @description 主内容面板高度限制需要返回一个字符串
+     * @returns {string}
+     */
     heightPXLimit() {
       return `${this.heightLimit}px`
     },
   },
   methods: {
+    /**
+     * 点击上传文件显示上传弹窗事件
+     */
     handleOnClickUpload() {
       this.IsUploadDialogShow = true;
     },
@@ -317,10 +271,6 @@ export default {
       //     console.log(this.compareImgUrl);
       //   });
     },
-    openUploadDialog() {
-      // this.IsUploadDialogShow = true;
-      // this.CreateTaskDialogVisible = true;
-    },
     openUploadFileOrCreateTask() {
       this.openUploadFileOrCreateTaskVisible = true;
     },
@@ -329,24 +279,12 @@ export default {
           ? `/public/images/251.png`
           : this.workObj.compareResultUrl;
     },
-    // foldItem(id) {
-    //   this.isFoldArray.splice(id, 1, !this.isFoldArray[id]);
-    // },
-    closeUploadDialog() {
-      this.IsUploadDialogShow = false;
-    },
-    openPayDialog() {
-      this.IsPayDialogShow = true;
-    },
-    closePayDialog() {
-      this.IsPayDialogShow = false;
-    },
     // 获取全部对比组
     getAll(val) {
       task.getAll(val).then((res) => {
         this.compareLogData.push(...res.records);
         this.total = res.total;
-        for (var index in this.compareLogData) {
+        for (let index in this.compareLogData) {
           console.log("for in 循环的ele是：", index);
           this.isFoldArray[index] = "展开";
         }
@@ -416,7 +354,6 @@ export default {
     },
   },
   mounted() {
-    console.log("挂在页面完毕");
     this.getAll(1);
   },
 };

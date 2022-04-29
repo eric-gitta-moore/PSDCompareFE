@@ -3,23 +3,35 @@ import Order from '../../entity/Rbac/Order';
 import PageResult from '../../entity/_Common/PageResult'
 import TaskGroupApi from '../../api/Rbac/TaskGroup'
 import DateHelper from '../../util/DateHelper'
-/**
- * @description 获取所有任务组方法
- * @param {int}startPages,当前页
- */
+import FileEntity from "@/entity/Rbac/File";
 
-async function getAll(startPages) {
-    const maxPages = 10;//每页显示数量
-    const sort = "asc";//排序方式（asc）
+/**
+ *
+ *
+ * @description 获取所有任务组方法
+ * @param {Number} startPages 当前页
+ * @param {Number} pageSize
+ * @param {String} keyWords
+ * @param {String} startTime
+ * @param {String} endTime
+ * @param {'desc'||'asc'} sort
+ * @returns {Promise<PageResult>}
+ */
+async function getAll(startPages = 1,
+                      pageSize = 5,
+                      keyWords = '',
+                      startTime = '',
+                      endTime = '',
+                      sort = 'desc') {
     const res = await TaskGroupApi.getGroups({
         endTime: "2020-10-2",
         startTime: "2020-10-2",
-        keyWords: null,
+        keyWords: keyWords,
         startPages,
-        maxPages,
+        maxPages: pageSize,
         sort,
     });
-    let { records: records_use, total, size, current, pages } = res.data;
+    let {records: records_use, total, size, current, pages} = res.data;
     let records = records_use.map(ele => {
         ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
         delete ele.deleted;
@@ -43,6 +55,26 @@ async function getAll(startPages) {
                 fileName,
                 files
             } = ele;
+            if (files !== null)
+                files = files.map(e => {
+                    if (e === null) return null;
+                    let {
+                        id,
+                        name,
+                        taskId,
+                        size,
+                        createTime,
+                        orderId
+                    } = e;
+                    return new FileEntity({
+                        id,
+                        name,
+                        taskId,
+                        size,
+                        createTime,
+                        orderId
+                    })
+                })
             return new Order({
                 id,
                 status,
@@ -59,7 +91,7 @@ async function getAll(startPages) {
                 files
             })
         })
-        let { id, name, createTime } = ele;
+        let {id, name, createTime} = ele;
         return new TaskGroup({
             id, name, createTime, orders
         })
@@ -67,33 +99,30 @@ async function getAll(startPages) {
     return new PageResult(
         records, total, size, current, pages
     );
-    // <<<<<<< HEAD
-    // }
-
-    // async function getGroup(){
-
-    // }
-    // /** 
-    //  * @description 获取单个任务组
-    // */
-    // export default {
-    //     getGroups,
-    //     getGroup,
-    // }
-    // =======
 }
+
+/**
+ * 批量删除
+ * @param ids {Array.<Number|String>}
+ * @returns {Promise<void>}
+ */
 async function deleteTaskByIds(ids) {
-    TaskGroupApi.deleteGroup({ ids })
+    TaskGroupApi.deleteGroup({ids})
 }
 
+/**
+ * 批量下载
+ * @param ids {Array.<Number|String>}
+ * @returns {Promise<void>}
+ */
 async function download(ids) {
-    await TaskGroupApi.download({ ids })
+    await TaskGroupApi.download({ids})
 
 }
+
 export default {
     deleteTaskByIds,
     getAll,
     download
 };
-// >>>>>>> 4f6d8fdd2cca1e1f36d8f9b57e7405998d4dbd53
 
