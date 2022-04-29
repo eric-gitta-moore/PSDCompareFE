@@ -285,8 +285,8 @@ export default {
     compareResultReferenceFileName() {
       try {
         return this.compareResult.files[0].name;
+        // eslint-disable-next-line
       } catch (e) {
-
       }
       return '';
     },
@@ -298,6 +298,7 @@ export default {
     compareResultCompareFileName() {
       try {
         return this.compareResult.files[1].name;
+        // eslint-disable-next-line
       } catch (e) {
 
       }
@@ -310,6 +311,7 @@ export default {
     compareResult() {
       try {
         return this.compareLogData.orders[this.currentLookUpCompareGroupIndex];
+        // eslint-disable-next-line
       } catch (e) {
 
       }

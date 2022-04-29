@@ -1,41 +1,43 @@
 <template>
-  <el-container class="compare-up-container-main">
+  <el-container class="compare-up-container-main" :style="{height:heightPXLimit}">
     <el-header width="0" class="container-el-header">
       <div class="container-header-left">
         <div class="left">对比记录</div>
         <div class="left-panel-right">
           <a @click="changeLayout()" title="切换布局">
             <svg-icon
-              class-name="svg-transform"
-              icon-class="transform"
+                class-name="svg-transform"
+                icon-class="transform"
             ></svg-icon>
           </a>
           <UploadFileOrCreateTask
-            class="upload-file-or-create-task"
-            @on-click-upload="handleOnClickUpload"
+              class="upload-file-or-create-task"
+              @on-click-upload="handleOnClickUpload"
           />
         </div>
       </div>
       <div class="container-header-right">
         <el-button type="primary" @click="downLoad" icon="el-icon-download"
-          >下载</el-button
+        >下载
+        </el-button
         >
       </div>
     </el-header>
 
-    <el-main class="compare-up-el-main">
+    <el-main class="compare-up-el-main" ref="compareUpElMain">
       <el-table
-        :data="tableData"
-        style="width: 100%"
-        @expand-change="expand"
-        @select="selsecTaskGroup"
-        :header-row-style="{
+          :data="tableData"
+          style="width: 100%"
+          @expand-change="expand"
+          @select="selsecTaskGroup"
+          :header-row-style="{
           background: 'RGB(246,248,250)',
         }"
-        :row-class-name="tableCellClassName"
-        :header-cell-style="{
+          :row-class-name="tableCellClassName"
+          :header-cell-style="{
           background: 'RGB(246,248,250)',
         }"
+          :max-height="tableHeight"
       >
         <el-table-column type="expand">
           <template slot-scope="props">
@@ -46,80 +48,78 @@
                 @selection-change="
                 (selection) => handleSelectionChange(selection, props.row.index)
               "
-              :row-class-name="tableCellClassName"
-              @select="
+                :row-class-name="tableCellClassName"
+                @select="
                 (selection, row) => userSelect(selection, row, props.row.index)
               "
-              ref="multipleTable"
+                ref="multipleTable"
             >
-              <el-table-column type="selection" width="10" :border="false">
-              </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
-                  <el-image
-                    style="width: 100%; height: 300px"
-                    :src="props.row.url"
-                    @load="loadImg(props.row.url)"
-                    :preview-src-list="srcList"
-                  >
-                  </el-image>
+                  <div style="width: 100%; height: 300px;overflow: hidden">
+                    <el-image
+                        style="width: 100%; height: auto"
+                        :src="props.row.url"
+                        @load="loadImg(props.row.url)"
+                        :preview-src-list="srcList"
+                    >
+                    </el-image>
+                  </div>
                 </template>
               </el-table-column>
+              <el-table-column type="selection" width="30">
+              </el-table-column>
               <el-table-column
-                label="流水帐号"
-                prop="serialNumber"
-                width="170"
+                  label="流水帐号"
+                  prop="serialNumber"
+                  width="250"
+              ></el-table-column>
+              <el-table-column label="名称" prop="title"></el-table-column>
+              <el-table-column
+                  label="对比费用"
+                  prop="fee"
+                  width="150"
               ></el-table-column>
               <el-table-column
-                  label="名称"
-                  prop="title"
-                  width="120"
+                  label="支付状态"
+                  prop="status"
+                  width="150"
               ></el-table-column>
               <el-table-column
-                label="对比费用"
-                prop="fee"
-                width="100"
+                  label="对比状态"
+                  prop="`已完成`"
+                  width="150"
               ></el-table-column>
               <el-table-column
-                label="支付状态"
-                prop="status"
-                width="100"
+                  label="对比结果"
+                  prop="result"
+                  width="150"
               ></el-table-column>
               <el-table-column
-                label="对比状态"
-                prop="`已完成`"
-                width="100"
+                  label="时间"
+                  prop="createTime"
+                  width="200"
               ></el-table-column>
-              <el-table-column
-                label="对比结果"
-                prop="result"
-                width="100"
-              ></el-table-column>
-              <el-table-column
-                label="时间"
-                prop="createTime"
-                width="190"
-              ></el-table-column>
-              <el-table-column width="240px">
+              <el-table-column width="200">
                 <template #default="scope">
                   <div class="act">
                     <svg-icon icon-class="show-eye"></svg-icon>
                     <span
-                      style="cursor: pointer"
-                      @click="checkTask(scope.row.id)"
-                      >查看</span
+                        style="cursor: pointer"
+                        @click="checkTask(scope.row.id)"
+                    >查看</span
                     >
                     <el-divider direction="vertical"></el-divider>
                     <svg-icon icon-class="download"></svg-icon>
                     <span
-                      style="cursor: pointer"
-                      @click="downLoadTask(scope.row.id)"
-                      >下载</span
+                        style="cursor: pointer"
+                        @click="downLoadTask(scope.row.id)"
+                    >下载</span
                     >
                     <el-divider direction="vertical"></el-divider>
                     <svg-icon icon-class="bin"></svg-icon>
                     <span style="cursor: pointer" @click="deleteTask(scope.row)"
-                      >删除</span
+                    >删除</span
                     >
                   </div>
                 </template>
@@ -129,32 +129,32 @@
         </el-table-column>
 
         <el-table-column type="selection" width="30"></el-table-column>
-        <el-table-column label="流水编号/任务ID" width="210"></el-table-column>
+        <el-table-column label="流水编号/任务ID" prop="id" width="260"></el-table-column>
         <el-table-column label="名称" prop="name"></el-table-column>
         <el-table-column
-          label="对比费用"
-          prop="fee"
-          width="150"
+            label="对比费用"
+            prop="fee"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="支付状态"
-          prop="payState"
-          width="150"
+            label="支付状态"
+            prop="payState"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="对比状态"
-          prop="contrastState"
-          width="180"
+            label="对比状态"
+            prop="contrastState"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="对比结果"
-          prop="contrastResult"
-          width="150"
+            label="对比结果"
+            prop="contrastResult"
+            width="150"
         ></el-table-column>
         <el-table-column
-          label="时间"
-          prop="createTime"
-          width="200"
+            label="时间"
+            prop="createTime"
+            width="200"
         ></el-table-column>
 
         <el-table-column label="操作" width="200">
@@ -162,17 +162,17 @@
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
               <span style="cursor: pointer" @click="checkTask(scope.row.id)"
-                >查看</span
+              >查看</span
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
               <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
-                >下载</span
+              >下载</span
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
               <span style="cursor: pointer" @click="deleteTask(scope.row)"
-                >删除</span
+              >删除</span
               >
             </div>
           </template>
@@ -184,11 +184,11 @@
         <el-row class="pagination">
           <el-col :span="24">
             <el-pagination
-              @current-change="handleCurrentChange"
-              background
-              layout="total, prev,sizes,pager, next, jumper"
-              :total="pagination.total"
-              :page-sizes="pageSizes"
+                @current-change="handleCurrentChange"
+                background
+                layout="total, prev,sizes,pager, next, jumper"
+                :total="pagination.total"
+                :page-sizes="pageSizes"
             >
             </el-pagination>
           </el-col>
@@ -197,10 +197,10 @@
     </el-main>
 
     <UploadDialog
-      v-if="IsUploadDialogShow"
-      @onClose="IsUploadDialogShow = false"
-      task-id="1"
-      @onComplete="uploadOnComplete"
+        v-if="IsUploadDialogShow"
+        @onClose="IsUploadDialogShow = false"
+        task-id="1"
+        @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
 </template>
@@ -232,7 +232,24 @@ export default {
       pagination: {
         total: 220,
       },
+      /**
+       * @description 主内容面板高度
+       */
+      heightLimit: document.body.clientHeight - 66,
+      tableHeight: (document.body.clientHeight - 66 - 120 - 60) + 'px',
+
     };
+
+  },
+  computed: {
+
+    /**
+     * @description 主内容面板高度限制需要返回一个字符串
+     * @returns {String}
+     */
+    heightPXLimit() {
+      return `${this.heightLimit}px`
+    },
   },
   methods: {
     /**
@@ -307,11 +324,10 @@ export default {
     },
     changeLayout() {
       console.log("打开左右布局");
-      this.$router.push({ name: "HomeCompareLeft" });
+      this.$router.push({name: "HomeCompareLeft"});
     },
     getAll(val) {
       taskGroup.getAll(val).then((res) => {
-        debugger;
         console.log("响应成功返回的是:", res.records);
         this.tableData = res.records;
         this.pagination.total = res.total;
@@ -352,11 +368,13 @@ export default {
       console.log("加载了图片", val);
       this.srcList.push(val);
     },
-    downLoad() {},
+    downLoad() {
+    },
+  },
+  created() {
+    this.getAll(1);
   },
   mounted() {
-    console.log("挂载了一个页面");
-    this.getAll(1);
   },
 };
 </script>
@@ -461,7 +479,7 @@ $radius: 4px;
     }
 
     .el-table__expanded-cell {
-      padding: 0 0px 0px 20px;
+      padding: 0 0 0 10px;
     }
   }
 }
