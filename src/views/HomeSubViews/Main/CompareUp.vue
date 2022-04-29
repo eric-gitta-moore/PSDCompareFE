@@ -102,7 +102,7 @@
                     <svg-icon icon-class="show-eye"></svg-icon>
                     <span
                         style="cursor: pointer"
-                        @click="checkTask(scope.row.id)"
+                        @click="lookUpCompareResult(scope.row.taskId,scope.row.id)"
                     >查看</span
                     >
                     <el-divider direction="vertical"></el-divider>
@@ -164,7 +164,7 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer" @click="checkTask(scope.row.id)"
+              <span style="cursor: pointer" @click="lookUpCompareResult(scope.row.id)"
               >查看</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -321,7 +321,7 @@ export default {
     },
     deleteTask(Ids) {
       //获得勾选的id.
-      taskGroup.deleteTaskByIds(Ids);
+      taskGroup.delTaskByIds(Ids);
       this.$notify({
         title: "删除成功！",
         type: "success",
@@ -339,15 +339,19 @@ export default {
         window.open(FileBiz.getDownloadUrl([row]));
       }
     },
-    //查看该文件
-    checkTask(rowKey) {
+    /**
+     * 表格中查看按钮事件
+     * @param {Number} taskId
+     * @param {Number|null} compareId
+     */
+    lookUpCompareResult(taskId, compareId = null) {
       this.$router.push({
-        name: "Home",
-        params: {
-          id: rowKey, //请求回来的任务组id
+        name: "HomeCompareLeft",
+        query: {
+          taskId: taskId + '',
+          compareId: compareId + '',
         },
       });
-      console.log(rowKey);
     },
     handleDelete(index, val) {
       console.log("你还勾选了我们要选的", index, val);
@@ -397,7 +401,7 @@ export default {
           this.$set(ee, 'index', index);
           return ee;
         });
-        // checkTaskTop[index] = checkOrders;
+        e.orders = e.orders.filter((e) => e.id !== null);
         this.$set(e, 'index', index);
         this.$set(e, 'checked', false);
         this.$set(e, 'indeterminate', false);//checkbox不确定状态

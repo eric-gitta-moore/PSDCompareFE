@@ -14,9 +14,7 @@ function getGroupById({
     groupId
 }) {
 
-    return BaseAxios({
-        url: `/taskGroup/getGroupById`,
-        method: "get",
+    return BaseAxios.get(`/taskGroup/getGroupById`, {
         params: {
             groupId
         },

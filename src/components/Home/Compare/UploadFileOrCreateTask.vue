@@ -17,8 +17,10 @@
 </template>
 
 <script>
+import TaskGroupBiz from "@/biz/Rbac/TaskGroup";
 
 export default {
+  name: "UploadFileOrCreateTask",
   data() {
     return {};
   },
@@ -42,11 +44,10 @@ export default {
                 });
                 return;
               }
-              this.$message({
-                type: "success",
-                message: "你的任务是: " + value,
-              });
-              this.$emit("createTask", value)
+              TaskGroupBiz.addTaskGroup({name: value}).then(() => {
+                this.$message.success("创建成功");
+                this.$emit('on-created-task');
+              })
             },)
             .catch(() => {
             });

@@ -1,6 +1,7 @@
 import BaseAxios from "./_BaseAxios.js";
 import ResHelper from "../_ResponseHelper.js"
 import axios from "axios";
+import {BASE_URL} from "@/const";
 
 /**
  * 获取user余额信息
@@ -30,7 +31,7 @@ function getQRCode({
                        size,
                        fee
                    }) {
-    return `http://buchitang.top:8081/recharge/getQRCode?size=${size}&fee=${fee}`;
+    return `${BASE_URL}/recharge/getQRCode?size=${size}&fee=${fee}`;
 }
 
 /**

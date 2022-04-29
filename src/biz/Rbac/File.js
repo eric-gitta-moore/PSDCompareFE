@@ -3,8 +3,8 @@ import CommonResult from "@/entity/_Common/CommonResult";
 
 /**
  * @description 创建对比组
- * @param referenceFiles
- * @param compareFiles
+ * @param {Array.<File>} referenceFiles
+ * @param {Array.<File>} compareFiles
  * @param {Number} taskId
  * @returns {Promise<string>}
  */

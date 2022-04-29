@@ -7,7 +7,7 @@
             <div class="left">
               <span>对比记录</span>
               <span class="gray" :style="{'margin-left': '10px','font-size':'14px'}">
-                对比组: {{ compareLogData.name }}</span>
+                对比组: {{ compareGroupName }}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -18,13 +18,17 @@
                     icon-class="transform"
                 ></svg-icon>
               </a>
-              <UploadFileOrCreateTask class="upload-file-or-create-task" @on-click-upload='handleOnClickUpload'/>
+              <UploadFileOrCreateTask
+                  class="upload-file-or-create-task"
+                  @on-click-upload='handleOnClickUpload'
+                  @on-created-task="handleOnCreatedTask"
+              />
             </div>
           </el-col>
         </el-row>
       </div>
       <div class="orders">
-        <ul infinite-scroll-immediate="true">
+        <ul infinite-scroll-immediate="true" v-if="compareLogData==={}">
           <li v-for="(val, index) in compareLogData.orders" :key="val.id">
             <el-row class="order">
               <el-col>
@@ -208,7 +212,7 @@
 <script>
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
-import task from "../../../biz/Rbac/TaskGroup.js";
+import TaskGroupBiz from "@/biz/Rbac/TaskGroup.js";
 import OrderEntity from "@/entity/Rbac/Order";
 import TaskGroupEntity from "@/entity/Rbac/TaskGroup";
 
@@ -260,8 +264,8 @@ export default {
     noMore() {
       return this.currentPage >= this.totalPages;
     },
-    disableLoading() {
-      return this.noMore || this.isLoading;
+    compareGroupName() {
+      return this.compareLogData?.name;
     },
 
     /**
@@ -321,13 +325,21 @@ export default {
   },
   methods: {
     /**
-     * 点击上传文件显示上传弹窗事件
+     * @description 点击上传文件显示上传弹窗事件
      */
     handleOnClickUpload() {
       this.IsUploadDialogShow = true;
     },
     /**
-     * 上传窗口上传完成
+     * @description 创建任务完成
+     */
+    handleOnCreatedTask() {
+      setTimeout(() => {
+        this.refreshData();
+      }, 1000);
+    },
+    /**
+     * @description 上传窗口上传完成
      */
     uploadOnComplete() {
       this.IsUploadDialogShow = false;
@@ -351,99 +363,39 @@ export default {
       //   message: "获取对比结果",
       // });
     },
-    openUploadFileOrCreateTask() {
-      this.openUploadFileOrCreateTaskVisible = true;
-    },
-    getCompareResultUrl() {
-      return !("workObj" in this) || !("compareResultUrl" in this.workObj)
-          ? `/public/images/251.png`
-          : this.workObj.compareResultUrl;
-    },
-    // 获取全部对比组
-    // getAll(val) {
-    //   task.getAll(val).then((res) => {
-    //     this.compareLogData.push(...res.records);
-    //     this.total = res.total;
-    // for (var index in this.compareLogData) {
-    //   console.log("for in 循环的ele是：", index);
-    //   this.isFoldArray[index] = "展开";
-    // }
-    //     console.log("我还可滚");
-    //   });
-    // for(var i)
-    // console.log("这是获取到的对比组个数", this.compareLogData.length);
-    // },
-    // 滚轮下滑刷新数据
-    // load() {
-    //   if (this.compareLogData.length <= this.total) {
-    //     this.getAll(this.index);
-    //     this.index++;
-    //     console.log("我还可滚");
-    //   } else console.log("到底了");
-    // },
-    // load() {
-    //   this.isLoading = true;
-    //   setTimeout(() => {
-    //     this.currentPage++;
-    //     this.queryData();
-    //   }, 500);
-    // },
-    // queryData() {
-    //   this.$api
-    //     .selectCompareLog(this.currentPage, this.pageSize)
-    //     .then((res) => {
-    //       this.compareLogData = this.compareLogData.concat(
-    //         res.data.data.records
-    //       );
-    //       for (let datum of res.data.data.records) {
-    //         this.isFoldArray[datum.id] = false;
-    //       }
-    //       this.currentPage = res.data.data.current;
-    //       this.pageSize = res.data.data.size;
-    //       this.totalPages = res.data.data.pages;
-    //       this.isLoading = false;
-    //     });
-    // },
+
     downloadCompareResult(compareId) {
-      task.download(compareId).then((res) => {
+      TaskGroupBiz.download(compareId).then((res) => {
         this.$notify.success({
           title: "成功",
           message: "获取对比结果",
         });
         // console.log("点击对比之后返回的是",res);
       });
-      // if (!this.workObj || !this.workObj.workCode) {
-      //   this.$store
-      //     .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-      //     .then(() => {
-      //       this.compareResultImgUrl = this.workObj.compareResultUrl;
-      //       if (this.workObj.compareResultUrl) {
-      //         this.$notify.success({
-      //           title: "成功",
-      //           message: "获取对比结果",
-      //         });
-      //       }
-      //       console.log(this.compareResultImgUrl);
-      //       window.open(
-      //         this.$api.reqDownloadUrl(compareId, this.workObj.workCode)
-      //       );
-      //     });
-      // } else {
-      //   window.open(this.$api.reqDownloadUrl(compareId, this.workObj.workCode));
-      // }
     },
+    /**
+     * @description 切换布局
+     */
     changeLayout() {
       console.log("用另一种布局方式显示文件,上下布局");
       this.$router.push({name: "HomeCompareUp"});
     },
+
+    /**
+     * @description 刷新数据
+     */
+    refreshData() {
+      if (this.$route.query.taskId === undefined) {
+        TaskGroupBiz.getAll(1, 1).then((res) => {
+          this.compareLogData = res.records[0];
+        });
+      } else {
+        TaskGroupBiz.find({taskId: Number(this.$route.query.taskId)}).then(r => this.compareLogData = r);
+      }
+    },
   },
   created() {
-    task.getAll(1).then((res) => {
-      this.compareLogData = res.records[0];
-      for (let index in res.records[0].orders) {
-        this.isFoldArray[index] = "查看更多";
-      }
-    });
+    this.refreshData();
   },
 };
 </script>

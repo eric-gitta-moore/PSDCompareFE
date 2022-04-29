@@ -32,78 +32,78 @@
           <el-header class="table-header" height="auto">
             <p>参考图纸文件（{{ fileListLeftSize }}）</p>
             <el-button
-              type="primary"
-              size="mini"
-              @click="handleUploadClick('leftFileInput')"
-              >上传
+                type="primary"
+                size="mini"
+                @click="handleUploadClick('leftFileInput')"
+            >上传
             </el-button>
           </el-header>
           <el-main class="table-main">
             <el-table
-              :data="fileListLeft"
-              tooltip-effect="dark"
-              :header-cell-style="headerCellStyle"
-              :row-class-name="rowClassName"
-              @cell-click="cellClickEvent"
-              :cell-class-name="tableCellClassName"
-              @header-click="headerLeftClickEvent"
-              ref="leftTable"
+                :data="fileListLeft"
+                tooltip-effect="dark"
+                :header-cell-style="headerCellStyle"
+                :row-class-name="rowClassName"
+                @cell-click="cellClickEvent"
+                :cell-class-name="tableCellClassName"
+                @header-click="headerLeftClickEvent"
+                ref="leftTable"
             >
               <el-table-column width="40px" class-name="dragalbe">
                 <template #default="scope">
                   <SvgIcon
-                    icon-class="drag"
-                    class="drag-icon"
-                    :data-index="scope.row.index"
-                    :data-sort-index="scope.row.sortIndex"
+                      icon-class="drag"
+                      class="drag-icon"
+                      :data-index="scope.row.index"
+                      :data-sort-index="scope.row.sortIndex"
                   ></SvgIcon>
                 </template>
               </el-table-column>
               <el-table-column
-                width="50px"
-                prop="index"
-                label="序号"
-                :show-overflow-tooltip="true"
+                  width="50px"
+                  prop="index"
+                  label="序号"
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
-                prop="title"
-                label="文件名"
-                :show-overflow-tooltip="true"
-                :index="3"
+                  prop="title"
+                  label="文件名"
+                  :show-overflow-tooltip="true"
+                  :index="3"
               ></el-table-column>
               <el-table-column
-                prop="size"
-                label="大小"
-                :formatter="showFormatFileSize"
-                :show-overflow-tooltip="true"
-                width="80px"
+                  prop="size"
+                  label="大小"
+                  :formatter="showFormatFileSize"
+                  :show-overflow-tooltip="true"
+                  width="80px"
               ></el-table-column>
               <el-table-column width="40px">
                 <template #default="scope">
                   <SvgIcon
-                    icon-class="ding"
-                    class="ding-icon"
-                    :class="dingStyle(scope.row, fileListLeft)"
+                      icon-class="ding"
+                      class="ding-icon"
+                      :class="dingStyle(scope.row, fileListLeft)"
                   ></SvgIcon>
                 </template>
                 <template #header>
                   <SvgIcon
-                    icon-class="ding"
-                    class="ding-icon"
-                    :class="headerDingStyle(leftTableDing)"
+                      icon-class="ding"
+                      class="ding-icon"
+                      :class="headerDingStyle(leftTableDing)"
                   ></SvgIcon>
                 </template>
               </el-table-column>
             </el-table>
 
             <input
-              class="el-upload__input"
-              type="file"
-              ref="leftFileInput"
-              name="leftFileInput"
-              accept=".pdf"
-              multiple
-              @change="handFileChange('leftFileInput', 'fileListLeft')"
+                class="el-upload__input"
+                type="file"
+                ref="leftFileInput"
+                name="leftFileInput"
+                accept=".pdf"
+                multiple
+                @change="handFileChange('leftFileInput', 'fileListLeft')"
             />
           </el-main>
         </el-container>
@@ -115,65 +115,65 @@
           <el-header class="table-header" height="auto">
             <p>对比图纸文件（{{ fileListRightSize }}）</p>
             <el-button
-              type="primary"
-              size="mini"
-              @click="handleUploadClick('rightFileInput')"
-              >上传
+                type="primary"
+                size="mini"
+                @click="handleUploadClick('rightFileInput')"
+            >上传
             </el-button>
           </el-header>
           <el-main class="table-main">
             <el-table
-              :data="fileListRight"
-              tooltip-effect="dark"
-              :header-cell-style="headerCellStyle"
-              :row-class-name="rowClassName"
-              @cell-click="cellClickEvent"
-              :cell-class-name="tableCellClassName"
-              @header-click="headerRightClickEvent"
-              ref="rightTable"
+                :data="fileListRight"
+                tooltip-effect="dark"
+                :header-cell-style="headerCellStyle"
+                :row-class-name="rowClassName"
+                @cell-click="cellClickEvent"
+                :cell-class-name="tableCellClassName"
+                @header-click="headerRightClickEvent"
+                ref="rightTable"
             >
               <el-table-column width="40px" class-name="dragalbe">
                 <template #default="scope">
                   <SvgIcon
-                    icon-class="drag"
-                    class="drag-icon"
-                    :data-index="scope.row.index"
-                    :data-sort-index="scope.row.sortIndex"
+                      icon-class="drag"
+                      class="drag-icon"
+                      :data-index="scope.row.index"
+                      :data-sort-index="scope.row.sortIndex"
                   ></SvgIcon>
                 </template>
               </el-table-column>
               <el-table-column
-                width="50px"
-                prop="index"
-                label="序号"
-                :show-overflow-tooltip="true"
+                  width="50px"
+                  prop="index"
+                  label="序号"
+                  :show-overflow-tooltip="true"
               ></el-table-column>
               <el-table-column
-                prop="title"
-                label="文件名"
-                :show-overflow-tooltip="true"
-                :index="3"
+                  prop="title"
+                  label="文件名"
+                  :show-overflow-tooltip="true"
+                  :index="3"
               ></el-table-column>
               <el-table-column
-                prop="size"
-                label="大小"
-                :formatter="showFormatFileSize"
-                :show-overflow-tooltip="true"
-                width="80px"
+                  prop="size"
+                  label="大小"
+                  :formatter="showFormatFileSize"
+                  :show-overflow-tooltip="true"
+                  width="80px"
               ></el-table-column>
               <el-table-column width="40px">
                 <template #default="scope">
                   <SvgIcon
-                    icon-class="ding"
-                    class="ding-icon"
-                    :class="dingStyle(scope.row, fileListRight)"
+                      icon-class="ding"
+                      class="ding-icon"
+                      :class="dingStyle(scope.row, fileListRight)"
                   ></SvgIcon>
                 </template>
                 <template #header>
                   <SvgIcon
-                    icon-class="ding"
-                    class="ding-icon"
-                    :class="headerDingStyle(rightTableDing)"
+                      icon-class="ding"
+                      class="ding-icon"
+                      :class="headerDingStyle(rightTableDing)"
                   ></SvgIcon>
                 </template>
               </el-table-column>
@@ -192,13 +192,13 @@
             </el-table>
 
             <input
-              class="el-upload__input"
-              type="file"
-              ref="rightFileInput"
-              name="rightFileInput"
-              accept=".pdf"
-              multiple
-              @change="handFileChange('rightFileInput', 'fileListRight')"
+                class="el-upload__input"
+                type="file"
+                ref="rightFileInput"
+                name="rightFileInput"
+                accept=".pdf"
+                multiple
+                @change="handFileChange('rightFileInput', 'fileListRight')"
             />
           </el-main>
         </el-container>
@@ -208,18 +208,19 @@
       <div class="footer-btn-group">
         <div class="left">
           <el-tooltip
-            content="自动匹配文件名相同的文件并锁定"
-            placement="top"
-            :open-delay="500"
+              content="自动匹配文件名相同的文件并锁定"
+              placement="top"
+              :open-delay="500"
           >
             <el-button @click="autoMatchFileList" :plain="true"
-              >自动匹配</el-button
+            >自动匹配
+            </el-button
             >
           </el-tooltip>
           <el-tooltip
-            content="恢复到最近一次自动匹配前的状态"
-            placement="top"
-            :open-delay="500"
+              content="恢复到最近一次自动匹配前的状态"
+              placement="top"
+              :open-delay="500"
           >
             <el-button @click="resetFileList" :plain="true">重置匹配</el-button>
           </el-tooltip>
@@ -236,8 +237,8 @@
 
 <script>
 import FileHelper from "@/util/FileHelper.js";
-import Sortable, { Swap } from "sortablejs";
-import { deepClone } from "@/util/DeepClone";
+import Sortable, {Swap} from "sortablejs";
+import {deepClone} from "@/util/DeepClone";
 
 Sortable.mount(new Swap());
 import BaseDialog from "@/components/_Common/BaseDialog.vue";
@@ -272,7 +273,7 @@ export default {
        * @description 右侧文件列表，备份用于重置的
        */
       fileListRightBackup: [],
-      headerCellStyle: { background: "#f6f8fa" },
+      headerCellStyle: {background: "#f6f8fa"},
       /**
        * @description 左侧表格表头钉子状态
        */
@@ -338,8 +339,8 @@ export default {
       // }
       // console.log(compareArr);
       let msg = await FileBiz.addCompareGroup({
-        referenceFiles: left,
-        compareFiles: right,
+        referenceFiles: left.map(i => i.FileObj),
+        compareFiles: right.map(i => i.FileObj),
         taskId: this.taskId,
       });
       this.$notify.success({
@@ -373,8 +374,8 @@ export default {
      */
     resetFileList() {
       if (
-        this.fileListLeftBackup.length === 0 ||
-        this.fileListRightBackup.length === 0
+          this.fileListLeftBackup.length === 0 ||
+          this.fileListRightBackup.length === 0
       ) {
         this.$message({
           showClose: true,
@@ -418,31 +419,31 @@ export default {
       this.fileListLeftBackup = deepClone(this.fileListLeft);
       this.fileListRightBackup = deepClone(this.fileListRight);
       let leftFileListUnmatchedIndex = [],
-        rightFileListUnmatchedIndex = []; //未匹配到的文件的index
+          rightFileListUnmatchedIndex = []; //未匹配到的文件的index
       let leftFileListMatched = [],
-        rightFileListMatched = [];
+          rightFileListMatched = [];
       for (const leftItemIndex in this.fileListLeft) {
         for (const rightItemIndex in this.fileListRight) {
           // console.log(leftItemIndex, rightItemIndex, this.fileListLeft[leftItemIndex].title.trim(), this.fileListRight[rightItemIndex].title.trim(), this.fileListLeft[leftItemIndex].title.trim() === this.fileListRight[rightItemIndex].title.trim())
           if (
-            this.fileListLeft[leftItemIndex].title.trim() ===
-            this.fileListRight[rightItemIndex].title.trim()
+              this.fileListLeft[leftItemIndex].title.trim() ===
+              this.fileListRight[rightItemIndex].title.trim()
           ) {
             // 匹配到的文件就给他锁定
             leftFileListMatched.push(
-              deepClone(this.fileListLeft[leftItemIndex])
+                deepClone(this.fileListLeft[leftItemIndex])
             );
             leftFileListMatched[
-              leftFileListMatched.length - 1
-            ].dragalbe = false;
+            leftFileListMatched.length - 1
+                ].dragalbe = false;
             leftFileListUnmatchedIndex.push(parseInt(leftItemIndex));
 
             rightFileListMatched.push(
-              deepClone(this.fileListRight[rightItemIndex])
+                deepClone(this.fileListRight[rightItemIndex])
             );
             rightFileListMatched[
-              rightFileListMatched.length - 1
-            ].dragalbe = false;
+            rightFileListMatched.length - 1
+                ].dragalbe = false;
             rightFileListUnmatchedIndex.push(parseInt(rightItemIndex));
             break;
           }
@@ -451,16 +452,16 @@ export default {
 
       //把没有匹配到的过滤出来
       let leftFileListUnmatched = [],
-        rightFileListUnmatched = [];
+          rightFileListUnmatched = [];
       leftFileListUnmatched = deepClone(
-        this.fileListLeft.filter(
-          (value, index) => !leftFileListUnmatchedIndex.includes(index)
-        )
+          this.fileListLeft.filter(
+              (value, index) => !leftFileListUnmatchedIndex.includes(index)
+          )
       );
       rightFileListUnmatched = deepClone(
-        this.fileListRight.filter(
-          (value, index) => !rightFileListUnmatchedIndex.includes(index)
-        )
+          this.fileListRight.filter(
+              (value, index) => !rightFileListUnmatchedIndex.includes(index)
+          )
       );
       //锁定状态修改为未锁定
       leftFileListUnmatched.forEach((e) => (e.dragalbe = true));
@@ -472,7 +473,7 @@ export default {
       // console.log("leftFileListMatched", leftFileListMatched, "rightFileListMatched", rightFileListMatched)
       leftFileListMatched = leftFileListMatched.concat(leftFileListUnmatched);
       rightFileListMatched = rightFileListMatched.concat(
-        rightFileListUnmatched
+          rightFileListUnmatched
       );
       for (const i in leftFileListMatched) {
         leftFileListMatched[i].sortIndex = parseInt(i);
@@ -512,7 +513,7 @@ export default {
         item.dragalbe = this[`${side.toLowerCase()}TableDing`];
       }
       this[`${side.toLowerCase()}TableDing`] =
-        !this[`${side.toLowerCase()}TableDing`];
+          !this[`${side.toLowerCase()}TableDing`];
     },
 
     /**
@@ -522,7 +523,7 @@ export default {
      * @param cell
      * @param event
      */
-    doFixed({ row, column, cell, event }) {
+    doFixed({row, column, cell, event}) {
       row.dragalbe = !row.dragalbe;
     },
 
@@ -584,7 +585,7 @@ export default {
      * @param rowIndex
      * @param columnIndex
      */
-    tableCellClassName({ row, column, rowIndex, columnIndex }) {
+    tableCellClassName({row, column, rowIndex, columnIndex}) {
       // row.rowIndex = rowIndex;
       column.columnIndex = columnIndex;
     },
@@ -595,7 +596,7 @@ export default {
      * @param rowIndex
      * @returns {string}
      */
-    rowClassName({ row, rowIndex }) {
+    rowClassName({row, rowIndex}) {
       if (!row.dragalbe) {
         return "drag-filtered";
       }
@@ -634,7 +635,7 @@ export default {
      */
     cellClickEvent(row, column, cell, event) {
       if (parseInt(column.columnIndex) === 4)
-        this.doFixed({ row, column, cell, event });
+        this.doFixed({row, column, cell, event});
     },
 
     /**
@@ -767,7 +768,8 @@ export default {
       }
     },
   },
-  beforeMount() {},
+  beforeMount() {
+  },
   mounted() {
     window.vue = this;
   },

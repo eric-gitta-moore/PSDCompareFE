@@ -188,7 +188,7 @@ export default {
     },
     //批量下载或删除任务组
     deleteTask() {
-      TaskGroup.deleteTaskByIds(this.IdsArr);
+      TaskGroup.delTaskByIds(this.IdsArr);
       this.$message.success('删除成功')
     },
     handleSelectionChange(val) {
