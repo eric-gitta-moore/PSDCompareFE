@@ -1,5 +1,5 @@
 <template>
-  <el-container class="main-container" :style="{height:heightPXLimit}">
+  <el-container class="main-content-container" :style="{height:heightPXLimit}">
     <el-aside class="main-left" width="0">
       <div>
         <el-row class="header-row">
@@ -60,12 +60,13 @@
                     <!-- collapse -->
                     <el-collapse-item
                         :name="val.id"
-                        :title="isFoldArray[index]"
-                        @click.native="isShow(index)"
                     >
+                      <template #title>
+                        <el-button type="text" @click="isShow(index)">{{ isFoldArray[index] }}</el-button>
+                      </template>
                       <el-row class="file-list">
                         <el-col :span="20">
-                          <span>{{ val.title ? val.title : "对比1" }}</span>
+                          <span>{{ val.files[0].name }}</span>
                         </el-col>
                         <el-col :span="4">
                           <span class="success">已完成</span>
@@ -74,7 +75,7 @@
 
                       <el-row class="file-list">
                         <el-col :span="20">
-                          <span>{{ val.title ? val.title : "对比2" }}</span>
+                          <span>{{ val.files[1].name }}</span>
                         </el-col>
                         <el-col :span="4">
                           <span class="normal">已完成</span>
@@ -243,7 +244,7 @@ export default {
       pageSize: 3, //每页数据总数
       totalPages: 0, //总页数
       isLoading: false, //是否在加载中，绑定给loading图标用
-      isFoldArray: ["展开"],
+      isFoldArray: ["查看更多"],
       compareWorkName: "对比任务",
       openUploadFileOrCreateTaskVisible: false, //加号操作选择框是否出现
       CreateTaskDialogVisible: false, //创建任务框是否出现
@@ -334,9 +335,9 @@ export default {
     },
     //控制每一个折叠面板的文字
     isShow(index) {
-      if (this.isFoldArray[index] === "展开")
+      if (this.isFoldArray[index] === "查看更多")
         this.isFoldArray.splice(index, 1, "收起");
-      else this.isFoldArray.splice(index, 1, "展开");
+      else this.isFoldArray.splice(index, 1, "查看更多");
     },
     /**
      * @description 点击左侧对比组的“对比”或“查看”按钮
@@ -440,62 +441,87 @@ export default {
     task.getAll(1).then((res) => {
       this.compareLogData = res.records[0];
       for (let index in res.records[0].orders) {
-        this.isFoldArray[index] = "展开";
+        this.isFoldArray[index] = "查看更多";
       }
     });
   },
 };
 </script>
 
-<style lang='scss' scoped>
-* {
-  list-style: none;
-}
-
-.upload-file-or-create-task {
-  display: inline-block;
-  margin-left: 5px;
-}
+<style lang='scss'>
 
 $radius: 4px;
-.loading span {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #409eff;
-  border-left: transparent;
-  animation: zhuan 0.5s linear infinite;
-  border-radius: 50%;
-}
-
-@keyframes zhuan {
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #eee;
-  border-radius: 3px;
-}
-
-.gray {
-  color: #a8a8aa;
-}
-
-.main-container {
+.main-content-container {
   align-items: stretch;
   padding: 18px;
   box-sizing: border-box;
   background: #f1f5f9;
+
+  * {
+    list-style: none;
+  }
+
+  .el-collapse {
+    border: 0;
+
+    .el-collapse-item__header {
+      justify-content: center;
+      border-bottom: 0;
+      height: 18px;
+      line-height: 18px;
+      //左侧折叠面板更多，把箭头与文字合并在一起
+      .el-collapse-item__arrow {
+        margin: 0 0 0 5px;
+      }
+    }
+
+    .el-collapse-item__wrap {
+      border: 0;
+    }
+
+    .el-collapse-item__content {
+      padding-bottom: 0;
+    }
+  }
+
+  .upload-file-or-create-task {
+    display: inline-block;
+    margin-left: 5px;
+  }
+
+
+  .loading span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #409eff;
+    border-left: transparent;
+    animation: zhuan 0.5s linear infinite;
+    border-radius: 50%;
+  }
+
+  @keyframes zhuan {
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #eee;
+    border-radius: 3px;
+  }
+
+  .gray {
+    color: #a8a8aa;
+  }
 
   .main-left {
     flex: {
@@ -511,156 +537,157 @@ $radius: 4px;
     }
     border-right: 1px solid #e5e7ed;
   }
-}
 
-.header-row {
-  line-height: 60px;
-  font-size: 16px;
+  .header-row {
+    line-height: 60px;
+    font-size: 16px;
 
-  .left {
-    text-align: left;
-  }
-
-  .right {
-    a {
-      cursor: pointer;
-      margin-right: 5px;
-
-      .svg-transform {
-        height: 14px;
-        width: 14px;
-        cursor: pointer;
-        vertical-align: 0;
-        filter: drop-shadow(#636d7e 9999rem 0);
-        transform: translateX(-9999rem);
-      }
-    }
-
-    text-align: right;
-  }
-}
-
-.orders {
-  height: 90%;
-  overflow-y: auto;
-
-  ul {
-    padding: 0;
-  }
-}
-
-.order {
-  margin-bottom: 20px;
-  border: 1px solid #e5e7ed;
-  border-radius: 4px;
-  padding: 15px;
-  text-align: left;
-
-  .more {
-    text-align: center;
-    color: #25262b;
-    margin-top: 0.5em;
-
-    span {
-      cursor: pointer;
-    }
-  }
-
-  .el-row {
-    margin-bottom: 20px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .success {
-    color: #7ebf50;
-  }
-
-  .normal {
-    color: #347eff;
-  }
-
-  .compare,
-  .download {
-    text-align: right;
-
-    a {
-      cursor: pointer;
-      color: #347eff;
-    }
-  }
-
-  .notice {
-    color: #a8a8aa;
-  }
-
-  .spilit-line {
-    border: 1px solid #e5e7ed;
-  }
-}
-
-.time-line {
-  text-align: center;
-  line-height: 14px;
-  font-size: 14px;
-
-  .svg-icon {
-    width: 1.2em;
-    height: 1.2em;
-    transform: translateY(-15%);
-  }
-
-  .el-progress {
-    transform: translateY(15%);
-  }
-}
-
-.main-right {
-  .el-container {
-    height: 100%;
-  }
-
-  .el-main {
-    padding: 0;
-    margin: 20px;
-  }
-
-  .right-main-img {
-    width: 100%;
-    height: 100%;
-
-    .el-image {
-      height: auto;
-      width: 100%;
-    }
-  }
-
-  flex: {
-    basis: 77%;
-  }
-  background: white;
-  border-top-right-radius: $radius;
-  border-bottom-right-radius: $radius;
-}
-
-.main-right-header {
-  .el-col {
-    &:first-of-type {
+    .left {
       text-align: left;
     }
 
-    overflow: hidden;
-    text-overflow: ellipsis;
+    .right {
+      a {
+        cursor: pointer;
+        margin-right: 5px;
 
-    &:last-of-type {
+        .svg-transform {
+          height: 14px;
+          width: 14px;
+          cursor: pointer;
+          vertical-align: 0;
+          filter: drop-shadow(#636d7e 9999rem 0);
+          transform: translateX(-9999rem);
+        }
+      }
+
       text-align: right;
     }
+  }
 
-    span {
-      white-space: nowrap;
+  .orders {
+    height: 90%;
+    overflow-y: auto;
+
+    ul {
+      padding: 0;
+    }
+  }
+
+  .order {
+    margin-bottom: 20px;
+    border: 1px solid #e5e7ed;
+    border-radius: 4px;
+    padding: 15px;
+    text-align: left;
+
+    .more {
+      text-align: center;
+      color: #25262b;
+      margin-top: 0.5em;
+
+      span {
+        cursor: pointer;
+      }
+    }
+
+    .el-row {
+      margin-bottom: 20px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .success {
+      color: #7ebf50;
+    }
+
+    .normal {
+      color: #347eff;
+    }
+
+    .compare,
+    .download {
+      text-align: right;
+
+      a {
+        cursor: pointer;
+        color: #347eff;
+      }
+    }
+
+    .notice {
+      color: #a8a8aa;
+    }
+
+    .spilit-line {
+      border: 1px solid #e5e7ed;
+    }
+  }
+
+  .time-line {
+    text-align: center;
+    line-height: 14px;
+    font-size: 14px;
+
+    .svg-icon {
+      width: 1.2em;
+      height: 1.2em;
+      transform: translateY(-15%);
+    }
+
+    .el-progress {
+      transform: translateY(15%);
+    }
+  }
+
+  .main-right {
+    .el-container {
+      height: 100%;
+    }
+
+    .el-main {
+      padding: 0;
+      margin: 20px;
+    }
+
+    .right-main-img {
+      width: 100%;
+      height: 100%;
+
+      .el-image {
+        height: auto;
+        width: 100%;
+      }
+    }
+
+    flex: {
+      basis: 77%;
+    }
+    background: white;
+    border-top-right-radius: $radius;
+    border-bottom-right-radius: $radius;
+  }
+
+  .main-right-header {
+    .el-col {
+      &:first-of-type {
+        text-align: left;
+      }
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:last-of-type {
+        text-align: right;
+      }
+
+      span {
+        white-space: nowrap;
+      }
     }
   }
 }
+
 </style>
