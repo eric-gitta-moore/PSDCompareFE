@@ -22,6 +22,7 @@ switch (process.env.NODE_ENV) {
     default:
         // baseUrl = 'http://ty.y68.fun/sales-show-3'; // swagger http://ty.y68.fun/sales-expo-saas/#/
         baseUrl = 'http://127.0.0.1:4523/mock/838613';
+        baseUrl = '/api';
         break;
 }
 export const BASE_URL = baseUrl;

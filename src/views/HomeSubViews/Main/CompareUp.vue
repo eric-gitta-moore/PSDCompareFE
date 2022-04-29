@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="container-header-right">
-        <el-button type="primary" @click="downLoad" icon="el-icon-download"
+        <el-button type="primary" @click="downLoadBatch" icon="el-icon-download"
         >下载
         </el-button
         >
@@ -109,7 +109,7 @@
                     <svg-icon icon-class="download"></svg-icon>
                     <span
                         style="cursor: pointer"
-                        @click="downLoadTask(scope.row.id)"
+                        @click="downloadSingleFile(scope.row.id,'compare')"
                     >下载</span
                     >
                     <el-divider direction="vertical"></el-divider>
@@ -169,7 +169,7 @@
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
+              <span style="cursor: pointer" @click="downloadSingleFile(scope.row.id,'task')"
               >下载</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -213,6 +213,7 @@ import taskGroup from "../../../biz/Rbac/TaskGroup.js";
 import DownloadHelper from "../../../util/DownloadHelper";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
+import FileBiz from "@/biz/Rbac/File";
 
 export default {
   name: "HomeCompareUp",
@@ -326,10 +327,17 @@ export default {
         type: "success",
       });
     },
-
-    downLoadTask(row) {
-      DownloadHelper.downloadByAnchorTag({});
-      console.log(row);
+    /**
+     * @description 下载单个文件
+     * @param row
+     * @param {'task'|'compare'} type
+     */
+    downloadSingleFile(row, type) {
+      if (type === 'task') {
+        window.open(FileBiz.getTaskDownloadUrl([row]));
+      } else {
+        window.open(FileBiz.getDownloadUrl([row]));
+      }
     },
     //查看该文件
     checkTask(rowKey) {
@@ -406,7 +414,28 @@ export default {
       this.getAll(val);
       console.log(`当前页: ${val}`);
     },
-    downLoad() {
+    /**
+     * @description 批量下载
+     */
+    downLoadBatch() {
+      //获取所有task.orders.order.checked状态为true时候,task.orders.order.id的值
+      let downList = this.tableData.map((task, index) => {
+        return task.orders.map((order, index) => {
+          if (order.checked) return order.id;
+        })
+      })
+      //扁平化
+      downList = downList.flat();
+      //剔除undefined
+      /**
+       * @type {Array.<Number>}
+       */
+      downList = downList.filter(a => a !== undefined)
+      if (downList.length === 0) {
+        this.$message.error('请先选择需要下载的项目')
+        return;
+      }
+      window.open(FileBiz.getDownloadUrl(downList));
     },
   },
   created() {

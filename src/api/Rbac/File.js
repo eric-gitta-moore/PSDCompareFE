@@ -1,8 +1,13 @@
 import BaseAxios from "./_BaseAxios.js";
 import ResHelper from "../_ResponseHelper.js"
 import axios from "axios";
+import {
+    BASE_URL,
+    TIMEOUT
+} from '@/const'
 
 /**
+ * @description
  * 上传文件
  * POST /file/upload
  * 接口ID：16431566
@@ -34,25 +39,36 @@ function upload({
 
 
 /**
+ * @description
  * 批量下载文件
  * GET /file/download
  * 接口ID：16431612
  * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16431612
  * @param {Array.<number>} ids
- * @returns {axios}
+ * @returns {String}
  */
 function download({ids}) {
-    return BaseAxios({
-        url: `/file/download`,
-        method: "get",
-        params: {
-            ids,
-        },
-    }).then(ResHelper.handler);
+    return BASE_URL + '/file/download?ids[]=' + ids.join('&ids[]=');
+
+}
+
+/**
+ * @description
+ * 根据taskgroupId批量下载文件
+ * GET /taskGroup/download
+ * 接口ID：16981068
+ * 接口地址：https://www.apifox.cn/web/project/838613/apis/api-16981068
+ * @param {Array.<number>} ids
+ * @returns {string}
+ */
+function downloadTask({ids}) {
+    return BASE_URL + '/taskGroup/download?ids[]=' + ids.join('&ids[]=');
 }
 
 
 export default {
     upload,
     download,
-}
+    downloadTask,
+
+};
