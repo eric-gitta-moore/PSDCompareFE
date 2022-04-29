@@ -35,16 +35,18 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-table
-                :data="props.row.orders"
-                v-for="(item, index) in props.row.orders"
-                :key="index"
-                style="width: 100%"
-                :show-header="false"
-                @expand-change="load"
-                @selection-change="handleSelectionChange"
+              :data="props.row.orders"
+              style="width: 100%"
+              :show-header="false"
+              @selection-change="
+                (selection) => handleSelectionChange(selection, props.row.index)
+              "
+              ref="multipleTable"
             >
-              <!-- <el-table-column type="selection" width="10" :border="false">
+              <!-- <el-table-column type="selection" width="10" :border="false" class="select">
               </el-table-column> -->
+              <el-table-column type="selection" width="10" :border="false">
+              </el-table-column>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-image
@@ -56,23 +58,23 @@
                   </el-image>
                 </template>
               </el-table-column>
-              <el-table-column width="40">
+              <!-- <el-table-column width="40">
                 <template slot-scope="scope">
                   <el-checkbox
-                      @change="handleDelete(scope.$index, scope.row)"
+                    v-model="isChecked[props.$index]"
+                    @change="select(scope.$index, scope.row)"
                   ></el-checkbox>
                 </template>
-              </el-table-column>
-
+              </el-table-column> -->
               <el-table-column
                   label="流水帐号"
                   prop="serialNumber"
                   width="170"
               ></el-table-column>
               <el-table-column
-                  label="名称"
-                  prop="title"
-                  width="100"
+                label="名称"
+                prop="title"
+                width="120"
               ></el-table-column>
               <el-table-column
                   label="对比费用"
@@ -200,6 +202,7 @@ export default {
   data() {
     return {
       IsUploadDialogShow: false,
+      isChecked: [false],
       multipleSelection: [],
       orders: [],
       srcList: [],
@@ -250,28 +253,46 @@ export default {
     handleDelete(index, val) {
       console.log("你还勾选了我们要选的", index, val);
     },
-    selsecTaskGroup(selection, row) {
-      console.log("你勾选了某个任务组", selection, row);
+    // 为每行数据设置索引 rowIndex 就是当前所在行的索引
+    tableCellClassName({ row, rowIndex }) {
+      row.index = rowIndex;
+      // row.itemDetailRefKey = `items${rowIndex}`
+    },
+    selsecTaskGroup(selecttion, row) {
+      debugger;
+      console.log(this.$refs.multipleTable, "你打开了某一个任务组",row.index);
+      this.$refs.multipleTable.toggleAllSelection();
     },
     changeLayout() {
       console.log("打开左右布局");
       this.$router.push({name: "HomeCompareLeft"});
     },
-    load(row, expandedRows) {
-      console.log("懒加载数据");
+    getAll(val) {
+      taskGroup.getAll(val).then((res) => {
+        console.log("响应成功返回的是：", res.records);
+        // res.records.forEach(element => {
+
+        // });
+        // for (var index in res.records) {
+        //   for(var index1 in res.records.orders){
+
+        //   }
+        // }
+        this.tableData = res.records;
+        this.pagination.total = res.total;
+      });
     },
     // 分页
     handleCurrentChange(val) {
-      taskGroup.getAll(`${val}`).then((res) => {
-        this.tableData = res.records;
-      });
+      this.getAll(val);
       console.log(`当前页: ${val}`);
     },
     // 勾选框
-    handleSelectionChange(val) {
-      console.log("val", val);
-      this.multipleSelection = val;
-      this.orders.push(...this.multipleSelection);
+    handleSelectionChange(val, index) {
+      // this.$nextTick(() => {
+      //   console.log("该订单对应的任务组是？：", this.$refs.multipleTable);
+      // });
+      console.log("某个order被勾选", val, index);
     },
     loadImg(val) {
       this.srcList = [];
@@ -283,12 +304,7 @@ export default {
   },
   mounted() {
     console.log("挂载了一个页面");
-    taskGroup.getAll(1).then((res) => {
-      console.log("响应成功返回的是：", res);
-      console.log("COMPARE", res.records);
-      this.tableData = res.records;
-      this.pagination.total = res.total;
-    });
+    this.getAll(1);
   },
 };
 </script>

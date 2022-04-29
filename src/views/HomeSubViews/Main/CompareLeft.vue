@@ -3,10 +3,15 @@
     <el-aside class="main-left" width="0">
       <div>
         <el-row class="header-row">
-          <el-col :span="12" class="left">
-            <span>对比记录</span>
+          <el-col :span="16">
+            <div class="left">
+              <span>对比记录</span>
+              <span class="gray" style="marginleft: 10px">{{
+                compareLogData.name
+              }}</span>
+            </div>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <div class="right">
               <a @click="changeLayout()" title="切换布局">
                 <svg-icon
@@ -20,8 +25,8 @@
         </el-row>
       </div>
       <div class="orders">
-        <ul v-infinite-scroll="load" infinite-scroll-immediate="true">
-          <li v-for="(val, index) in compareLogData" :key="val.id">
+        <ul infinite-scroll-immediate="true">
+          <li v-for="(val, index) in compareLogData.orders" :key="val.id">
             <el-row class="order">
               <el-col>
                 <div>
@@ -32,9 +37,8 @@
                           val.title ? val.title : "对比记录" + val.id
                         }}</span>
                     </el-col>
-
                     <el-col :span="4" class="compare">
-                      <a @click="gotoCompareResult(val.id)">查看</a>
+                      <a @click="gotoCompareResult(index)">对比</a>
                     </el-col>
 
                     <el-col :span="4" class="download">
@@ -62,16 +66,6 @@
                         :title="isFoldArray[index]"
                         @click.native="isShow(index)"
                     >
-                      <!-- <template slot="title">
-                        <span v-if="isFoldArray[index]"  @click.native="isShow(index)">收起</span>
-                        <span v-else>展开</span>
-                      </template> -->
-                      <!-- <el-row>
-                        <el-col class="spilit-line">
-                          <span></span>
-                        </el-col>
-                      </el-row> -->
-
                       <el-row class="file-list">
                         <el-col :span="20">
                           <span>{{ val.title ? val.title : "对比1" }}</span>
@@ -160,7 +154,10 @@
         </el-header>
         <el-main>
           <div class="right-main-img">
-            <img :src="compareImgUrl" alt=""/>
+            <span v-if="compareImgUrl.length === 0" class="gray"
+              >请选择要对比的文件</span
+            >
+            <img :src="compareImgUrl" v-else />
           </div>
         </el-main>
       </el-container>
@@ -253,23 +250,16 @@ export default {
     },
     //控制每一个折叠面板的文字
     isShow(index) {
-      if (this.isFoldArray[index] === "展开") this.isFoldArray.splice(index, 1, "收起");
+      if (this.isFoldArray[index] === "展开")
+        this.isFoldArray.splice(index, 1, "收起");
       else this.isFoldArray.splice(index, 1, "展开");
     },
-    gotoCompareResult(compareId) {
-      console.log("你点击了对比", compareId);
-      // this.$store
-      //   .dispatch("reqAndRreshCompareWorkWithStatus", compareId)
-      //   .then(() => {
-      //     this.compareImgUrl = this.workObj.compareResultUrl;
-      //     if (this.workObj.compareResultUrl) {
-      //       this.$notify.success({
-      //         title: "成功",
-      //         message: "获取对比结果",
-      //       });
-      //     }
-      //     console.log(this.compareImgUrl);
-      //   });
+    gotoCompareResult(index) {
+      this.compareImgUrl = this.compareLogData.orders[index].url;
+      this.$notify.success({
+        title: "成功",
+        message: "获取对比结果",
+      });
     },
     openUploadFileOrCreateTask() {
       this.openUploadFileOrCreateTaskVisible = true;
@@ -280,27 +270,27 @@ export default {
           : this.workObj.compareResultUrl;
     },
     // 获取全部对比组
-    getAll(val) {
-      task.getAll(val).then((res) => {
-        this.compareLogData.push(...res.records);
-        this.total = res.total;
-        for (let index in this.compareLogData) {
-          console.log("for in 循环的ele是：", index);
-          this.isFoldArray[index] = "展开";
-        }
-        console.log("我还可滚");
-      });
-      // for(var i)
-      // console.log("这是获取到的对比组个数", this.compareLogData.length);
-    },
+    // getAll(val) {
+    //   task.getAll(val).then((res) => {
+    //     this.compareLogData.push(...res.records);
+    //     this.total = res.total;
+    // for (var index in this.compareLogData) {
+    //   console.log("for in 循环的ele是：", index);
+    //   this.isFoldArray[index] = "展开";
+    // }
+    //     console.log("我还可滚");
+    //   });
+    // for(var i)
+    // console.log("这是获取到的对比组个数", this.compareLogData.length);
+    // },
     // 滚轮下滑刷新数据
-    load() {
-      if (this.compareLogData.length <= this.total) {
-        this.getAll(this.index);
-        this.index++;
-        console.log("我还可滚");
-      } else console.log("到底了");
-    },
+    // load() {
+    //   if (this.compareLogData.length <= this.total) {
+    //     this.getAll(this.index);
+    //     this.index++;
+    //     console.log("我还可滚");
+    //   } else console.log("到底了");
+    // },
     // load() {
     //   this.isLoading = true;
     //   setTimeout(() => {
@@ -325,8 +315,12 @@ export default {
     //     });
     // },
     downloadCompareResult(compareId) {
-      task.download(compareId).then(res => {
-        console.log("点击对比之后返回的是", res);
+      task.download(compareId).then((res) => {
+        this.$notify.success({
+          title: "成功",
+          message: "获取对比结果",
+        });
+        // console.log("点击对比之后返回的是",res);
       });
       // if (!this.workObj || !this.workObj.workCode) {
       //   this.$store
@@ -354,7 +348,15 @@ export default {
     },
   },
   mounted() {
-    this.getAll(1);
+    console.log("挂在页面完毕");
+    task.getAll(1).then((res) => {
+      this.compareLogData = res.records[0];
+      for (var index in res.records[0].orders) {
+        console.log("for in 循环的ele是：", index);
+        this.isFoldArray[index] = "展开";
+      }
+      console.log(res);
+    });
   },
 };
 </script>
@@ -533,17 +535,14 @@ $radius: 4px;
   .el-container {
     height: 100%;
   }
-
   .right-main-img {
     width: 100%;
     height: 100%;
-
     img {
+      height: auto;
       width: 100%;
-      height: 100%;
     }
   }
-
   flex: {
     basis: 77%;
   }
