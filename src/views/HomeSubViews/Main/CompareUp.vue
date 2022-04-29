@@ -28,8 +28,6 @@
       <el-table
           :data="tableData"
           style="width: 100%"
-          @expand-change="expand"
-          @select="selsecTaskGroup"
           :header-row-style="{
           background: 'RGB(246,248,250)',
         }"
@@ -40,39 +38,37 @@
           :max-height="tableHeight"
       >
         <el-table-column type="expand">
-          <template slot-scope="props">
+          <template #default="props">
             <el-table
                 :data="props.row.orders"
                 style="width: 100%"
                 :show-header="false"
-                @selection-change="
-                (selection) => handleSelectionChange(selection, props.row.index)
-              "
                 :row-class-name="tableCellClassName"
-                @select="
-                (selection, row) => userSelect(selection, row, props.row.index)
-              "
                 ref="multipleTable"
             >
               <el-table-column type="expand">
-                <template slot-scope="props">
+                <template #default="props">
                   <div style="width: 100%; height: 300px;overflow: hidden">
                     <el-image
                         style="width: 100%; height: auto"
                         :src="props.row.url"
-                        @load="loadImg(props.row.url)"
-                        :preview-src-list="srcList"
+                        :preview-src-list="[props.row.url]"
                     >
                     </el-image>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column type="selection" width="30">
+              <el-table-column width="40">
+                <template #default="params">
+                  <el-checkbox v-model="tableData[props.row.index].orders[params.row.index].checked"
+                               @change="compareGroupCheckboxClick({taskIndex:props.row.index,compareIndex:params.row.index})"
+                  ></el-checkbox>
+                </template>
               </el-table-column>
               <el-table-column
                   label="流水帐号"
                   prop="serialNumber"
-                  width="250"
+                  width="240"
               ></el-table-column>
               <el-table-column label="名称" prop="title"></el-table-column>
               <el-table-column
@@ -128,8 +124,15 @@
           </template>
         </el-table-column>
 
-        <el-table-column type="selection" width="30"></el-table-column>
-        <el-table-column label="流水编号/任务ID" prop="id" width="260"></el-table-column>
+        <el-table-column width="50">
+          <template #default="params">
+            <el-checkbox v-model="tableData[params.row.index].checked"
+                         :indeterminate="taskGroupIndeterminate({taskIndex:params.row.index})"
+                         @change="taskGroupTableCheckboxClick({taskIndex:params.row.index})"
+            ></el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column label="流水编号/任务ID" prop="id" width="240"></el-table-column>
         <el-table-column label="名称" prop="name"></el-table-column>
         <el-table-column
             label="对比费用"
@@ -220,13 +223,12 @@ export default {
   data() {
     return {
       /**
-       * @description 判断订单是否能被选中
+       * @description 对比组数据集
        */
-      isChecked: {},
+      dataCollection: [],
       IsUploadDialogShow: false,
       multipleSelection: [],
       ordersId: [],
-      srcList: [],
       tableData: [],
       pageSizes: [10, 20, 30, 40],
       pagination: {
@@ -236,6 +238,9 @@ export default {
        * @description 主内容面板高度
        */
       heightLimit: document.body.clientHeight - 66,
+      /**
+       * @description 绑定表格高度，避免展开子节点的时候把页面撑开
+       */
       tableHeight: (document.body.clientHeight - 66 - 120 - 60) + 'px',
 
     };
@@ -253,18 +258,56 @@ export default {
   },
   methods: {
     /**
+     * 获取对比组多选框不确定状态
+     * @param taskIndex
+     * @returns {boolean}
+     */
+    taskGroupIndeterminate({taskIndex}) {
+      try {
+        return this.tableData[taskIndex].indeterminate;
+        // eslint-disable-next-line
+      } catch (e) {
+        console.log(e);
+      }
+      return false;
+    },
+    /**
+     * @description 外层任务组表格多选框点击事件
+     * @param taskIndex
+     */
+    taskGroupTableCheckboxClick({taskIndex}) {
+      let checkStatus = this.tableData[taskIndex].checked;
+      this.tableData[taskIndex].orders.forEach((order, index) => {
+        this.tableData[taskIndex].orders[index].checked = checkStatus;
+      })
+    },
+    /**
+     * @description 内层对比组变革多选框点击事件
+     * @param taskIndex
+     * @param compareIndex
+     */
+    compareGroupCheckboxClick({taskIndex, compareIndex}) {
+      this.tableData[taskIndex].indeterminate = true;
+      let isCheckedAll = true;
+      for (let i = 0; i < this.tableData[taskIndex].orders.length; i++) {
+        if (this.tableData[taskIndex].orders[i].checked === false) {
+          isCheckedAll = false;
+          break;
+        }
+      }
+      let isUnCheckedAll = true;
+      for (let i = 0; i < this.tableData[taskIndex].orders.length; i++) {
+        if (this.tableData[taskIndex].orders[i].checked === true) {
+          isUnCheckedAll = false;
+          break;
+        }
+      }
+      this.tableData[taskIndex].indeterminate = !isCheckedAll && !isUnCheckedAll;
+      this.tableData[taskIndex].checked = isCheckedAll && !this.tableData[taskIndex].indeterminate;
+    },
+    /**
      * @description 上传窗口上传完成
      */
-    expand(row, val) {
-      if (this.isChecked[row.index].item) {
-        this.$nextTick(() => {
-          if (this.$refs.multipleTable) {
-            this.$refs.multipleTable.toggleAllSelection();
-            console.log("this.$refs.multipleTable", this.$refs.multipleTable);
-          }
-        });
-      }
-    },
     uploadOnComplete() {
       this.IsUploadDialogShow = false;
       // TODO:刷新页面，重新加载数据
@@ -306,67 +349,62 @@ export default {
       row.index = rowIndex;
       // row.itemDetailRefKey = `items${rowIndex}`
     },
-    selsecTaskGroup(selecttion, row) {
+    selectTaskGroup(selection) {
       // 如果选中
-      if (!this.isChecked[row.index].item) {
-        let a = this.isChecked[row.index];
-        a.item = true;
-        this.$set(this.isChecked, row.index, a);
-        // 如果展开
-        if (this.$refs.multipleTable) {
-          this.$refs.multipleTable.toggleAllSelection();
+      for (const selectionElement of selection) {
+        let index = selectionElement.index
+        if (!this.dataCollection[index].item) {
+          let a = this.dataCollection[index];
+          a.item = true;
+          this.$set(this.dataCollection, index, a);
+          // 如果展开
+          if (this.$refs.multipleTable) {
+            this.$refs.multipleTable.toggleAllSelection();
+          }
+        } else {
+          let a = this.dataCollection[index];
+          a.item = false;
+          this.$set(this.dataCollection, index, a);
         }
-      } else {
-        let a = this.isChecked[row.index];
-        a.item = false;
-        this.$set(this.isChecked, row.index, a);
       }
     },
+    /**
+     * @description 点击改变布局按钮触发的事件
+     */
     changeLayout() {
       console.log("打开左右布局");
       this.$router.push({name: "HomeCompareLeft"});
     },
-    getAll(val) {
-      taskGroup.getAll(val).then((res) => {
-        console.log("响应成功返回的是:", res.records);
-        this.tableData = res.records;
-        this.pagination.total = res.total;
-        let checkTaskTop = {};
-        res.records.forEach((ele, index) => {
-          let checkOrders = {};
-          checkOrders.item = false;
-          ele.orders.forEach((ele, index) => {
-            checkOrders[index] = false;
-          });
-          checkTaskTop[index] = checkOrders;
+    /**
+     * @description 刷新数据
+     * @param val
+     */
+    async getAll(val) {
+      let res = await taskGroup.getAll(val)
+      this.pagination.total = res.total;
+      res.records = res.records.map((e, index) => {
+        e.orders = e.orders.map((ee, index) => {
+          // checkOrders[index] = false;
+          this.$set(ee, 'checked', false);
+          this.$set(ee, 'index', index);
+          return ee;
         });
-        this.isChecked = checkTaskTop;
-        console.log("checkTaskTop[index] = checkOrders;", this.isChecked);
+        // checkTaskTop[index] = checkOrders;
+        this.$set(e, 'index', index);
+        this.$set(e, 'checked', false);
+        this.$set(e, 'indeterminate', false);//checkbox不确定状态
+        return e;
       });
+      this.tableData = res.records;
+      console.log("this.dataCollection", this.tableData);
     },
-    // 分页
+    /**
+     * @description 分页
+     * @param val
+     */
     handleCurrentChange(val) {
       this.getAll(val);
       console.log(`当前页: ${val}`);
-    },
-    // 勾选状态改变
-    handleSelectionChange(val, index) {
-      console.log("某个order被勾选", val, index);
-      let ids = val.map((ele) => {
-        console.log("id", ele.id);
-        return ele.id;
-      });
-      this.ordersId.push(...ids);
-    },
-    // 用户手动更改状态
-    userSelect(arr, row, index) {
-      console.log("手动勾选了某个订单", this.isChecked[index][row.index]);
-      this.isChecked[index][row.index] = true;
-    },
-    loadImg(val) {
-      this.srcList = [];
-      console.log("加载了图片", val);
-      this.srcList.push(val);
     },
     downLoad() {
     },
