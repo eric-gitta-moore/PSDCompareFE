@@ -24,8 +24,8 @@ async function getAll(startPages = 1,
                       endTime = '',
                       sort = 'desc') {
     const res = await TaskGroupApi.getGroups({
-        endTime: "2020-10-2",
-        startTime: "2020-10-2",
+        endTime,
+        startTime,
         keyWords: keyWords,
         startPages,
         maxPages: pageSize,
