@@ -191,7 +191,8 @@ export default {
     },
     //点击下载多个任务组
     downLoadTaskByCheck() {
-      TaskGroup.download(this.IdsArr);
+      let IdsArr=this.taskGroupCheck()
+      TaskGroup.download(IdsArr);
     },
     freshTable() {
       let startT, endT;
@@ -227,7 +228,8 @@ export default {
     },
     //批量下载或删除任务组
     deleteTask() {
-      TaskGroup.delTaskByIds(this.IdsArr);
+      let IdsArr=this.taskGroupCheck()
+      TaskGroup.delTaskByIds(IdsArr);
       this.$message.success("删除成功");
     },
     handleSelectionChange(val) {
@@ -271,6 +273,7 @@ export default {
             }
             })
       })
+      return GroupIdsArr
   },
   taskGroupCheckId(row) {
           this.tableData[row.index].orders.forEach(element => {
