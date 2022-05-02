@@ -7,10 +7,10 @@
         </el-col>
         <el-col :span="3">
           <el-input
-              placeholder="请输入内容"
-              v-model="searchText"
-              @change="freshTable"
-              clearable
+            placeholder="请输入内容"
+            v-model="searchText"
+            @change="freshTable"
+            clearable
           ></el-input>
         </el-col>
         <el-col :span="2">
@@ -18,58 +18,75 @@
         </el-col>
         <el-col :span="5">
           <el-date-picker
-              v-model="daterange"
-              type="daterange"
-              unlink-panels
-              range-separator="~"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="freshTable"
+            v-model="daterange"
+            type="daterange"
+            unlink-panels
+            range-separator="~"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            @change="freshTable"
           >
           </el-date-picker>
         </el-col>
         <el-col :span="2">
           <el-button type="primary" @click="clearAll">重置</el-button>
         </el-col>
-        <el-button type="primary" @click="downLoadTaskByCheck" class="styleLoad">下载</el-button>
+        <el-button type="primary" @click="downLoadTaskByCheck" class="styleLoad"
+          >下载</el-button
+        >
       </el-row>
     </el-header>
 
-
     <el-main class="main">
       <el-table
-          :data="tableData"
-          style="width: 100%"
-          lazy:true
-          row-key="id"
-          :tree-props="{ children: 'orders' }"
-          @selection-change="handleSelectionChange"
-          :header-row-style="{
-          background:'RGB(246,248,250)'
+        :data="tableData"
+        style="width: 100%"
+        lazy:true
+        row-key="id"
+        :tree-props="{ children: 'orders', hasChildren: 'hasChildren' }"
+        @selection-change="handleSelectionChange"
+        :header-row-style="{
+          background: 'RGB(246,248,250)',
         }"
-          :header-cell-style="{
-          background:'RGB(246,248,250)'
+        :header-cell-style="{
+          background: 'RGB(246,248,250)',
         }"
       >
         <el-table-column>
           <template slot-scope="scope">
             <el-checkbox
-                @change="GetIdsByCheck(scope.row.id, $event)"
-            ></el-checkbox>
-          </template>
-        </el-table-column>
-        <el-table-column prop="serialNumber" label="流水编号/任务ID" width="210">
-          <template slot-scope="scope">
-            {{ scope.row.serialNumber !== undefined ? scope.row.serialNumber : scope.row.id }}
+              v-if="scope.row.serialNumber === undefined"
+              v-model="scope.row.checked"
+              :indeterminate="scope.row.indeterminate"
+              @change="taskGroupCheck(scope.row)"
+            >
+            </el-checkbox>
+            <el-checkbox v-else
+            v-model="scope.row.checked"
+            @change="childCheckAll(scope.row)"
+            > </el-checkbox>
           </template>
         </el-table-column>
         <el-table-column
-            prop="title"
-            label="名称"
-            width="200"
+          prop="serialNumber"
+          label="流水编号/任务ID"
+          width="210"
         >
           <template slot-scope="scope">
-            {{ scope.row.serialNumber !== undefined ? scope.row.title : scope.row.name }}
+            {{
+              scope.row.serialNumber !== undefined
+                ? scope.row.serialNumber
+                : scope.row.id
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="名称" width="200">
+          <template slot-scope="scope">
+            {{
+              scope.row.serialNumber !== undefined
+                ? scope.row.title
+                : scope.row.name
+            }}
           </template>
         </el-table-column>
         <el-table-column prop="fee" label="对比费用" width="150">
@@ -77,7 +94,7 @@
         <el-table-column prop="status" label="支付状态" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status" class="dot"
-            ><span class="blue-dot"></span>已支付</span
+              ><span class="blue-dot"></span>已支付</span
             >
             <span v-else class="dot"><span class="red-dot"></span>未支付</span>
           </template>
@@ -85,7 +102,7 @@
         <el-table-column prop="status" label="对比状态" width="180">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" class="dot"
-            ><span class="blue-dot"></span>已完成</span
+              ><span class="blue-dot"></span>已完成</span
             >
             <span v-else class="dot"><span class="red-dot"></span>未完成</span>
           </template>
@@ -93,7 +110,7 @@
         <el-table-column prop="status" label="支付结果" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.status == '未成功'" style="color: #67c23a"
-            >成功</span
+              >成功</span
             >
             <span v-else style="color: #f56760">错误</span>
           </template>
@@ -107,32 +124,37 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer;" @click="checkTask(scope.row.id)">查看</span>
+              <span style="cursor: pointer" @click="checkTask(scope.row.id)"
+                >查看</span
+              >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer;" @click="downLoadTask(scope.row.id)">下载</span>
+              <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
+                >下载</span
+              >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span style="cursor: pointer;" @click="deleteTask(scope.row)">删除</span>
+              <span style="cursor: pointer" @click="deleteTask(scope.row)"
+                >删除</span
+              >
             </div>
           </template>
         </el-table-column>
       </el-table>
     </el-main>
 
-
     <el-footer>
       <el-row class="pagination">
         <el-col :span="24">
           <el-pagination
-              :page-sizes="pageSizes"
-              :page-size.sync="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              @current-change="freshTable"
-              @size-change="freshTable"
-              :current-page.sync="currentPage"
-              background
+            :page-sizes="pageSizes"
+            :page-size.sync="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @current-change="freshTable"
+            @size-change="freshTable"
+            :current-page.sync="currentPage"
+            background
           >
           </el-pagination>
         </el-col>
@@ -145,6 +167,7 @@
 //引入对返回数据处理的方法
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
+import { turquoise } from "color-name";
 
 export default {
   name: "History",
@@ -178,6 +201,22 @@ export default {
       }
       TaskGroup.getAll(this.currentPage).then((res) => {
         console.log(res.records);
+        this.total = res.total;
+        res.records = res.records.map((e, index) => {
+          e.orders = e.orders.map((ee, iindex) => {
+            // checkOrders[index] = false;
+            this.$set(ee, "checked", false);
+            this.$set(ee, "index", iindex);
+            this.$set(ee, "taskIndex", index);
+            
+            return ee;
+          });
+          e.orders = e.orders.filter((e) => e.id !== null);
+          this.$set(e, "index", index);
+          this.$set(e, "checked", false);
+          this.$set(e, "indeterminate", false); //checkbox不确定状态
+          return e;
+        });
         this.tableData = res.records;
         console.log(this.tableData);
       });
@@ -189,7 +228,7 @@ export default {
     //批量下载或删除任务组
     deleteTask() {
       TaskGroup.delTaskByIds(this.IdsArr);
-      this.$message.success('删除成功')
+      this.$message.success("删除成功");
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -203,10 +242,39 @@ export default {
       }
       console.log(this.IdsArr);
     },
+    childCheckAll(row) {
+      //遍历数组获取子复选框的状态
+      let lengthOfTrueChecked=0
+      this.tableData[row.taskIndex].orders.forEach(e=>{
+        if(e.checked)  lengthOfTrueChecked++
+      })
+      if(lengthOfTrueChecked===this.tableData[row.taskIndex].orders.length){
+                this.tableData[row.taskIndex].checked=true
+                this.tableData[row.taskIndex].indeterminate=false
+      }
+      else if(lengthOfTrueChecked===0)
+      {
+        this.tableData[row.taskIndex].indeterminate=false
+      }
+      else{
+        this.tableData[row.taskIndex].indeterminate=true
+        this.tableData[row.taskIndex].checked=false
+      }
+      console.log(lengthOfTrueChecked);
+    },
+    //全选的联动效果
+    taskGroupCheck(row)
+    {
+
+          this.tableData[row.index].orders.forEach(element => {
+          element.checked=row.checked
+        });
+  },
   },
   mounted() {
     this.freshTable();
   },
+  
   data() {
     return {
       publicPath: process.env.BASE_URL,
@@ -220,7 +288,7 @@ export default {
       IdsArr: [],
     };
   },
-};
+}
 </script>
 
 <style lang='scss' scoped>
@@ -345,5 +413,4 @@ $radius: 4px;
     }
   }
 }
-
 </style>

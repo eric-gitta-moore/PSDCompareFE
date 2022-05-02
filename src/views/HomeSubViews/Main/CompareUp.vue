@@ -190,7 +190,8 @@
                 @current-change="handleCurrentChange"
                 background
                 layout="total, prev,sizes,pager, next, jumper"
-                :total="pagination.total"
+                
+                
                 :page-sizes="pageSizes"
             >
             </el-pagination>
