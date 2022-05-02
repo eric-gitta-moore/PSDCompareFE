@@ -58,7 +58,7 @@
               v-if="scope.row.serialNumber === undefined"
               v-model="scope.row.checked"
               :indeterminate="scope.row.indeterminate"
-              @change="taskGroupCheck(scope.row)"
+              @change="taskGroupCheckId(scope.row)"
             >
             </el-checkbox>
             <el-checkbox v-else
@@ -233,20 +233,14 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    GetIdsByCheck(Id, $event) {
-      // 如果需要使用到上下文this我们应该使用computed计算属性的或者一个method方法。
-      if ($event) {
-        this.IdsArr.push(Id);
-      } else {
-        this.IdsArr = this.IdsArr.filter((x) => x !== Id);
-      }
-      console.log(this.IdsArr);
-    },
     childCheckAll(row) {
       //遍历数组获取子复选框的状态
       let lengthOfTrueChecked=0
       this.tableData[row.taskIndex].orders.forEach(e=>{
-        if(e.checked)  lengthOfTrueChecked++
+        if(e.checked) {
+           lengthOfTrueChecked++
+           
+        }
       })
       if(lengthOfTrueChecked===this.tableData[row.taskIndex].orders.length){
                 this.tableData[row.taskIndex].checked=true
@@ -255,6 +249,7 @@ export default {
       else if(lengthOfTrueChecked===0)
       {
         this.tableData[row.taskIndex].indeterminate=false
+        this.tableData[row.taskIndex].checked=false
       }
       else{
         this.tableData[row.taskIndex].indeterminate=true
@@ -262,13 +257,26 @@ export default {
       }
       console.log(lengthOfTrueChecked);
     },
-    //全选的联动效果
-    taskGroupCheck(row)
-    {
-
+    //遍历所有cheked属性实现下载功能
+    taskGroupCheck()
+    {   
+      let GroupIdsArr =[]
+      this.tableData.forEach(e=>{
+            if(e.checked) {
+                GroupIdsArr.push(e.id)
+            }
+            e.orders.forEach(e=>{
+              if(e.checked) {
+                GroupIdsArr.push(e.id)
+            }
+            })
+      })
+  },
+  taskGroupCheckId(row) {
           this.tableData[row.index].orders.forEach(element => {
           element.checked=row.checked
         });
+        row.indeterminate=false
   },
   },
   mounted() {
