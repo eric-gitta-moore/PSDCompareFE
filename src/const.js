@@ -16,6 +16,7 @@ switch (process.env.NODE_ENV) {
     case "preview": // 发布前预览 npm run preview
     {
         baseUrl = 'http://ty.y68.fun/sales-expo-saas'; // swagger http://ty.y68.fun/sales-expo-saas/#/
+        baseUrl = '/api';
         break;
     }
     case "development": // 本机前端开发调试 npm run serve
