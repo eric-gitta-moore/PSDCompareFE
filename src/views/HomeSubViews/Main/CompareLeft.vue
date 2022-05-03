@@ -7,7 +7,7 @@
             <div class="left">
               <span>对比记录</span>
               <span class="gray" :style="{'margin-left': '10px','font-size':'14px'}">
-                对比组: {{ compareGroupName }}</span>
+                任务组: {{ taskGroupName }}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -203,7 +203,7 @@
     <UploadDialog
         v-if="IsUploadDialogShow"
         @onClose="IsUploadDialogShow=false"
-        task-id="1"
+        :task-id="compareLogData.id"
         @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
@@ -264,7 +264,7 @@ export default {
     noMore() {
       return this.currentPage >= this.totalPages;
     },
-    compareGroupName() {
+    taskGroupName() {
       return this.compareLogData?.name;
     },
 

@@ -251,7 +251,7 @@ export default {
   },
   props: {
     taskId: {
-      type: String,
+      type: [String, Number],
       required: true,
     },
   },
