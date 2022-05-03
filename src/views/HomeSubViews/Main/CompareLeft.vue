@@ -140,7 +140,7 @@
     <el-main class="main-right">
       <el-container>
         <el-header height="auto">
-          <el-row class="main-right-header">
+          <el-row class="main-right-header" v-if="compareResultImgUrl">
             <el-col :span="4">
               <el-tooltip
                 placement="top-start"
