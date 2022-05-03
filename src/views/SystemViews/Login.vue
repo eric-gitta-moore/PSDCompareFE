@@ -109,6 +109,7 @@ export default {
         this.setLoginError("账号/密码不能为空");
       } else {
         try {
+          // 禁用登陸按鈕
           this.setBtnSubmitDisable();
 
           const user = await UserBiz.login({

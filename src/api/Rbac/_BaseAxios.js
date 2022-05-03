@@ -1,10 +1,11 @@
-/*
+/** 
+ *  
  * @Author: Billy
  * @Date: 2020-06-23 08:44:33
  * @LastEditors: Billy
  * @LastEditTime: 2021-09-22 09:41:08
- * @Description: 基础api的Axios的基类
- */
+ * @description: 基础api的Axios的基类
+ **/
 
 import axios from "axios";
 import AxiosInterceptors from '../_AxiosInterceptors.js'
