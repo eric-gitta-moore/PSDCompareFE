@@ -482,6 +482,7 @@ $radius: 4px;
     }
 
     .upload-file-or-create-task {
+      visibility: hidden;
       display: inline;
     }
 
