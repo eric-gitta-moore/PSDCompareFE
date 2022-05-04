@@ -227,7 +227,8 @@ export default {
     },
     //点击下载单个任务组
     downLoadTask(id) {
-      let urlString=file.getTaskDownloadUrl(id);
+      let ids =[id]
+      let urlString=file.getTaskDownloadUrl(ids);
       window.open(urlString)
     },
     //批量下载或删除任务组
