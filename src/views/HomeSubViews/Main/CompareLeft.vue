@@ -261,6 +261,7 @@
 import UploadDialog from "@/components/Home/Compare/UploadDialog";
 import UploadFileOrCreateTask from "@/components/Home/Compare/UploadFileOrCreateTask";
 import TaskGroupBiz from "@/biz/Rbac/TaskGroup.js";
+import FileBiz from "@/biz/Rbac/File";
 import OrderEntity from "@/entity/Rbac/Order";
 import TaskGroupEntity from "@/entity/Rbac/TaskGroup";
 
@@ -411,13 +412,7 @@ export default {
     },
 
     downloadCompareResult(compareId) {
-      TaskGroupBiz.download(compareId).then((res) => {
-        this.$notify.success({
-          title: "成功",
-          message: "获取对比结果",
-        });
-        // console.log("点击对比之后返回的是",res);
-      });
+      window.open(FileBiz.getDownloadUrl([compareId]));
     },
     /**
      * @description 切换布局
