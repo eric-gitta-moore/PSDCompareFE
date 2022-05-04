@@ -7,15 +7,19 @@
       <div>
         <el-row class="header-row">
           <el-col :span="16">
-            <div class="left">
-              <span>对比记录</span>
-              <span
-                class="gray"
-                :style="{ 'margin-left': '10px', 'font-size': '14px' }"
-              >
-                任务组: {{ taskGroupName }}</span
-              >
-            </div>
+            <el-tooltip :content="`任务组: ${taskGroupName}`" placement="top-end">
+              <template>
+                <div class="left">
+                  <span>对比记录</span>
+                  <span
+                    class="gray"
+                    :style="{ 'margin-left': '10px', 'font-size': '14px' }"
+                  >
+                    任务组: {{ taskGroupName }}</span
+                  >
+                </div>
+              </template>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
             <div class="right">
@@ -35,7 +39,10 @@
         </el-row>
       </div>
       <div class="orders">
-        <ul infinite-scroll-immediate="true" v-if="compareLogData === {}">
+        <ul
+          infinite-scroll-immediate="true"
+          v-if="compareLogData !== undefined"
+        >
           <li v-for="(val, index) in compareLogData.orders" :key="val.id">
             <el-row class="order">
               <el-col>
@@ -79,7 +86,12 @@
                       </template>
                       <el-row class="file-list">
                         <el-col :span="20">
-                          <span>{{ val.files[0].name }}</span>
+                          <span>{{
+                            val.files !== undefined &&
+                            val.files[0] !== undefined
+                              ? val.files[0].name
+                              : ""
+                          }}</span>
                         </el-col>
                         <el-col :span="4">
                           <span class="success">已完成</span>
@@ -88,7 +100,12 @@
 
                       <el-row class="file-list">
                         <el-col :span="20">
-                          <span>{{ val.files[1].name }}</span>
+                          <span>{{
+                            val.files !== undefined &&
+                            val.files[1] !== undefined
+                              ? val.files[1].name
+                              : ""
+                          }}</span>
                         </el-col>
                         <el-col :span="4">
                           <span class="normal">已完成</span>
@@ -145,6 +162,7 @@
               <el-tooltip
                 placement="top-start"
                 :content="compareResultReferenceFileName"
+                v-if="compareResultReferenceFileName"
               >
                 <template>
                   <div>
@@ -153,6 +171,10 @@
                   </div>
                 </template>
               </el-tooltip>
+              <div v-else>
+                <span class="gray">参考图纸名称: </span>
+                <span>{{ compareResultReferenceFileName }}</span>
+              </div>
             </el-col>
             <el-col :span="3">
               <el-tooltip placement="top-start" :content="compareResult.size">
@@ -168,6 +190,7 @@
               <el-tooltip
                 placement="top-start"
                 :content="compareResultCompareFileName"
+                v-if="compareResultCompareFileName"
               >
                 <template>
                   <div>
@@ -176,6 +199,10 @@
                   </div>
                 </template>
               </el-tooltip>
+              <div v-else>
+                <span class="gray">对比图纸名称: </span>
+                <span>{{ compareResultCompareFileName }}</span>
+              </div>
             </el-col>
             <el-col :span="3">
               <el-tooltip placement="top-start" :content="compareResult.size">
@@ -257,9 +284,9 @@ export default {
 
       /**
        * @description 对比组数组
-       * @type {TaskGroupEntity|Object}
+       * @type {TaskGroupEntity|undefined}
        */
-      compareLogData: {},
+      compareLogData: undefined,
       /**
        * @description 当前用户查看的对比组索引，默认第一个
        * @type {Number}
@@ -280,6 +307,9 @@ export default {
       heightLimit: document.body.clientHeight - 66,
     };
   },
+  // watch:{
+
+  // },
   computed: {
     noMore() {
       return this.currentPage >= this.totalPages;
@@ -300,7 +330,7 @@ export default {
      * @returns {String}
      */
     compareResultImgUrl() {
-      return this.compareResult.url;
+      return this.compareResult?.url;
     },
 
     /**
@@ -359,6 +389,7 @@ export default {
     uploadOnComplete() {
       this.IsUploadDialogShow = false;
       // TODO:刷新页面，重新加载数据
+      this.refreshData();
     },
     //控制每一个折叠面板的文字
     isShow(index) {
@@ -402,7 +433,11 @@ export default {
     refreshData() {
       if (this.$route.query.taskId === undefined) {
         TaskGroupBiz.getAll(1, 1).then((res) => {
+          console.log("刷新数据ing");
           this.compareLogData = res.records[0];
+          let len = this.compareLogData.orders.length;
+          this.isFoldArray = [...new Array(len)].map(() => "查看更多");
+          console.log("compareLogData-cre", this.compareLogData);
         });
       } else {
         TaskGroupBiz.find({ taskId: Number(this.$route.query.taskId) }).then(
@@ -413,6 +448,9 @@ export default {
   },
   created() {
     this.refreshData();
+  },
+  mounted() {
+    console.log("compareLogData-mounted", this.compareLogData);
   },
 };
 </script>
@@ -511,6 +549,9 @@ $radius: 4px;
 
     .left {
       text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .right {
