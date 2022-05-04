@@ -17,6 +17,7 @@ function formatRecords(records_use) {
         delete ele.deleted;
         ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
         let orders = ele.orders.map(ele => {
+            if (ele.id === null) return null;
             ele.status = ele.status === "complete" ? "已成功" : "未成功";
             if (ele.files === null) ele.files = [];
             ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss")
@@ -35,8 +36,10 @@ function formatRecords(records_use) {
                 fileName,
                 files
             } = ele;
-            if (url.indexOf("http") === -1 && url.indexOf("//") === -1) {
-                url = "//" + url;
+            if (url) {
+                if (url.indexOf("http") === -1 && url.indexOf("//") === -1) {
+                    url = "//" + url;
+                }
             }
             if (files !== null)
                 files = files.map(e => {
@@ -74,7 +77,9 @@ function formatRecords(records_use) {
                 files
             })
         })
-        let { id, name, createTime } = ele;
+        let {id, name, createTime} = ele;
+        //过滤id为空的order
+        orders = orders.filter(e => (Boolean(e) && Boolean(e.id)));
 
         return new TaskGroup({
             id,
@@ -98,11 +103,11 @@ function formatRecords(records_use) {
  * @returns {Promise<PageResult>}
  */
 async function getAll(startPages = 1,
-    pageSize = 5,
-    keyWords = '',
-    startTime = '',
-    endTime = '',
-    sort = 'desc') {
+                      pageSize = 5,
+                      keyWords = '',
+                      startTime = '',
+                      endTime = '',
+                      sort = 'desc') {
     const res = await TaskGroupApi.getGroups({
         endTime,
         startTime,
@@ -111,7 +116,7 @@ async function getAll(startPages = 1,
         maxPages: pageSize,
         sort,
     });
-    let { records: records_use, total, size, current, pages } = res.data;
+    let {records: records_use, total, size, current, pages} = res.data;
     return new PageResult(
         formatRecords(records_use), total, size, current, pages
     );
@@ -122,9 +127,9 @@ async function getAll(startPages = 1,
  * @param {Number} taskId
  * @returns {Promise<TaskGroup>}
  */
-async function find({ taskId }) {
-    const r = await TaskGroupApi.getGroupById({ groupId: taskId });
-    let { records: records_use, total, size, current, pages } = r.data;
+async function find({taskId}) {
+    const r = await TaskGroupApi.getGroupById({groupId: taskId});
+    let {records: records_use, total, size, current, pages} = r.data;
     return formatRecords(records_use)[0];
 }
 
@@ -134,7 +139,7 @@ async function find({ taskId }) {
  * @returns {Promise<>}
  */
 async function delTaskByIds(ids) {
-    TaskGroupApi.deleteGroup({ ids })
+    TaskGroupApi.deleteGroup({ids})
 }
 
 /**
@@ -143,7 +148,7 @@ async function delTaskByIds(ids) {
  * @returns {Promise<>}
  */
 async function download(ids) {
-    return TaskGroupApi.download({ ids })
+    return TaskGroupApi.download({ids})
 }
 
 /**
@@ -151,8 +156,8 @@ async function download(ids) {
  * @param {String} name
  * @returns {Promise<axios>}
  */
-async function addTaskGroup({ name }) {
-    return TaskGroupApi.createGroup({ name });
+async function addTaskGroup({name}) {
+    return TaskGroupApi.createGroup({name});
 }
 
 
