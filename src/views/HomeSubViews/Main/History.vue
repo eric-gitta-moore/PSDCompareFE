@@ -167,6 +167,7 @@
 //引入对返回数据处理的方法
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
+import file from '../../../biz/Rbac/File'
 import { turquoise } from "color-name";
 
 export default {
@@ -192,7 +193,8 @@ export default {
     //点击下载多个任务组
     downLoadTaskByCheck() {
       let IdsArr=this.taskGroupCheck()
-      TaskGroup.download(IdsArr);
+       let urlString =file.getTaskDownloadUrl(IdsArr);
+       window.open(urlString)
     },
     freshTable() {
       let startT, endT;
@@ -224,7 +226,8 @@ export default {
     },
     //点击下载单个任务组
     downLoadTask(id) {
-      TaskGroup.download(id);
+      let urlString=file.getTaskDownloadUrl(id);
+      window.open(urlString)
     },
     //批量下载或删除任务组
     deleteTask() {
@@ -264,9 +267,6 @@ export default {
     {   
       let GroupIdsArr =[]
       this.tableData.forEach(e=>{
-            if(e.checked) {
-                GroupIdsArr.push(e.id)
-            }
             e.orders.forEach(e=>{
               if(e.checked) {
                 GroupIdsArr.push(e.id)
