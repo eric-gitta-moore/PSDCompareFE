@@ -203,7 +203,7 @@
     <UploadDialog
         v-if="IsUploadDialogShow"
         @onClose="IsUploadDialogShow = false"
-        task-id="1"
+        :task-id="1"
         @onComplete="uploadOnComplete"
     ></UploadDialog>
   </el-container>
@@ -482,6 +482,7 @@ $radius: 4px;
     }
 
     .upload-file-or-create-task {
+      visibility: hidden;
       display: inline;
     }
 
