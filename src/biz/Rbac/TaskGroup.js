@@ -16,70 +16,73 @@ function formatRecords(records_use) {
         ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
         delete ele.deleted;
         ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss");
-        let orders = ele.orders.map(ele => {
-            if (ele.id === null) return null;
-            ele.status = ele.status === "complete" ? "已成功" : "未成功";
-            if (ele.files === null) ele.files = [];
-            ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss")
-            let {
-                id,
-                status,
-                fee,
-                title,
-                serialNumber,
-                createTime,
-                url,
-                size,
-                resolution,
-                taskId,
-                result,
-                fileName,
-                files
-            } = ele;
-            if (url) {
-                if (url.indexOf("http") === -1 && url.indexOf("//") === -1) {
-                    url = "//" + url;
+        let orders = [];
+        if (ele.orders) {
+            orders = ele.orders.map(ele => {
+                if (ele.id === null) return null;
+                ele.status = ele.status === "complete" ? "已成功" : "未成功";
+                if (ele.files === null) ele.files = [];
+                ele.createTime = DateHelper.format(new Date(ele.createTime), "yyyy-MM-dd hh:mm:ss")
+                let {
+                    id,
+                    status,
+                    fee,
+                    title,
+                    serialNumber,
+                    createTime,
+                    url,
+                    size,
+                    resolution,
+                    taskId,
+                    result,
+                    fileName,
+                    files
+                } = ele;
+                if (url) {
+                    if (url.indexOf("http") === -1 && url.indexOf("//") === -1) {
+                        url = "//" + url;
+                    }
                 }
-            }
-            if (files !== null)
-                files = files.map(e => {
-                    if (e === null) return null;
-                    let {
-                        id,
-                        name,
-                        taskId,
-                        size,
-                        createTime,
-                        orderId
-                    } = e;
-                    return new FileEntity({
-                        id,
-                        name,
-                        taskId,
-                        size,
-                        createTime,
-                        orderId
+                if (files !== null)
+                    files = files.map(e => {
+                        if (e === null) return null;
+                        let {
+                            id,
+                            name,
+                            taskId,
+                            size,
+                            createTime,
+                            orderId
+                        } = e;
+                        return new FileEntity({
+                            id,
+                            name,
+                            taskId,
+                            size,
+                            createTime,
+                            orderId
+                        })
                     })
+                return new Order({
+                    id,
+                    status,
+                    fee,
+                    title,
+                    serialNumber,
+                    createTime,
+                    url,
+                    size,
+                    resolution,
+                    taskId,
+                    result,
+                    fileName,
+                    files
                 })
-            return new Order({
-                id,
-                status,
-                fee,
-                title,
-                serialNumber,
-                createTime,
-                url,
-                size,
-                resolution,
-                taskId,
-                result,
-                fileName,
-                files
-            })
-        })
+            });
+            //过滤id为空的order
+            orders = orders.filter(e => (Boolean(e) && Boolean(e.id)));
+        }
         let {id, name, createTime} = ele;
-        //过滤id为空的order
-        orders = orders.filter(e => (Boolean(e) && Boolean(e.id)));
 
         return new TaskGroup({
             id,

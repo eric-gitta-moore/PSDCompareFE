@@ -13,13 +13,18 @@ async function addCompareGroup({
                                    compareFiles,
                                    taskId,
                                }) {
-    let r = await FileApi.upload({
-        file1: referenceFiles,
-        file2: compareFiles,
-        taskId,
-    })
-    let commonResult = new CommonResult(r.data, r.message, r.code);
-    return commonResult.message;
+    try {
+        let r = await FileApi.upload({
+            file1: referenceFiles,
+            file2: compareFiles,
+            taskId,
+        })
+        let commonResult = new CommonResult(r.data, r.message, r.code);
+        return commonResult.message;
+    } catch (e) {
+        console.log(e.message);
+        return e.message;
+    }
 }
 
 /**

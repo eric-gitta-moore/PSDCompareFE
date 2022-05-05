@@ -338,6 +338,7 @@ export default {
       //   })
       // }
       // console.log(compareArr);
+      this.$message.success("正在上传中");
       let msg = await FileBiz.addCompareGroup({
         referenceFiles: left.map(i => i.FileObj),
         compareFiles: right.map(i => i.FileObj),
