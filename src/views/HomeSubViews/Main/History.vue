@@ -93,28 +93,19 @@
         <el-table-column prop="fee" label="对比费用" width="150">
         </el-table-column>
         <el-table-column prop="status" label="支付状态" width="150">
-          <template slot-scope="scope">
-            <span v-if="scope.row.status" class="dot"
-            ><span class="blue-dot"></span>已支付</span
-            >
-            <span v-else class="dot"><span class="red-dot"></span>未支付</span>
-          </template>
-        </el-table-column>
+         <template slot-scope="scope">
+                {{scope.row.status}}
+          </template> 
+        </el-table-column>z
         <el-table-column prop="status" label="对比状态" width="180">
           <template slot-scope="scope">
-            <span v-if="scope.row.status == '未成功'" class="dot"
-            ><span class="blue-dot"></span>已完成</span
-            >
-            <span v-else class="dot"><span class="red-dot"></span>未完成</span>
-          </template>
+                {{scope.row.result}}
+          </template> 
         </el-table-column>
         <el-table-column prop="status" label="支付结果" width="150">
           <template slot-scope="scope">
-            <span v-if="scope.row.status == '未成功'" style="color: #67c23a"
-            >成功</span
-            >
-            <span v-else style="color: #f56760">错误</span>
-          </template>
+                {{scope.row.status}}
+          </template> 
         </el-table-column>
         <el-table-column prop="createTime" label="时间" width="200">
           <template slot-scope="scope">
