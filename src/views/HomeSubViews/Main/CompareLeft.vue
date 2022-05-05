@@ -446,6 +446,10 @@ export default {
   },
   mounted() {
     console.log("compareLogData-mounted", this.compareLogData);
+    if(this.$route.params.from==="History")
+    {
+        this.uploadOnComplete
+    }
   },
 };
 </script>

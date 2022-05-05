@@ -125,7 +125,7 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer" @click="checkTask(scope.row.id)"
+              <span style="cursor: pointer" @click="checkTask(scope)"
               >查看</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -135,7 +135,7 @@
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span style="cursor: pointer" @click="deleteTask(scope.row)"
+              <span style="cursor: pointer" @click="deleteTask(scope.row.id)"
               >删除</span
               >
             </div>
@@ -165,7 +165,7 @@
 </template>
 
 <script>
-//引入对返回数据处理的方法
+/*引入对返回数据处理的方法*/
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
 import file from '../../../biz/Rbac/File'
@@ -181,17 +181,21 @@ export default {
       this.daterange = "";
       this.freshTable();
     },
-    //查看该文件
+    /*查看该文件
+    */
     checkTask(rowKey) {
       this.$router.push({
         name: "Home",
         params: {
-          id: rowKey, //请求回来的任务组id
+          rowKey, //请求回来的任务组
+          from:'History'
         },
       });
       console.log(rowKey);
     },
-    //点击下载多个任务组
+    /*
+    点击下载多个任务组
+    */
     downLoadTaskByCheck() {
       let IdsArr=this.taskGroupCheck()
        let urlString =file.getTaskDownloadUrl(IdsArr);
@@ -232,8 +236,9 @@ export default {
       window.open(urlString)
     },
     //批量下载或删除任务组
-    deleteTask() {
+    deleteTask(rowId) {
       let IdsArr = this.taskGroupCheck()
+      IdsArr.push(rowId)
       TaskGroup.delTaskByIds(IdsArr);
       this.$message.success("删除成功");
     },
