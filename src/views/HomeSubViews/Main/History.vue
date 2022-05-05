@@ -43,7 +43,7 @@
           :data="tableData"
           style="width: 100%"
           lazy:true
-          row-key="id"
+          :row-key="getRowKey"
           :tree-props="{ children: 'orders', hasChildren: 'hasChildren' }"
           @selection-change="handleSelectionChange"
           :header-row-style="{
@@ -135,7 +135,7 @@
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="bin"></svg-icon>
-              <span style="cursor: pointer" @click="deleteTask(scope.row)"
+              <span style="cursor: pointer" @click="deleteTask(scope.row.id)"
               >删除</span
               >
             </div>
@@ -165,7 +165,7 @@
 </template>
 
 <script>
-//引入对返回数据处理的方法
+/*引入对返回数据处理的方法*/
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
 import file from '../../../biz/Rbac/File'
@@ -195,7 +195,9 @@ export default {
       });
       console.log(row);
     },
-    //点击下载多个任务组
+    /*
+    点击下载多个任务组
+    */
     downLoadTaskByCheck() {
       let IdsArr = this.taskGroupCheck()
       let urlString = file.getDownloadUrl(IdsArr);
@@ -241,8 +243,9 @@ export default {
       window.open(urlString)
     },
     //批量下载或删除任务组
-    deleteTask() {
+    deleteTask(rowId) {
       let IdsArr = this.taskGroupCheck()
+      IdsArr.push(rowId)
       TaskGroup.delTaskByIds(IdsArr);
       this.$message.success("删除成功");
     },
@@ -289,6 +292,15 @@ export default {
       });
       row.indeterminate = false
     },
+    //解决重复id
+    getRowKey(row){
+        if(row.serialNumber===undefined){
+            return  row.id
+        }else{
+           return row.id+'only'
+        }
+    },
+
   },
   mounted() {
     this.freshTable();
@@ -375,9 +387,12 @@ $radius: 4px;
     background: white;
 
     .el-checkbox__inner {
-      position: absolute;
+     .cell{
+       justify-content: center;
+        position: absolute;
       top: -5px;
-      left: 8px;
+      left:15px;
+     }
     }
   }
 
