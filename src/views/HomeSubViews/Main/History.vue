@@ -125,12 +125,12 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer" @click="checkTask(scope)"
+              <span style="cursor: pointer" @click="checkTask(scope.row)"
               >查看</span
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
+              <span style="cursor: pointer" @click="downLoadTask(scope.row)"
               >下载</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -169,7 +169,8 @@
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
 import file from '../../../biz/Rbac/File'
-import { turquoise } from "color-name";
+import TaskGroupEntity from '@/entity/Rbac/TaskGroup';
+import {turquoise} from "color-name";
 
 export default {
   name: "History",
@@ -181,24 +182,25 @@ export default {
       this.daterange = "";
       this.freshTable();
     },
-    /*查看该文件
-    */
-    checkTask(rowKey) {
+    //查看该文件
+    checkTask(row) {
+      let query = {};
+      query.taskId = row.taskId ? row.taskId : row.id;
+      if (!(row instanceof TaskGroupEntity)) {
+        query.compareId = row.id;
+      }
       this.$router.push({
-        name: "Home",
-        params: {
-          rowKey, //请求回来的任务组
-          from:'History'
-        },
+        name: "HomeCompareLeft",
+        query
       });
-      console.log(rowKey);
+      console.log(row);
     },
     /*
     点击下载多个任务组
     */
     downLoadTaskByCheck() {
-      let IdsArr=this.taskGroupCheck()
-       let urlString =file.getTaskDownloadUrl(IdsArr);
+      let IdsArr = this.taskGroupCheck()
+      let urlString = file.getDownloadUrl(IdsArr);
        window.open(urlString)
     },
     freshTable() {
@@ -230,9 +232,14 @@ export default {
       });
     },
     //点击下载单个任务组
-    downLoadTask(id) {
-      let ids =[id]
-      let urlString=file.getTaskDownloadUrl(ids);
+    downLoadTask(e) {
+      let idArr = [];
+      if (e instanceof TaskGroupEntity) {
+        idArr = e.orders.map(ele => ele.id);
+      } else {
+        idArr = [e.id];
+      }
+      let urlString = file.getDownloadUrl(idArr);
       window.open(urlString)
     },
     //批量下载或删除任务组

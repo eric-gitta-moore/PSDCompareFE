@@ -436,7 +436,19 @@ export default {
         });
       } else {
         TaskGroupBiz.find({ taskId: Number(this.$route.query.taskId) }).then(
-          (r) => (this.compareLogData = r)
+            (r) => {
+              /**
+               * @type {TaskGroup}
+               */
+              this.compareLogData = r
+              if (this.$route.query.compareId !== undefined) {
+                r.orders.forEach((a, index) => {
+                  if (Number(a.id) === Number(this.$route.query.compareId)) {
+                    this.currentLookUpCompareGroupIndex = index;
+                  }
+                })
+              }
+            }
         );
       }
     },
