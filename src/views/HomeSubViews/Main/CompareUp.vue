@@ -187,12 +187,14 @@
         <el-row class="pagination">
           <el-col :span="24">
             <el-pagination
-                @current-change="handleCurrentChange"
-                background
-                layout="total, prev,sizes,pager, next, jumper"
-                
-                
                 :page-sizes="pageSizes"
+                :page-size.sync="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.total"
+                @current-change="handleCurrentChange"
+                @size-change="handleCurrentChange"
+                :current-page.sync="pagination.currentPage"
+                background
             >
             </el-pagination>
           </el-col>
@@ -235,6 +237,8 @@ export default {
       pageSizes: [10, 20, 30, 40],
       pagination: {
         total: 220,
+        pageSize: 10,
+        currentPage: 1,
       },
       /**
        * @description 主内容面板高度
@@ -393,7 +397,7 @@ export default {
      * @param val
      */
     async getAll(val) {
-      let res = await taskGroup.getAll(val)
+      let res = await taskGroup.getAll(val, this.pagination.pageSize)
       this.pagination.total = res.total;
       res.records = res.records.map((e, index) => {
         e.orders = e.orders.map((ee, index) => {

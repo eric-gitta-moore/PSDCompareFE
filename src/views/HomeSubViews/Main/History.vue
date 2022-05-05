@@ -125,7 +125,7 @@
           <template #default="scope">
             <div class="act">
               <svg-icon icon-class="show-eye"></svg-icon>
-              <span style="cursor: pointer" @click="checkTask(scope.row.id)"
+              <span style="cursor: pointer" @click="checkTask(scope.row)"
               >查看</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -183,14 +183,17 @@ export default {
       this.freshTable();
     },
     //查看该文件
-    checkTask(rowKey) {
+    checkTask(row) {
+      let query = {};
+      query.taskId = row.taskId ? row.taskId : row.id;
+      if (!(row instanceof TaskGroupEntity)) {
+        query.compareId = row.id;
+      }
       this.$router.push({
-        name: "Home",
-        params: {
-          id: rowKey, //请求回来的任务组id
-        },
+        name: "HomeCompareLeft",
+        query
       });
-      console.log(rowKey);
+      console.log(row);
     },
     //点击下载多个任务组
     downLoadTaskByCheck() {
