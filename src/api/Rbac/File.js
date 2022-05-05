@@ -48,7 +48,7 @@ function upload({
  * @returns {String}
  */
 function download({ids}) {
-    return BASE_URL + '/file/download?ids[]=' + ids.join('&ids[]=');
+    return BASE_URL + '/file/download?id=' + ids.join('&id=');
 
 }
 
@@ -62,7 +62,7 @@ function download({ids}) {
  * @returns {string}
  */
 function downloadTask({ids}) {
-    return BASE_URL + '/taskGroup/download?ids[]=' + ids.join('&ids[]=');
+    return BASE_URL + '/taskGroup/download?ids=' + ids.join('&ids=');
 }
 
 

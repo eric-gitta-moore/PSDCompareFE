@@ -130,7 +130,7 @@
               >
               <el-divider direction="vertical"></el-divider>
               <svg-icon icon-class="download"></svg-icon>
-              <span style="cursor: pointer" @click="downLoadTask(scope.row.id)"
+              <span style="cursor: pointer" @click="downLoadTask(scope.row)"
               >下载</span
               >
               <el-divider direction="vertical"></el-divider>
@@ -169,7 +169,8 @@
 import TaskGroup from "../../../biz/Rbac/TaskGroup";
 import DateHelper from "@/util/DateHelper";
 import file from '../../../biz/Rbac/File'
-import { turquoise } from "color-name";
+import TaskGroupEntity from '@/entity/Rbac/TaskGroup';
+import {turquoise} from "color-name";
 
 export default {
   name: "History",
@@ -193,8 +194,8 @@ export default {
     },
     //点击下载多个任务组
     downLoadTaskByCheck() {
-      let IdsArr=this.taskGroupCheck()
-       let urlString =file.getTaskDownloadUrl(IdsArr);
+      let IdsArr = this.taskGroupCheck()
+      let urlString = file.getDownloadUrl(IdsArr);
        window.open(urlString)
     },
     freshTable() {
@@ -226,8 +227,14 @@ export default {
       });
     },
     //点击下载单个任务组
-    downLoadTask(id) {
-      let urlString=file.getTaskDownloadUrl(id);
+    downLoadTask(e) {
+      let idArr = [];
+      if (e instanceof TaskGroupEntity) {
+        idArr = e.orders.map(ele => ele.id);
+      } else {
+        idArr = [e.id];
+      }
+      let urlString = file.getDownloadUrl(idArr);
       window.open(urlString)
     },
     //批量下载或删除任务组
