@@ -43,7 +43,7 @@
           :data="tableData"
           style="width: 100%"
           lazy:true
-          row-key="id"
+          :row-key="getRowKey"
           :tree-props="{ children: 'orders', hasChildren: 'hasChildren' }"
           @selection-change="handleSelectionChange"
           :header-row-style="{
@@ -292,6 +292,15 @@ export default {
       });
       row.indeterminate = false
     },
+    //解决重复id
+    getRowKey(row){
+        if(row.serialNumber===undefined){
+            return  row.id
+        }else{
+           return row.id+'only'
+        }
+    },
+
   },
   mounted() {
     this.freshTable();
@@ -378,9 +387,12 @@ $radius: 4px;
     background: white;
 
     .el-checkbox__inner {
-      position: absolute;
+     .cell{
+       justify-content: center;
+        position: absolute;
       top: -5px;
-      left: 8px;
+      left:15px;
+     }
     }
   }
 
