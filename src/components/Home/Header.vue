@@ -11,7 +11,7 @@
         <div class="to-home">返回主页</div>
         <el-divider direction="vertical"></el-divider>
         <div class="avatar">
-          <img :src="`/images/avatar.png`" alt=""/>
+          <img :src="`images/avatar.png`" alt=""/>
           <span>头像</span>
           <SvgIcon icon-class="angle-down"></SvgIcon>
           <UserPanel @onComplete="gotoPayDialog" class="user-panel"></UserPanel>
