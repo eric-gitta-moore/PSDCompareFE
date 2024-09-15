@@ -17,6 +17,7 @@ switch (process.env.NODE_ENV) {
     {
         baseUrl = 'http://ty.y68.fun/sales-expo-saas'; // swagger http://ty.y68.fun/sales-expo-saas/#/
         baseUrl = '/api';
+        baseUrl = 'https://apifoxmock.com/m1/838613-1838785-default';
         break;
     }
     case "development": // 本机前端开发调试 npm run serve
