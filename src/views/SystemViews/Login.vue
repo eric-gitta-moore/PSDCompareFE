@@ -77,8 +77,8 @@ export default {
     return {
       LOGIN_PAGE_TITLE,
       form: {
-        name: "", // 用户名
-        password: "", // 密码
+        name: "admin", // 用户名
+        password: "password", // 密码
         isRememberMe: true, // 是否记住我
       },
       activeTabName: "first",

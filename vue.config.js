@@ -21,8 +21,8 @@ module.exports = {
     port: 8030,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:4523/mock/838613',
-        //target: 'http://127.0.0.1:4523/mock/838613',
+        // target: 'http://127.0.0.1:8081',
+        target: 'https://apifoxmock.com/m1/838613-1838785-default',
         //  target: 'http://test.tianhaoltd.top/api/',
         ws: true,
         changeOrigin: true, // false：请求头中host仍然是浏览器发送过来的host；true：请求头中host会设置成target
